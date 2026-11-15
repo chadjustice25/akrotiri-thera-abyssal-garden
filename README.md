@@ -1,3 +1,13 @@
+# Akrotiri–Thera (a fork of Abyssal Garden)
+
+**Work in progress.** This fork is turning Noniv's [Abyssal Garden](https://github.com/Noniv/abyssal-garden) into an archaeologically grounded reconstruction of the island of **Thera (Santorini) and its Bronze Age town at Akrotiri, c. 1650 BCE**, as they stood just before the Late Bronze Age eruption. Like the original, it is built entirely from code in one HTML file. Thera is the proof of concept. The same world clock will later extend to Crete, Egypt, Byblos and other places of the same moment.
+
+**Status:** setting up. The scene is still the original underwater world. Rules for contributors and agents are in [`AGENTS.md`](AGENTS.md), the evidence rules in [`docs/HISTORICAL_STANDARD.md`](docs/HISTORICAL_STANDARD.md), and the research briefs in [`docs/research/`](docs/research/).
+
+Everything below is the original Abyssal Garden README, by Noniv, under the MIT License ([`LICENSE`](LICENSE)).
+
+---
+
 # Abyssal Garden
 
 **A dreamy underwater world you can swim through, right in your browser.**

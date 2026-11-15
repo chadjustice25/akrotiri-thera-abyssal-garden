@@ -1,0 +1,17 @@
+{
+  "shared": false,
+  "hooks": {
+    "post-tool-use-validate": {
+      "mode": "report",
+      "outputs": [
+        {
+          "glob": ".harness/log/*.jsonl",
+          "rules": "evidence-log"
+        }
+      ],
+      "notify": [
+        "file"
+      ]
+    }
+  }
+}

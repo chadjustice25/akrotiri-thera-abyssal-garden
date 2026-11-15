@@ -1,2 +1,15 @@
 node_modules/
 dev.html
+.DS_Store
+
+# Reference images (photographs of the Akrotiri wall paintings) stay local: this fork is
+# public, and the reproduction rights are not settled (docs/DECISIONS.md D6; research lane T6).
+akrotiri-frescoes-sources/
+
+# Harness: gate exports and personal notes stay local (unghost CONTRACTS.md section 2)
+.harness/exports/
+.harness/notes/
+
+# Third-party project skills and personal Claude settings stay out of git
+.claude/skills/
+.claude/settings.local.json
