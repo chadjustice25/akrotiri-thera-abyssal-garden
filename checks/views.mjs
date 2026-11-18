@@ -3,6 +3,8 @@
 // check `views`: render the page in headless Chrome on this Mac's GPU and photograph the six viewpoints
 // ============================================================================
 //   node checks/views.mjs [--page index.html] [--level high|medium|low] [--size 1600x900] [--out DIR] [--settle 2.5]
+//                         [--min-fps N] [--min-scale P]   smoothness limits: FAIL if any view's stats line shows fewer than
+//                         N fps, or a render resolution below P% (the page's own scaler lowers it when the GPU cannot keep up)
 //   (also: cd source && npm run views)
 // It serves the page from 127.0.0.1, opens it in headless Chrome (WebGPU on the real Metal adapter), waits for the
 // world to finish building, presses Dive in, then keys 1-6 and saves a JPEG of each view, with the stats line (key H)
@@ -31,6 +33,8 @@ const LEVEL = arg('level', 'high');
 if (!(LEVEL in LEVELS)) error(`--level must be high, medium or low, not ${LEVEL}`);
 const [W, H] = arg('size', '1600x900').split('x').map(Number);
 if (!(W > 0 && H > 0)) error('--size must look like 1600x900');
+const MINFPS = arg('min-fps') ? Number(arg('min-fps')) : null, MINSCALE = arg('min-scale') ? Number(arg('min-scale')) : null;
+if ((MINFPS !== null && !(MINFPS > 0)) || (MINSCALE !== null && !(MINSCALE > 0 && MINSCALE <= 100))) error('--min-fps must be > 0 and --min-scale 1-100');
 const SETTLE = Number(arg('settle', '2.5')) * 1000; // after each jump: let shadows, exposure and plants settle
 const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 const OUT = path.resolve(ROOT, arg('out', path.join('.harness', 'views', stamp)));
@@ -124,6 +128,9 @@ try {
   await run(`(()=>{const s=document.createElement('style');s.textContent='#o,#i{visibility:hidden!important}';document.head.append(s)})()`);
   await key('KeyH', 'h'); // the stats line: read after each view, hidden from the picture
 
+  // warm-up: the first seconds after diving in compile pipelines and let the resolution scaler settle; not measured
+  for (let v = 1; v <= 6; v++) { await key('Digit' + v, String(v)); await sleep(800); }
+  await key('Digit1', '1'); await sleep(SETTLE);
   mkdirSync(OUT, { recursive: true });
   for (let v = 1; v <= 6; v++) {
     await key('Digit' + v, String(v));
@@ -137,7 +144,8 @@ try {
       let s=0,q=0,n=d.length/4;for(let i=0;i<d.length;i+=4){const l=(0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2]);s+=l;q+=l*l}
       const m=s/n;return{mean:+m.toFixed(1),spread:+Math.sqrt(Math.max(0,q/n-m*m)).toFixed(1)}})()`);
     const stats = (await run(`document.getElementById('i').textContent`)) || '';
-    report.views.push({ view: v, file, ...px, stats, ok: px.spread >= 4 && px.mean >= 3 });
+    const fps = +(stats.match(/^(\d+) fps/) || [])[1] || null, scale = +(stats.match(/\((\d+)%\)/) || [])[1] || null;
+    report.views.push({ view: v, file, ...px, stats, fps, scale, ok: px.spread >= 4 && px.mean >= 3 });
   }
 } catch (e) {
   report.fatal = e.message;
@@ -152,7 +160,10 @@ report.when = new Date().toISOString();
 const hw = report.adapter && !report.adapter.fallback;
 for (const u of missing) problems.push('the page requested ' + u + ' (nothing may load at run time)');
 const blank = report.views.filter((v) => !v.ok).map((v) => v.view);
-const pass = hw && !report.fatal && report.views.length === 6 && !blank.length && !problems.length;
+const slow = report.views.filter((v) => (MINFPS !== null && !(v.fps >= MINFPS)) || (MINSCALE !== null && !(v.scale >= MINSCALE)))
+  .map((v) => `view ${v.view} (${v.fps ?? '?'} fps at ${v.scale ?? '?'}%)`);
+report.limits = { minFps: MINFPS, minScale: MINSCALE, slow };
+const pass = hw && !report.fatal && report.views.length === 6 && !blank.length && !problems.length && !slow.length;
 report.result = pass ? 'PASS' : 'FAIL';
 writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(report, null, 2) + '\n');
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -185,5 +196,7 @@ if (!report.adapter) done(1, `FAIL views: no WebGPU adapter in headless Chrome; 
 if (!hw) done(1, `FAIL views: only a software fallback adapter; see ${rel}/report.json`);
 if (report.fatal) done(1, `FAIL views: ${report.fatal}; see ${rel}/report.json`);
 if (blank.length) done(1, `FAIL views: view ${blank.join(', ')} has no picture content; see ${rel}/`);
+if (slow.length) done(1, `FAIL views: below the smoothness limit (${MINFPS ?? '-'} fps, ${MINSCALE ?? '-'}% resolution): ${slow.join(', ')}; see ${rel}/`);
 if (problems.length) done(1, `FAIL views: ${problems.length} error(s) logged, first: ${problems[0].slice(0, 160)}; see ${rel}/report.json`);
-done(0, `PASS views: six viewpoints rendered on ${report.adapter.vendor} ${report.adapter.architecture} at ${LEVEL} detail, ${report.size}, world built in ${report.loadSeconds} s; pictures in ${rel}/`);
+const lim = MINFPS !== null || MINSCALE !== null ? `, every view at least ${MINFPS ?? '-'} fps and ${MINSCALE ?? '-'}% resolution` : '';
+done(0, `PASS views: six viewpoints rendered on ${report.adapter.vendor} ${report.adapter.architecture} at ${LEVEL} detail, ${report.size}, world built in ${report.loadSeconds} s${lim}; pictures in ${rel}/`);

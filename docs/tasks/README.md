@@ -15,4 +15,6 @@ One file per task: `docs/tasks/NNN-slug.md`, numbered from 001. A work order is 
 ~/Developer/agent-lab/unghost/harness/bin/harness lint docs/tasks/NNN-slug.md
 ```
 
-None exist yet. The first one comes after T1 is checked: replace upstream's seabed with the pre-eruption island's terrain and sea (`HANDOFF.md`, Next).
+| # | Order | Status |
+|---|---|---|
+| 001 | `001-terrain-and-sea.md`: Thera's land, sea and sky in 1615 BCE (Fable 5.2, D14) | open |
