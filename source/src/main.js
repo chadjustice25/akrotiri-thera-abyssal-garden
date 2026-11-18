@@ -457,6 +457,7 @@ setTime(2);
 const key = (e, v) => {
   switch (e.code) {
     case 'KeyW': kf = v; break; case 'KeyS': kb = v; break; case 'KeyA': kl = v; break; case 'KeyD': kr = v; break;
+    case 'Space': if (!menu) e.preventDefault(); // up, like E; in the world it must not press the last button clicked
     case 'KeyE': ku = v; break; case 'KeyQ': kd = v; break; case 'ShiftLeft': case 'ShiftRight': ks = v; break;
     default: if (v && !e.repeat) {
       if (e.code === 'KeyH') { hud = !hud; hTot = 0; hPer = 1e9; info.textContent = ''; }
