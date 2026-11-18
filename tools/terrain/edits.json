@@ -1,0 +1,109 @@
+{
+  "about": "The named edits that turn today's elevation data into the island of 1615 BCE (work order 001). Each edit carries its claim references (lane#row, as corrected in docs/research/verification/) or a liberty number (T-L…, listed in docs/terrain/README.md), and its parameters. A later research result changes a number here, not the code in build.mjs. All positions are [x, z] in metres from 36.405 N, 25.405 E (x east, z south); heights are metres above the sea level of 1615 BCE.",
+  "grid": { "cells": 640, "cellMetres": 40, "coarseFactor": 4 },
+
+  "E0": {
+    "name": "Surface-model clean-up",
+    "claims": ["T1#53"], "correction": "T1 correction 11",
+    "note": "GLO-30 is a surface model: buildings stand in it. Inside these town outlines a 3x3 morphological opening at the source resolution removes narrow highs. Vegetation on Santorini is low and is not treated.",
+    "towns": {
+      "Fira-Firostefani-Imerovigli": [[1500, -3300], [2300, -3300], [2900, -1700], [3000, -300], [2400, -300], [2200, -1700]],
+      "Oia": [[-3300, -6500], [-1500, -6400], [-1500, -5700], [-3200, -5700]]
+    }
+  },
+
+  "E1": {
+    "name": "Sea level",
+    "claims": ["T1#51", "T1#52"], "grade": "C",
+    "note": "Regional value for the northern and central Cyclades, c. 2000 BC to c. 30 BC: 3.60 +/- 0.20 m below present. Santorini's own vertical land movement is unknown, so the regional value is applied unchanged.",
+    "seaLevelBelowPresent": 3.6
+  },
+
+  "E2": {
+    "name": "Remove the Kameni islands",
+    "claims": ["T1#26", "T1#27", "T1#28", "T1#29"], "grade": "B",
+    "note": "They formed after the eruption. Everything inside this outline, above and below the water, is replaced by the bay floor (E5) or by restored land (E4). The published volumes (4.85 +/- 0.7 km3 DRE for all products; 3.2 km3 for the islands) are different measures and are not used as parameters (T1 correction 8).",
+    "outline": [[-3100, 100], [-2300, -100], [-1900, -900], [-800, -1400], [700, -1100], [800, 400], [-100, 1400], [-1600, 1700], [-2700, 1300]]
+  },
+
+  "E3": {
+    "name": "Strip the Minoan eruption deposits from the land",
+    "claims": ["T1#24", "T1#43"], "liberty": "T-L1",
+    "note": "No sourced thickness map exists. The model: thin on ridges, steep slopes and the old basement, thick in valleys and on flat ground, never more than the unit maxima of T1#24 allow on land (A 5.5 + B 12 + C 55 m), and never enough to move the coast. Mavrorachidi's ~25 m is depth to bedrock at one core and is not used (T1 correction 1). The ~32 m average is an inference and is not used as a target (T1 correction 2).",
+    "ridgeMetres": 1.5, "valleyMetres": 38, "maxMetres": 55,
+    "positionWindowMetres": 360, "positionRangeMetres": 14,
+    "slopeThinStart": 0.25, "slopeThinEnd": 0.7,
+    "basementFactor": 0.12,
+    "keepAboveSeaFraction": 0.2
+  },
+
+  "E4": {
+    "name": "Restore the ring island on the caldera side",
+    "claims": ["T1#11", "T1#14", "T1#20", "T1b#51"], "grade": "C", "liberty": "T-L2",
+    "note": "The southern part of today's caldera, and the south-western gaps between Thera, Aspronisi and Therasia, were land. The restored surface is modelled: a membrane stretched between the surviving land around it, a rim crest and an outer coast, with an inner wall falling to the bay. The rim crest reaches about 260 m (T1b#51, preferred value). The volume added must fall within 9.1-17.1 km3 (T1#14); build.mjs reports it and fails outside that range.",
+    "volumeRangeKm3": [9.1, 17.1],
+    "southLand": [[2160, 400], [2800, 400], [3040, 1300], [2900, 2400], [2400, 3400], [1600, 4400], [600, 4960], [-800, 5160], [-2200, 4840], [-3400, 4760], [-4300, 5240], [-5000, 5900], [-6100, 4700], [-6900, 2900], [-7400, 900], [-7700, -1100], [-7300, -1700], [-6900, -1600], [-6000, -1400], [-5100, -1100], [-4240, -200], [-3300, 400], [-1800, 840], [-200, 960], [1200, 840]],
+    "rimCrest": [[2500, 880, 250], [1200, 1380, 255], [-200, 1500, 260], [-1800, 1380, 255], [-3400, 900, 235], [-4500, 260, 205], [-5050, -700, 175]],
+    "southWestCrest": [[-4500, 260, 205], [-5000, 1300, 190], [-5200, 2400, 180], [-4900, 3500, 150], [-4300, 4500, 120]],
+    "outerCoast": [[-4440, 5240], [-5300, 4500], [-5900, 3300], [-6200, 2000], [-6500, 700], [-6900, -600], [-7160, -1440]],
+    "wallWidthMetres": 620, "wallExponent": 0.62,
+    "reliefMetres": 26, "reliefWavelengthMetres": 1300, "coastWobbleMetres": 260,
+    "erosion": { "rounds": 70, "rate": 0.022, "creep": 0.12, "routingJitterMetres": 2.5 }
+  },
+
+  "E5": {
+    "name": "The northern bay",
+    "claims": ["T1#2", "T1#3", "T1#4", "T1#7", "T1#19", "T1b#46"], "grade": "B", "liberty": "T-L3",
+    "note": "A flooded caldera in the north part of today's caldera only, shallow and lagoonal: all of today's caldera water (and the Kameni islands, E2) that can be reached from the seed without crossing E4's restored land or E6's low ground. Its north, north-east and east walls are today's cliffs, which largely predate the eruption (T1#4, T1#19); it reaches south to below Fira harbour (T1#19) and stops north of Athinios (T1#20). 'No more than a few metres' deep is T1b#46 (B, to verify, and contested); the depth, the outline of the south shore and the keeping of Therasia's east cliffs as the west wall are liberties.",
+    "seed": [-1200, -2400],
+    "depthMetres": 5, "shoreShelfMetres": 260
+  },
+
+  "E6": {
+    "name": "The opening to the sea",
+    "claims": ["T1#9", "T1#10", "T1#11", "T1b#49", "T1b#52"], "liberty": "T-L4",
+    "note": "At most a narrow, low channel to the north or north-west. Today's 1 km wide strait between Thera and Therasia was cut by the sea flooding in after the eruption (T1#10), so it is filled back to low land (counted in the E4 volume) and a channel is left through it. The channel's width (under 1 km, today's width being the upper bound), depth and course, and the height of the low ground beside it, are liberties.",
+    "bridge": [[-5300, -5550], [-5700, -5700], [-6300, -5800], [-6700, -6300], [-5800, -7900], [-4000, -8300], [-2900, -7500], [-3200, -6600], [-2900, -5900], [-3000, -5800], [-4800, -5600]],
+    "saddle": [[-5500, -5950, 75], [-4700, -6150, 45], [-3600, -6250, 45], [-3050, -6250, 80]],
+    "outerCoast": [[-6250, -5850], [-5700, -6600], [-4900, -7000], [-4000, -7050], [-3160, -6700]],
+    "channel": [[-3950, -5500], [-4040, -6100], [-4120, -6700], [-4200, -7300], [-4300, -8100]],
+    "channelWidthMetres": 280, "channelDepthMetres": 3, "channelBankMetres": 220
+  },
+
+  "E7": {
+    "name": "Pre-Kameni, the island in the bay (a modern label)",
+    "claims": ["T1#13", "T1#15", "T1b#19", "T1b#39", "T1b#40", "T1b#42", "T1b#43"], "grade": "B/C", "liberty": "T-L5",
+    "correction": "T1b correction 1",
+    "note": "A low dome of about 2.4 km3 (the DEM value) of black glassy andesite, with the first-phase vent of the eruption on it, 1-2 km west of modern Fira. No height or footprint is published. The shape here is a liberty: an elliptical dome h = H(1 - r^p), its summit kept below the 260 m rim (the shield-scaled heights of 340-420 m would stand above it). Volume = pi a b H p/(p+2). No buildings: no source supports them (T1b gap; T1b-4).",
+    "centre": [-1200, -2400], "semiAxesMetres": [2730, 1900], "longAxisAzimuthDegrees": 150,
+    "heightMetres": 245, "exponent": 3, "volumeTargetKm3": 2.4, "roughnessMetres": 10, "outlineWobble": 0.11,
+    "ventWestOfFiraMetres": [1000, 2000], "fira": [2440, -1298]
+  },
+
+  "E8": {
+    "name": "Akrotiri and the south coast",
+    "claims": ["T1#32", "T1#35", "T1#36", "T1#37", "T1b#59"], "liberty": "T-L6",
+    "note": "The town site (the modern excavation, about 1 km south of today's caldera edge) gets a gently sloping terrace for work order 002: a small rise at about 20-25 m (T1#35, B, to verify) falling gently to the sea. Its exact form is a liberty. The harbour has not been found (T1#36, T1#37), so the coast is left as the data and E3 give it: no harbour is cut.",
+    "site": [-135, 5937], "radiusMetres": 330, "blendMetres": 260,
+    "hillTopMetres": 24, "slopeTowardsSea": 0.055, "seaDirection": [0.1, 1]
+  },
+
+  "E9": {
+    "name": "Profitis Ilias",
+    "claims": ["T1#21", "T1b#55", "T1b#56"], "grade": "B",
+    "note": "The old non-volcanic basement keeps its shape. Its summit height is sampled from the DEM (the 567 m of T1b#55 rests on an unchecked row); E3 strips almost nothing here.",
+    "basement": {
+      "Profitis Ilias": [[3700, 3300], [5000, 2900], [6200, 3200], [6700, 3900], [6500, 4900], [5400, 5300], [4200, 5100], [3500, 4300]],
+      "Mesa Vouno": [[6500, 3900], [7300, 4000], [7900, 4600], [7500, 5200], [6500, 4900]]
+    },
+    "marbleAboveMetres": { "Profitis Ilias": 240, "Mesa Vouno": 150 }
+  },
+
+  "rock": {
+    "name": "Rock classes",
+    "liberty": "T-L7",
+    "note": "0 undivided volcanic rocks of the ring (default); 1 light-grey andesite, Akrotiri peninsula (T1#23); 2 dark-grey andesite, Therasia (T1#23); 3 black glassy andesite, Pre-Kameni (T1b#43); 4 phyllite and schist basement (T1#21); 5 marble (T1b#56). The claims name places, not boundaries: every outline here is a liberty. Athinios (T1#21) is not drawn: its basement crops out in the caldera wall that the eruption exhumed (T1#20), which in 1615 BCE lay under the restored land.",
+    "akrotiriPeninsula": [[-4700, 5600], [-4400, 4700], [-3300, 4500], [-2200, 4600], [-800, 4900], [500, 4700], [1100, 5200], [900, 6500], [-200, 6700], [-2000, 6600], [-3500, 6100]],
+    "therasia": [[-7800, -1400], [-7500, -4500], [-6400, -6700], [-5300, -6300], [-4000, -4200], [-4700, -2600], [-4100, -300], [-5500, -900], [-7000, -1300]]
+  }
+}
