@@ -4,7 +4,9 @@
 //   F    fly the camera along the scripted path (FLY in main.js), one minute through the whole world
 //   B    the same flight as a benchmark: the resolution stays fixed, every frame is timed, the result is shown at the end
 //   F, B or 1-6 during a flight stop it
+//   dev.look(x, y, z, tx, ty, tz), dev.hour(h), dev.F: for scripts that take pictures (y is an absolute height)
 {
+  window.dev = { look: lookAt, hour: (h) => { hourTo = F[HOUR] = h; }, F, hAt };
   const LOGN = 1 << 16, logFrame = new Float32Array(LOGN), logGpu = new Float32Array(LOGN);
   let flying = false, bench = false, last = 0, nFrame = 0, nGpu = 0;
   const stop = () => { flying = bench = false; dynT = 0; };

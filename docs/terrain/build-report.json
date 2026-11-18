@@ -1,0 +1,131 @@
+{
+  "grid": {
+    "cells": 640,
+    "cellMetres": 40,
+    "coarseFactor": 4
+  },
+  "inputs": {
+    "Copernicus_DSM_COG_10_N36_00_E025_00_DEM.tif": "5f6c36e7a53cada055433a9ff2546174ed2741e3652d046a6f408051022aa2fd",
+    "emodnet_dtm2024_mean_santorini.tif": "b608b5b085fce51d585deda9856579f10a797326231097bee44797250a488ed5"
+  },
+  "edits": {
+    "E0": {
+      "cellsChanged": 1271,
+      "meanLoweringMetres": 2.03
+    },
+    "E9": {
+      "summits": {
+        "Profitis Ilias": {
+          "publishedMetres": 565,
+          "onTheGridBeforeMetres": 554.8,
+          "raisedByMetres": 10.2
+        },
+        "Mesa Vouno": {
+          "publishedMetres": 369,
+          "onTheGridBeforeMetres": 358.7,
+          "raisedByMetres": 10.3
+        }
+      },
+      "summitInTheSourceDemMetres": 557.5,
+      "summitOnTheGridMetresAbove1615Sea": 568.2,
+      "summitLonLat": [
+        25.4641,
+        36.3684
+      ],
+      "strippedAtSummitMetres": 0.13
+    },
+    "E1": {
+      "seaLevelBelowPresentMetres": 3.6,
+      "landGainedKm2": 5.59
+    },
+    "E3": {
+      "landKm2": 96.54,
+      "meanThicknessMetres": 15.49,
+      "maxThicknessMetres": 36,
+      "volumeStrippedKm3": 1.496,
+      "atTownSite": {
+        "modelStripsMetres": 20.1,
+        "reportedFirstPumiceFallCentimetres": [
+          1,
+          2
+        ],
+        "reportedThenAshFallMetres": [
+          1,
+          2
+        ],
+        "reportedFiguresUsed": false
+      }
+    },
+    "E2": {
+      "landRemovedKm2": 4.09,
+      "volumeAboveTodaysSeaKm3": 0.167,
+      "highestPointRemovedMetres": 120.6
+    },
+    "E6": {
+      "channelWidthMetres": 280,
+      "channelDepthMetres": 3,
+      "channelFloorKm2": 0.44
+    },
+    "E4": {
+      "volumeAddedKm3": 13.16,
+      "volumeAddedAboveSeaKm3": 4.76,
+      "restoredLandKm2": 44.01,
+      "highestRestoredPointMetres": 259.4,
+      "allowedRangeKm3": [
+        9.1,
+        17.1
+      ]
+    },
+    "E5": {
+      "bayKm2": 40.97,
+      "depthMetres": 5,
+      "volumeBetweenTodaysFloorAndBayFloorKm3": 9.81
+    },
+    "E7": {
+      "volumeAboveBayFloorKm3": 2.4,
+      "formulaVolumeKm3": 2.395,
+      "summitMetres": 230.9,
+      "islandKm2": 16.31,
+      "ventPositionsAsFractionOfTheDomeRadius": {
+        "1 km west of Fira": 1.24,
+        "2 km west of Fira": 0.79
+      }
+    },
+    "E8": {
+      "siteLonLat": [
+        25.4035,
+        36.3515
+      ],
+      "terraceKm2": 0.38,
+      "terraceHeightsMetres": [
+        5.7,
+        42
+      ],
+      "groundAtSiteBeforeMetres": 13.6,
+      "groundAtSiteMetres": 24
+    }
+  },
+  "rockClassLandKm2": {
+    "0 undivided volcanic": 103.78,
+    "1 light-grey andesite": 7.8,
+    "2 dark-grey andesite": 11.02,
+    "3 black glassy andesite": 16.31,
+    "4 phyllite and schist": 3.01,
+    "5 marble": 3.45
+  },
+  "island": {
+    "landKm2In1615": 145.37,
+    "landKm2Today": 90.96,
+    "highestPointMetres": 568.2
+  },
+  "data": {
+    "bytes": 54257,
+    "sha256": "026887f55b4c80df7cfed05cf0e6fd71fdce1861705da9f2f3ebd09cd5fd592c",
+    "heightUnitMetres": 0.25,
+    "fineCellsStored": 138272,
+    "maxErrorMetresOnLand": 3.45,
+    "rmsErrorMetresOnLand": 0.35,
+    "maxErrorMetresUnderwater": 34.44,
+    "pageDecoderAgrees": true
+  }
+}

@@ -25,70 +25,6 @@ fn wor(p: vec3f) -> f32 {
 }
 `;
 
-// ---------------------------------------------------------------- terrain density (compute)
-const W_DENS = W_NOISE + /*wgsl*/`
-struct U { n: vec4u, o: vec4f, c: vec4u };
-@group(0) @binding(0) var<uniform> u: U;
-@group(0) @binding(1) var<storage, read_write> D: array<f32>;
-@group(0) @binding(2) var<storage, read> P: array<vec4f>;
-fn smax(a: f32, b: f32, k: f32) -> f32 { let h = max(k - abs(a - b), 0.) / k; return max(a, b) + h * h * k * .25; }
-fn smin(a: f32, b: f32, k: f32) -> f32 { return -smax(-a, -b, k); }
-fn seg2(p: vec2f, a: vec2f, b: vec2f) -> f32 { let pa = p - a; let ba = b - a; let h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-4), 0., 1.); return length(pa - ba * h); }
-fn seg3(p: vec3f, a: vec3f, b: vec3f) -> f32 { let pa = p - a; let ba = b - a; let h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-4), 0., 1.); return length(pa - ba * h); }
-fn dens(p: vec3f) -> f32 {
-  let w = vec3f(fbm(p * .04 + 11., 3), fbm(p * .04 + 47., 3), fbm(p * .04 + 83., 3)) - .5;
-  let q = p + w * vec3f(15., 6., 15.);
-  let g0 = -45.5 + 7. * (fbm(vec3f(q.xz * .011, 3.), 4) - .5) + 1.6 * (fbm(vec3f(q.xz * .07, 9.), 3) - .5);
-  let tn = 3. * (fbm(vec3f(q.xz * .09, 2.), 3) - .5);
-  var dm = -1e3; var de = 1e3;
-  var k = 0u;
-  for (var i = 0u; i < u.c.x; i++) {
-    let a = P[k]; let b = P[k + 1u]; k += 2u;
-    let yr = clamp((p.y - g0) / (b.y - g0), 0., 1.3);
-    var e = seg2(q.xz, a.xy, a.zw) - b.x;
-    e -= b.z * ss(.3, .92, yr) + 3. * (1. - yr) * (1. - yr) - b.w * ss(.0, .5, yr) * (1. - ss(.5, 1., yr));
-    dm = smax(dm, smin(-e, b.y + tn - p.y, 3.), 2.5);
-    de = min(de, e);
-  }
-  var clr = 0.;
-  let kc = (u.c.x + u.c.y + u.c.z) * 2u;
-  for (var i = 0u; i < u.c.w; i++) {
-    let a = P[kc + i * 2u]; let b = P[kc + i * 2u + 1u];
-    clr = max(clr, 1. - ss(0., b.y, seg2(q.xz, a.xy, a.zw) - b.x));
-  }
-  let rad = length(p.xz) + w.x * 14.;
-  let n = fbm(vec3f(q.xz * .0125, 1.7), 4);
-  let ring = ss(156., 172., rad);
-  let plat = max(ss(.5, .565, n) * (1. - clr), ring);
-  let th = g0 + plat * mix(26. + 17. * fbm(vec3f(q.xz * .03, 5.), 2), 60., ring);
-  var d = smax(g0 + 4.5 * ss(10., 0., de) - p.y, dm, 3.);
-  d = smax(d, (th - p.y) * .7, 3.);
-  k = u.c.x * 2u;
-  for (var i = 0u; i < u.c.y; i++) {
-    let a = P[k]; let b = P[k + 1u]; k += 2u;
-    var r = p + w * 3. - a.xyz;
-    let cs = cos(a.w); let sn = sin(a.w);
-    r = vec3f(cs * r.x + sn * r.z, r.y / b.z, -sn * r.x + cs * r.z);
-    d = smax(d, b.y - length(vec2f(length(r.xy) - b.x, r.z)), 1.5);
-  }
-  let hg = p.y - g0;
-  let rk = mix(.25, 1., ss(.5, 5., hg));
-  d += rk * ((.5 - wor(p * .17 + w * 2.)) * 3.4 + (.5 - wor(p * .41 + 7.)) * 1.3 + (fbm(p * .3, 3) - .5) * 2.2);
-  d += rk * 2.2 * (abs(fract(p.y * .21 + w.y * 2.2) - .5) - .25);
-  for (var i = 0u; i < u.c.z; i++) {
-    let a = P[k]; let b = P[k + 1u]; k += 2u;
-    d = smin(d, seg3(p + w * 2., a.xyz, b.xyz) - a.w, 2.);
-  }
-  return min(d, 3. - p.y);
-}
-@compute @workgroup_size(4, 4, 4) fn main(@builtin(global_invocation_id) id: vec3u) {
-  if (any(id >= u.n.xyz)) { return; }
-  var d = dens(u.o.xyz + vec3f(id) * u.o.w);
-  if (id.x == 0u || id.z == 0u || id.x == u.n.x - 1u || id.z == u.n.z - 1u || id.y == u.n.y - 1u) { d = -1.; }
-  D[id.x + u.n.x * (id.y + u.n.y * id.z)] = d;
-}
-`;
-
 // ---------------------------------------------------------------- fullscreen helpers
 const W_FS = /*wgsl*/`
 @vertex fn vs(@builtin(vertex_index) i: u32) -> @builtin(position) vec4f { return vec4f(f32(i32(i & 1u) * 4 - 1), f32(i32(i >> 1u) * 4 - 1), 0., 1.); }
@@ -189,31 +125,80 @@ const WK = array<vec3f, 10>(vec3f(1., 2., 1.), vec3f(-2., 1., .9), vec3f(3., 1.,
 `;
 
 // ---------------------------------------------------------------- shared scene code
+// G is the per-frame block: sun.w = how fresh the breeze is (0-1); mis = exposure, light-shaft strength, unused, the height
+// of the sea surface at the camera; sunc = sunlight at sea level (w: 1 at night); cam.w = time in seconds.
 const S_G = /*wgsl*/`
-struct G { vp: mat4x4f, sm: mat4x4f, cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, sun: vec4f, res: vec4f, mis: vec4f };
-const SIG = vec3f(.058, .0235, .0195);
-const KD = vec3f(.056, .0245, .0170);
-const WCOL = vec3f(.16, .58, .90);
-const KDZ = vec3f(.034, .023, .018);
-const PCOL = vec3f(.58, .66, .98);
-const SUNC = vec3f(1.7, 1.6, 1.45);
+struct G { vp: mat4x4f, sm: mat4x4f, cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, sun: vec4f, res: vec4f, mis: vec4f, sunc: vec4f };
 const TAU = 6.2831853;
 const LOW = ${LV > 1};
+const DOM = ${DOM}.;
+const RE = ${RE}.;
+const RA = ${RA}.;
+const HR = ${HR}.;
+const HM = ${HM}.;
+const BR = vec3f(5.802e-6, 13.558e-6, 33.1e-6);
+const BO = vec3f(.65e-6, 1.881e-6, .085e-6);
+const BM = ${BM};
+const BME = ${BME};
+const SKYI = ${SUNE * PI};
+const SIG = vec3f(.058, .0235, .0195);
+const KD = vec3f(.056, .0245, .0170);
+const WCOL = vec3f(.13, .52, .92);
 fn sat(x: f32) -> f32 { return clamp(x, 0., 1.); }
 fn ss(a: f32, b: f32, x: f32) -> f32 { let t = clamp((x - a) / (b - a), 0., 1.); return t * t * (3. - 2. * t); }
 fn ign(p: vec2f) -> f32 { return fract(52.9829189 * fract(dot(p, vec2f(.06711056, .00583715)))); }
 fn hs(x: f32) -> f32 { return fract(sin(x * 127.1) * 43758.5453); }
-fn kd(z: f32) -> vec3f { return mix(KD, KDZ, z); }
-fn sg(z: f32) -> vec3f { return mix(SIG, vec3f(.034, .026, .022), z); }
-fn fin(c: vec3f) -> vec4f { return vec4f(min(max(c, vec3f(0.)), vec3f(40.)), 1.); }
-const KDF = vec3f(.043, .045, .042);
-fn fogIn(ro: vec3f, rd: vec3f, d: f32, z: f32, sun: vec3f) -> vec3f {
-  let k = mix(KD, KDF, z);
-  let a = sg(z) - k * rd.y;
-  let I = (1. - exp(-a * d)) / a;
-  let mu = max(dot(rd, sun), 0.);
-  let m2 = mu * mu;
-  return mix(WCOL, PCOL, z) * sg(z) * exp(k * ro.y) * I * (1.22 + .3 * m2 * m2);
+fn fin(c: vec3f) -> vec4f { return vec4f(min(max(c, vec3f(0.)), vec3f(60.)), 1.); }
+fn h21(p: vec2f) -> f32 { var q = fract(p.xyx * vec3f(.1031, .1030, .0973)); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
+fn n2(p: vec2f) -> f32 { let i = floor(p); let f = fract(p); let u = f * f * (3. - 2. * f); return mix(mix(h21(i), h21(i + vec2f(1., 0.)), u.x), mix(h21(i + vec2f(0., 1.)), h21(i + vec2f(1., 1.)), u.x), u.y); }
+// soft noise over the ground, 0 to 1, with features about 1/f metres across
+fn gn(p: vec2f, f: f32) -> f32 { return n2(p * f) * .6 + n2(p * f * 2.7 + 11.3) * .28 + n2(p * f * 7.1 + 5.7) * .12; }
+`;
+
+// ---------------------------------------------------------------- the sky, looked up by direction
+// A small picture of the whole sky as the camera sees it, redrawn every frame: single scattering by air (Rayleigh), haze
+// (Mie) and ozone along each view ray on a round Earth, plus a flat share for light scattered more than once. u is the
+// compass angle from the sun, v the height above the horizon (stretched near it).
+const SKYW = 192, SKYH = 108;
+const W_SKYLUT = S_G + W_FS + /*wgsl*/`
+@group(0) @binding(0) var<uniform> g: G;
+fn rsi(ro: vec3f, rd: vec3f, r: f32) -> vec2f {
+  let b = dot(ro, rd); let h = b * b - dot(ro, ro) + r * r;
+  if (h < 0.) { return vec2f(-1.); }
+  let q = sqrt(h); return vec2f(-b - q, -b + q);
+}
+fn dn(h: f32) -> vec3f { return vec3f(exp(-h / HR), exp(-h / HM), max(0., 1. - abs(h - 25000.) / 15000.)); }
+fn tSun(p: vec3f, L: vec3f) -> vec3f {
+  if (rsi(p, L, RE).x > 0.) { return vec3f(0.); }
+  let tt = rsi(p, L, RA).y; var o = vec3f(0.);
+  for (var i = 0; i < 8; i++) { o += dn(length(p + L * (tt * (f32(i) + .5) / 8.)) - RE); }
+  o *= tt / 8.;
+  return exp(-(BR * o.x + vec3f(BME * o.y) + BO * o.z));
+}
+@fragment fn fs(@builtin(position) fc: vec4f) -> @location(0) vec4f {
+  let uv = fc.xy / vec2f(${SKYW}., ${SKYH}.);
+  let c = uv.y * 2. - 1.; let el = sign(c) * c * c * 1.5708; let az = uv.x * TAU;
+  let rd = vec3f(cos(el) * cos(az), sin(el), cos(el) * sin(az));
+  let L = vec3f(sqrt(max(1. - g.sun.y * g.sun.y, 0.)), g.sun.y, 0.);
+  let ro = vec3f(0., RE + max(g.cam.y, 2.), 0.);
+  var tm = rsi(ro, rd, RA).y; let gh = rsi(ro, rd, RE).x; let ground = gh > 0.;
+  if (ground) { tm = gh; }
+  let mu = dot(rd, L); let pr = .0596831 * (1. + mu * mu);
+  let pm = .0795775 * .36 / pow(1.64 - 1.6 * mu, 1.5);
+  var T = vec3f(1.); var S = vec3f(0.);
+  for (var i = 0; i < 32; i++) {
+    let u = (f32(i) + .5) / 32.; let ds = tm * u / 16.;
+    let p = ro + rd * (tm * u * u); let d = dn(length(p) - RE);
+    let sr = BR * d.x; let sm = BM * d.y; let ex = sr + vec3f(BME * d.y) + BO * d.z;
+    let ts = tSun(p, L);
+    let ins = ts * (sr * pr + sm * pm) + (sr + vec3f(sm)) * (ts * .028 + vec3f(.0012, .0016, .0022) * ss(-.38, .1, g.sun.y));
+    let sg = exp(-ex * ds);
+    S += T * ins * (1. - sg) / max(ex, vec3f(1e-9));
+    T *= sg;
+  }
+  // past the edge of the sea mesh the ray ends on open water
+  if (ground) { S += T * vec3f(.004, .010, .018) * (tSun(ro + rd * tm, L) * max(L.y, 0.) + .03); }
+  return vec4f(S, 1.);
 }
 `;
 
@@ -225,65 +210,203 @@ const S_B = S_G + /*wgsl*/`
 @group(0) @binding(4) var tSh: texture_depth_2d;
 @group(0) @binding(5) var tW: texture_2d<f32>;
 @group(0) @binding(6) var tD: texture_2d<f32>;
-@group(0) @binding(7) var tV: texture_3d<f32>;
-@group(0) @binding(8) var tM: texture_2d<f32>;
-fn shUV(p: vec3f) -> vec3f { let s = g.sm * vec4f(p, 1.); return vec3f(s.x * .5 + .5, .5 - s.y * .5, s.z - .0007); }
-fn shadow1(p: vec3f) -> f32 { let s = shUV(p); return textureSampleCompareLevel(tSh, sS, s.xy, s.z); }
-fn shadow4(p: vec3f) -> f32 {
-  let s = shUV(p); let e = 1.8 / ${SHADOW}.;
-  return (textureSampleCompareLevel(tSh, sS, s.xy + vec2f(-e, -e), s.z) + textureSampleCompareLevel(tSh, sS, s.xy + vec2f(e, -e), s.z)
-        + textureSampleCompareLevel(tSh, sS, s.xy + vec2f(-e, e), s.z) + textureSampleCompareLevel(tSh, sS, s.xy + vec2f(e, e), s.z)) * .25;
-}
-fn shadow9(p: vec3f) -> f32 {
-  if (LOW) { return shadow1(p); }
-  let s = shUV(p); let e = 2.1 / ${SHADOW}.; var a = 0.;
-  for (var x = -1; x <= 1; x++) { for (var y = -1; y <= 1; y++) { a += textureSampleCompareLevel(tSh, sS, s.xy + vec2f(f32(x), f32(y)) * e, s.z); } }
+@group(0) @binding(7) var tH: texture_2d<f32>;
+@group(0) @binding(8) var tN: texture_2d<f32>;
+@group(0) @binding(9) var tG: texture_2d<f32>;
+@group(0) @binding(10) var tSky: texture_2d<f32>;
+struct WV { w: array<vec4f, ${NWAVE * 2}> };
+@group(0) @binding(11) var<uniform> wv: WV;
+@group(0) @binding(12) var sA: sampler;
+const MIP0 = ${log2(DOM / TS)};
+const LK = ${LK};
+fn tuv(p: vec2f) -> vec2f { return p / DOM + .5; }
+fn hgt(p: vec2f, l: f32) -> f32 { return textureSampleLevel(tH, sC, tuv(p), l).r; }
+// the terrain's shadow: one map over the whole island, drawn again whenever the sun moves
+fn shadow(p: vec3f) -> f32 {
+  let s = g.sm * vec4f(p, 1.); let uv = vec2f(s.x * .5 + .5, .5 - s.y * .5); let z = s.z - .00004;
+  if (any(abs(uv - .5) > vec2f(.499)) || z > 1.) { return 1.; }
+  if (LOW) { return textureSampleCompareLevel(tSh, sS, uv, z); }
+  let e = 1.3 / ${SHADOW}.; var a = 0.;
+  for (var x = -1; x <= 1; x++) { for (var y = -1; y <= 1; y++) { a += textureSampleCompareLevel(tSh, sS, uv + vec2f(f32(x), f32(y)) * e, z); } }
   return a / 9.;
 }
-fn cuv(p: vec3f) -> vec2f { return p.xz - g.sun.xz * (p.y / g.sun.y); }
+// ---- air
+fn skyUV(d: vec3f) -> vec2f {
+  let el = asin(clamp(d.y, -1., 1.));
+  return vec2f((atan2(d.z, d.x) - atan2(g.sun.z, g.sun.x)) / TAU, clamp(.5 + .5 * sign(el) * sqrt(abs(el) / 1.5708), .006, .994));
+}
+fn skyL(d: vec3f) -> vec3f { return textureSampleLevel(tSky, sR, skyUV(d), 0.).rgb * SKYI + vec3f(.0005, .0008, .0016) * g.sunc.w; }
+fn seg(a: f32, d: f32) -> f32 { let x = a * d; if (abs(x) < .002) { return d * (1. - .5 * x); } return (1. - exp(-x)) / a; }
+// what is left of light after d metres through the air from ro along rd (flat Earth: fine for the distances drawn)
+fn airT(ro: vec3f, rd: vec3f, d: f32) -> vec3f {
+  let y = max(ro.y, 0.);
+  return exp(-(BR * (exp(-y / HR) * seg(rd.y / HR, d)) + vec3f(BME * exp(-y / HM) * seg(rd.y / HM, d))));
+}
+// haze: the lost light is replaced by the sky's own colour near the horizon in that direction
+fn air(c: vec3f, ro: vec3f, rd: vec3f, d: f32) -> vec3f {
+  let T = airT(ro, rd, d);
+  return c * T + skyL(normalize(vec3f(rd.x, .035 + max(rd.y, 0.) * .5, rd.z))) * (1. - T);
+}
+// ---- water (the colours and falloffs are upstream's, lit by this world's sun and sky)
+fn wlit() -> vec3f { return (g.sunc.rgb * (.25 + .75 * max(g.sun.y, 0.)) + skyL(vec3f(0., 1., 0.)) * 1.6) / 1.9; }
+fn fogIn(ro: vec3f, rd: vec3f, d: f32) -> vec3f {
+  let a = max(SIG - KD * rd.y, vec3f(1e-4));
+  let I = (1. - exp(-a * d)) / a;
+  let mu = max(dot(rd, g.sun.xyz), 0.); let m2 = mu * mu;
+  return WCOL * SIG * exp(KD * min(ro.y, 0.)) * I * (1.22 + .3 * m2 * m2) * wlit() * .3;
+}
+fn wfog(c: vec3f, ro: vec3f, rd: vec3f, d: f32) -> vec3f { return c * exp(-SIG * d) + fogIn(ro, rd, d); }
+// Everything between the eye and a point: air, water, or one after the other where the view crosses the sea surface.
+// That is what makes going under and coming up seamless: no switch is thrown, the lengths just change.
+fn medium(c: vec3f, wp: vec3f) -> vec3f {
+  let v = wp - g.cam.xyz; let d = length(v); let rd = v / d; let hw = g.mis.w;
+  let cu = g.cam.y < hw; let pu = wp.y < select(0., hw, d < 40.);
+  if (cu == pu) { if (cu) { return wfog(c, g.cam.xyz, rd, d); } return air(c, g.cam.xyz, rd, d); }
+  let tc = clamp((hw - g.cam.y) / (rd.y + select(-1e-6, 1e-6, rd.y >= 0.)), 0., d);
+  let x = g.cam.xyz + rd * tc;
+  if (cu) { return wfog(air(c, x, rd, d - tc), g.cam.xyz, rd, tc); }
+  return air(wfog(c, x, rd, d - tc), g.cam.xyz, rd, tc);
+}
+fn cuv(p: vec3f) -> vec2f { return p.xz - g.sun.xz * (p.y / max(g.sun.y, .25)); }
 fn caus(p: vec3f, d: f32) -> vec3f {
-  let q = cuv(p);
-  let o = vec2f(.004, .0025);
+  let q = cuv(p); let o = vec2f(.004, .0025);
   let a = vec3f(textureSample(tW, sR, q / 3.3 + o).r, textureSample(tW, sR, q / 3.3).r, textureSample(tW, sR, q / 3.3 - o).r);
   let b = textureSample(tW, sR, q.yx / 6.9 + .37).r;
-  let c = min(pow(a, vec3f(2.3)) * 5. * (.45 + b * 1.3), vec3f(4.));
-  return mix(c, vec3f(.33), ss(35., 100., d));
+  return mix(min(pow(a, vec3f(2.3)) * 5. * (.45 + b * 1.3), vec3f(4.)), vec3f(.33), ss(35., 100., d));
 }
-fn caus2(p: vec3f, d: f32) -> f32 {
-  let q = cuv(p);
-  let c = min(pow(textureSample(tW, sR, q / 4.1).r, 1.4) * 2.6 * (.45 + textureSample(tW, sR, q.yx / 6.9 + .37).r * 1.3), 2.6);
-  return mix(c, .33, ss(35., 100., d));
+// ---- waves (the table is WAVES in world.js)
+fn wamp() -> f32 { return .22 + g.sun.w; }
+// how far the surface point that rests at p is moved, on a mesh with cells of sp metres, over water dep metres deep
+fn seaD(p: vec2f, sp: f32, dep: f32) -> vec3f {
+  var o = vec3f(0.);
+  for (var i = 0; i < ${NWG}; i++) {
+    let a = wv.w[i * 2]; let b = wv.w[i * 2 + 1];
+    let A = a.w * wamp() * clamp(dep * a.z * .6, .1, 1.) * sat(TAU / a.z / sp / 4. - .5);
+    let th = dot(a.xy, p) * a.z - b.x * g.cam.w + b.y;
+    o += vec3f(a.x * b.z * cos(th), sin(th), a.y * b.z * cos(th)) * A;
+  }
+  return o;
 }
-fn sunE(y: f32, z: f32) -> vec3f { return SUNC * exp(kd(z) * (min(y, 0.) / g.sun.y)) * (.5 + .5 * sat(-y / 30.)); }
-fn vol(p: vec3f) -> vec4f { return textureSampleLevel(tV, sC, (p - vec3f(-192., -56., -192.)) / vec3f(384., 60., 384.), 0.); }
-fn amb(p: vec3f, n: vec3f, sky: f32, z: f32) -> vec3f {
-  let up = n.y * .5 + .5;
-  return mix(vec3f(.22, .60, .80), vec3f(.34, .56, .82), z) * exp(kd(z) * min(p.y, 0.) * 1.2) * (.3 + .7 * sky) * (.24 + .76 * up * up) * 1.3 * (.55 + .45 * sat(-p.y / 30.)) + vec3f(.003, .010, .016);
+// the surface's slopes at rest point p, seen with pixels px metres wide: xy = slope, z = how much the crests pinch
+fn seaS(p: vec2f, px: f32, dep: f32) -> vec3f {
+  var o = vec3f(0.);
+  for (var i = 0; i < ${NWAVE}; i++) {
+    let a = wv.w[i * 2]; let b = wv.w[i * 2 + 1];
+    let A = a.w * a.z * wamp() * clamp(dep * a.z * .6, .1, 1.) * sat(TAU / a.z / px / 5. - .8);
+    let th = dot(a.xy, p) * a.z - b.x * g.cam.w + b.y;
+    o += vec3f(a.xy * cos(th), b.z * sin(th)) * A;
+  }
+  return o;
 }
-fn zone(p: vec3f) -> f32 { return mix(g.sun.w, textureSampleLevel(tM, sC, p.xz / 384. + .5, 0.).b, .2); }
-fn side(p: vec3f, n: vec3f, open: f32, z: f32) -> vec3f { return mix(WCOL, PCOL, z) * exp(kd(z) * min(p.y, 0.)) * open * (1. - abs(n.y)) * .7; }
-// skylight at most 150 m along the ray: past that, terrain and the background behind it (vsB) get the same haze
-fn fog(c: vec3f, wp: vec3f, z: f32) -> vec3f {
-  let v = wp - g.cam.xyz; let d = length(v); let rd = v / d;
-  return c * exp(-sg(z) * d) * ss(230., 185., d) + fogIn(g.cam.xyz, rd, d, z, g.sun.xyz) * (.58 + .42 * vol(g.cam.xyz + rd * min(d, 150.)).g);
+// ---- the grid meshes: a vertex of level L (cells of s metres) is moved onto the coarser grids as it gets far from the
+// camera, one level per doubling of distance, so neighbouring rings meet exactly and nothing pops. y0 is the height the
+// distance is measured to. Returns xy = the position, z = the level it ended at (fractional while blending).
+fn ring(q: vec2i, lv: vec4f, sea: bool) -> vec3f {
+  var s = lv.z; var L = lv.w; var p = lv.xy + vec2f(q) * s; var e = L;
+  for (var k = 0; k < 3; k++) {
+    var y = 0.; if (!sea) { y = hgt(p, ${log2(TS / 128)}.); }
+    let t = clamp(log2(max(distance(vec3f(p.x, y, p.y), g.cam.xyz), 1.) / LK) - L, 0., 1.);
+    p = mix(p, floor(p / (2. * s)) * 2. * s, t); e = L + t;
+    if (t < 1.) { break; }
+    L += 1.; s *= 2.;
+  }
+  return vec3f(p, e);
 }
-fn qrot(q: vec4f, v: vec3f) -> vec3f { return v + 2. * cross(q.xyz, cross(q.xyz, v) + q.w * v); }
 `;
 
-// ---------------------------------------------------------------- solid meshes (terrain, rocks, set pieces, sponges, coral)
-const W_SOLID = S_B + /*wgsl*/`
-struct VI { @location(0) p: vec3f, @location(1) n: vec4f, @location(2) a: vec4f, @location(3) b: vec4f, @location(4) c: vec4f };
-struct VO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) n: vec3f, @location(2) op: vec3f, @location(3) on: vec3f,
-  @location(4) @interpolate(flat) m: vec4f, @location(5) @interpolate(flat) q: vec4f, @location(6) ao: f32 };
-@vertex fn vs(i: VI) -> VO {
-  var o: VO;
-  var sc = i.a.w;
-  if (i.c.x < 1.5 && i.c.z > 1.5 && g.res.x > 0.) { sc *= 1. - ss(i.c.z * .7, i.c.z, distance(i.a.xyz, g.cam.xyz) / g.mis.z); }
-  var w = i.a.xyz + qrot(i.b, i.p * sc);
-  w.y += sin(g.cam.w * .3 + i.c.y * 40.) * i.c.w;
-  o.cp = g.vp * vec4f(w, 1.); o.wp = w; o.n = qrot(i.b, i.n.xyz); o.op = i.p * i.a.w + i.c.y * 37.; o.on = i.n.xyz;
-  o.m = i.c; o.q = i.b; o.ao = i.n.w;
+// ---------------------------------------------------------------- one-time bakes of the terrain
+// 1. Height: the 40 m data, smoothly interpolated, plus the detail the data cannot hold: gullies and spurs on slopes,
+//    ledges on cliffs, blocky lava on Pre-Kameni, soft waves of sand under water. The detail has zero mean, stays within
+//    a few metres, and fades out at the shore, so it never contradicts the data.
+const S_BK = W_NOISE + W_FS + /*wgsl*/`
+const DOM = ${DOM}.;
+const TS = ${TS}.;
+@group(0) @binding(0) var tC: texture_2d<f32>;
+@group(0) @binding(1) var tK: texture_2d<u32>;
+fn ld(p: vec2i) -> f32 { return textureLoad(tC, clamp(p, vec2i(0), vec2i(639)), 0).r; }
+fn cl(p: vec2i, c: u32) -> f32 { return f32(textureLoad(tK, clamp(p, vec2i(0), vec2i(639)), 0).r == c); }
+// share of rock class c at grid position u (cell centres at whole numbers)
+fn cls(u: vec2f, c: u32) -> f32 {
+  let i = vec2i(floor(u)); let f = fract(u);
+  return mix(mix(cl(i, c), cl(i + vec2i(1, 0), c), f.x), mix(cl(i + vec2i(0, 1), c), cl(i + vec2i(1, 1), c), f.x), f.y);
+}
+`;
+const W_BAKEH = S_BK + /*wgsl*/`
+fn cw(f: f32) -> vec4f { let f2 = f * f; let f3 = f2 * f; return vec4f(-.5 * f3 + f2 - .5 * f, 1.5 * f3 - 2.5 * f2 + 1., -1.5 * f3 + 2. * f2 + .5 * f, .5 * f3 - .5 * f2); }
+fn dw(f: f32) -> vec4f { let f2 = f * f; return vec4f(-1.5 * f2 + 2. * f - .5, 4.5 * f2 - 5. * f, -4.5 * f2 + 4. * f + .5, 1.5 * f2 - f); }
+@fragment fn fs(@builtin(position) fc: vec4f) -> @location(0) vec4f {
+  let uv = fc.xy / TS; let w = (uv - .5) * DOM;
+  // Catmull-Rom through the 4 x 4 cells around the point, kept near the range of the four nearest so cliffs do not ring
+  let u = uv * 640. - .5; let i = vec2i(floor(u)); let f = fract(u);
+  let wx = cw(f.x); let wz = cw(f.y); let ex = dw(f.x); let ez = dw(f.y);
+  var h = 0.; var gr = vec2f(0.); var lo = 1e9; var hi = -1e9;
+  for (var b = 0; b < 4; b++) { for (var a = 0; a < 4; a++) {
+    let v = ld(i + vec2i(a - 1, b - 1));
+    h += v * wx[a] * wz[b]; gr += v * vec2f(ex[a] * wz[b], wx[a] * ez[b]);
+    if (a > 0 && a < 3 && b > 0 && b < 3) { lo = min(lo, v); hi = max(hi, v); }
+  } }
+  let mg = (hi - lo) * .15 + 2.; h = clamp(h, lo - mg, hi + mg);
+  let sl = length(gr) / 40.;
+  let pk = cls(u, 3u);
+  let p = vec3f(w.x, 0., w.y);
+  let wa = vec2f(fbm(p * .004 + 3., 3), fbm(p * .004 + 19., 3)) - .5;
+  let q = p + vec3f(wa.x, 0., wa.y) * 180.;
+  let r1 = 1. - abs(fbm(q * .011, 4) * 2. - 1.);
+  let r2 = 1. - abs(fbm(q * .037 + 7., 3) * 2. - 1.);
+  var d = (r1 * r1 - .42) * 8. * ss(.06, .45, sl) + (r2 - .5) * 2.4 * ss(.03, .3, sl) + (fbm(p * .05, 3) - .5) * 1.4;
+  // beds of lava and tuff stand out as ledges on steep faces
+  let st = h / 16. + (fbm(p * .006, 2) - .5) * 3.;
+  d += (ss(.3, .7, fract(st)) - fract(st)) * 16. * .5 * ss(.45, 1.1, sl);
+  // Pre-Kameni: blocky lava with pressure ridges
+  d = mix(d, (wor(p * .028 + wa.x * 4.) - .5) * 7. + (wor(p * .085 + 5.) - .5) * 3. + (r1 - .5) * 5., pk);
+  h += d * ss(.4, 6., h);
+  h += (fbm(p * .02 + 40., 3) - .5) * 1.3 * ss(-1.5, -9., h);
+  return vec4f(h, 0., 0., 1.);
+}
+`;
+// 2. Normal (rg), how much sky a point sees (b: horizon heights in 8 directions out to 450 m), and the pale share (a):
+//    marble where the old basement is, pale sediment on the floor of the bay
+const W_BAKEN = S_BK + /*wgsl*/`
+@group(0) @binding(2) var tH: texture_2d<f32>;
+@group(0) @binding(3) var sC: sampler;
+fn H(uv: vec2f, l: f32) -> f32 { return textureSampleLevel(tH, sC, uv, l).r; }
+@fragment fn fs(@builtin(position) fc: vec4f) -> @location(0) vec4f {
+  let uv = fc.xy / TS; let e = 1. / TS; let m = DOM / TS;
+  let n = normalize(vec3f(H(uv - vec2f(e, 0.), 0.) - H(uv + vec2f(e, 0.), 0.), 2. * m, H(uv - vec2f(0., e), 0.) - H(uv + vec2f(0., e), 0.)));
+  let h0 = H(uv, 0.); var occ = 0.;
+  for (var a = 0; a < 8; a++) {
+    let dir = vec2f(cos(f32(a) * .7854 + .3), sin(f32(a) * .7854 + .3)); var mx = 0.;
+    for (var r = 0; r < 5; r++) { let rad = 10. * pow(2.6, f32(r)); mx = max(mx, (H(uv + dir * rad / DOM, log2(rad / m) - 1.5) - h0) / rad); }
+    occ += mx / sqrt(1. + mx * mx);
+  }
+  return vec4f(n.xz * .5 + .5, pow(1. - occ / 8., 1.6), cls(uv * 640. - .5, 5u) + cls(uv * 640. - .5, 6u));
+}
+`;
+// 3. Rock shares: r light-grey andesite, g dark-grey andesite, b black glassy andesite, a the old basement
+const W_BAKEG = S_BK + /*wgsl*/`
+@fragment fn fs(@builtin(position) fc: vec4f) -> @location(0) vec4f {
+  let uv = fc.xy / 1024.; let p = vec3f((uv - .5) * DOM, 0.).xzy;
+  let u = uv * 640. - .5 + (vec2f(fbm(p * .006, 3), fbm(p * .006 + 31., 3)) - .5) * 5.;
+  return vec4f(cls(u, 1u), cls(u, 2u), cls(u, 3u), cls(u, 4u) + cls(u, 5u));
+}
+`;
+
+// ---------------------------------------------------------------- terrain
+const W_TERR = S_B + /*wgsl*/`
+struct VO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) zen: vec3f };
+@vertex fn vs(@location(0) q: vec2i, @location(1) lv: vec4f) -> VO {
+  let r = ring(q, lv, false); let p = r.xy;
+  let h = hgt(p, r.z - MIP0);
+  let dq = p - g.cam.xz;
+  var o: VO; o.wp = vec3f(p.x, h, p.y); o.zen = skyL(vec3f(0., 1., 0.));
+  o.cp = g.vp * vec4f(p.x, h - dot(dq, dq) / (2. * RE), p.y, 1.);
   return o;
+}
+// the shadow map is drawn from a plain grid over the whole square, 9 m low: the grid is too coarse for gullies, and
+// would otherwise put them in their own shade
+@vertex fn vsS(@builtin(vertex_index) vi: u32) -> @builtin(position) vec4f {
+  let n = ${SG + 1}u; let p = (vec2f(f32(vi % n), f32(vi / n)) / ${SG}. - .5) * DOM;
+  return g.vp * vec4f(p.x, hgt(p, ${log2(TS / SG)}.) - 9., p.y, 1.);
 }
 struct TP { h: f32, c: f32, n: vec3f };
 fn tri(p: vec3f, n: vec3f, s: f32) -> TP {
@@ -296,393 +419,170 @@ fn tri(p: vec3f, n: vec3f, s: f32) -> TP {
   o.n = vec3f(0., a.y, a.x) * w.x + vec3f(b.x, 0., b.y) * w.y + vec3f(c.x, c.y, 0.) * w.z;
   return o;
 }
-@fragment fn fs(i: VO, @builtin(front_facing) ff: bool) -> @location(0) vec4f {
-  let mat = i32(i.m.x + .5); let sd = i.m.y; let fl_ = select(-1., 1., ff);
-  let on = normalize(i.on) * fl_; let n0 = normalize(i.n) * fl_;
-  let dist = length(i.wp - g.cam.xyz);
-  let ts = select(1., i.m.z, mat >= 2);
-  let A = tri(i.op, on, .1 * ts); let B = tri(i.op, on, .43 * ts); let C = tri(i.op, on, 1.9 * ts); let F = tri(i.op, on, 6.7 * ts); let fk = ss(10., 1.5, dist) * f32(mat <= 1);
-  let Wd = textureSample(tD, sR, vec2f(i.op.x * .06, (i.op.y + i.op.z) * .7));
-  let big = textureSample(tD, sR, i.op.xz * .013 + i.op.y * .021).a;
-  let big2 = textureSample(tD, sR, i.op.zx * .031 + i.op.y * .043 + .37).a;
-  var sgro = 0.;
-  let sk = textureSample(tD, sR, vec2f((i.op.x + i.op.z) * .33, i.op.y * .035));
-  let sk2 = textureSample(tD, sR, vec2f((i.op.x - i.op.z) * 1.1, i.op.y * .11));
-  let gm = textureSample(tM, sC, i.wp.xz / 384. + .5);
-  let ca = caus(i.wp, dist);
-  let hgt = A.h * .5 + B.h * .35 + C.h * .15;
-  var bump = 1.7; var gloss = .1; var alb = vec3f(0.); var emi = vec3f(0.); var vao = 1.; var flu = 0.;
-  let flt = ss(.72, .93, n0.y);
-  if (mat <= 1) {
-    // layered rock: grey / olive / brown beds, warm encrustation patches, algae on up-facing parts
-    let st = i.op.y * .55 + A.h * 1.6 + big * 5. + big2 * 3.;
-    let bed = hs(floor(st)); let sf = fract(st);
-    alb = mix(vec3f(.11, .12, .13), vec3f(.33, .30, .25), sat(A.c * 1.5 - .25));
-    alb = mix(alb, mix(vec3f(.26, .19, .10), vec3f(.20, .22, .14), bed), ss(.42, .66, big) * .7);
-    alb *= mix(.72, 1.15, bed) * (1. - .45 * ss(.12, .0, sf) * (1. - abs(on.y)));
-    let enc = ss(.46, .6, big2 * .6 + B.c * .5) * ss(.3, .6, hgt);
-    alb = mix(alb, mix(vec3f(.34, .07, .10), vec3f(.40, .25, .07), ss(.45, .6, A.c)) * (.5 + .8 * B.h), enc * .75);
-    alb = mix(alb, vec3f(.50, .50, .46) * (.5 + .7 * C.h), ss(.60, .70, B.c * .6 + C.c * .5) * .5);
-    let alg = ss(-.1, .6, n0.y) * ss(.3, .52, B.c * .55 + big * .5);
-    alb = mix(alb, vec3f(.035, .14, .07), alg * .8);
-    alb *= (.22 + 1.3 * hgt) * mix(1., .62 + .76 * F.h, fk);
-    sgro = -ss(.14, .0, sf) * (1. - abs(on.y)) * 1.2;
-    if (mat == 0) {
-      alb = mix(alb, vec3f(.13, .15, .14) * (.55 + .6 * B.h), flt * gm.a * .7);
-      let mg = flt * sat(gm.r * 1.5 - .45 + (B.c - .5) * 1.6) * ss(.35, .6, A.h) * ss(-34., -40., i.wp.y);
-      alb = mix(alb, vec3f(.20, .02, .12) * (.4 + .9 * B.h), mg * .8);
-      flu = mg * .35;
-      alb = mix(alb, alb * vec3f(.85, .8, 1.4) + vec3f(.015, .0, .05), gm.b * .8);
-    }
-  } else if (mat == 2) {
-    // whale fluke: smooth pale stone with dark streaks running along its length
-    alb = mix(vec3f(.42, .47, .48), vec3f(.10, .13, .15), ss(.40, .62, sk.a * .6 + sk2.b * .5)) * (.75 + .3 * B.h);
-    alb = mix(alb, vec3f(.60, .64, .62), ss(.62, .75, sk2.a) * .5);
-    gloss = .9; bump = .3;
-  } else if (mat == 3) {
-    alb = mix(vec3f(.13, .085, .05), vec3f(.36, .25, .14), Wd.b) * (.6 + .5 * B.h);
-    let pk = fract(atan2(i.op.z, 2. - i.op.y) * 7.);
-    alb *= .35 + .65 * ss(0., .12, min(pk, 1. - pk));
-    alb = mix(alb, vec3f(.08, .22, .16), ss(.5, .7, A.c) * .6);
-    gloss = .2; bump = .7;
-  } else if (mat == 4) {
-    let hue = fract(sd * 7.31);
-    alb = mix(vec3f(.60, .17, .08), vec3f(.64, .35, .10), fract(hue * 3.));
-    if (hue > .75) { alb = vec3f(.44, .18, .42); }
-    alb *= (.45 + .75 * B.h) * (.7 + .3 * C.h);
-    vao = i.ao * i.ao; gloss = .2; bump = 1.4; flu = .55;
-  } else {
-    let hue = fract(sd * 5.73);
-    alb = mix(vec3f(.80, .08, .10), vec3f(.90, .22, .40), fract(hue * 4.));
-    if (hue > .7) { alb = vec3f(.88, .42, .10); }
-    if (hue > .9) { alb = vec3f(.55, .22, .75); }
-    alb *= (.4 + .8 * B.h) * (.5 + .9 * i.ao * i.ao);
-    alb = mix(alb, vec3f(1., .75, .6), ss(.8, 1., i.ao) * .35);
-    emi = alb * .01; flu = .75; gloss = .25; bump = 1.5;
-  }
-  let rip = select(0., flt * gm.a * cos((i.wp.x * .8 + i.wp.z * .35) * 5. + A.c * 9.) * .65, mat == 0);
-  let N = normalize(qrot(i.q, normalize(on + (A.n * .85 + B.n * .65 + C.n * .45 * ss(60., 12., dist) + F.n * .5 * fk) * bump + vec3f(.8, sgro, .35) * vec3f(rip, 1., rip))));
-  let L = g.sun.xyz; let V = normalize(g.cam.xyz - i.wp);
-  let v1 = vol(i.wp + n0 * 1.5); let v2 = vol(i.wp + n0 * 4.5);
-  let ao = (sat((v1.r - .5) * 8.) * .55 + sat((v2.r - .5) * 2.7) * .45) * vao * ss(.12, .6, hgt);
-  let z = zone(i.wp);
-  let E = sunE(i.wp.y, z) * shadow9(i.wp + n0 * .35);
-  let ndl = sat(dot(N, L));
-  let am = (amb(i.wp, N, v1.g, z) + side(i.wp, N, sat((v2.r - .5) * 2.7), z)) * ao;
-  let dl = E * ndl * (.10 + mix(vec3f(.33), ca, ss(.1, .45, dot(n0, L))) * 2.5);
-  var c = alb * (dl + am) + emi + alb * flu * dot(dl + am, vec3f(.1, .5, .5));
-  let H = normalize(V + L);
-  c += E * (.25 + ca) * pow(sat(dot(N, H)), mix(10., 70., gloss)) * gloss * ndl * 1.8;
-  c += (amb(i.wp, reflect(-V, N), v1.g, z) + side(i.wp, reflect(-V, N), sat((v2.r - .5) * 2.7), z)) * ao * (.08 + gloss) * .6 * pow(1. - sat(dot(N, V)), 2.5);
-  return fin(fog(c, i.wp, z));
-}
-`;
-
-// ---------------------------------------------------------------- leaves (kelp, grasses, ground cover)
-const W_LEAF = S_B + /*wgsl*/`
-override ROWS: f32 = 7.;
-override FAR: f32 = 150.;
-struct LI { @location(0) a: vec4f, @location(1) b: vec4f, @location(2) c: vec4f };
-struct LO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) n: vec3f, @location(2) uv: vec2f,
-  @location(3) @interpolate(flat) col: vec3f, @location(4) @interpolate(flat) pr: vec4f,
-  @location(5) @interpolate(flat) sd: vec2f, @location(6) @interpolate(flat) spc: vec3f };
-fn sway(p: vec2f, h: f32, t: f32) -> vec2f {
-  let ph = dot(p, vec2f(.031, .017));
-  let a = .024 * pow(max(h, 0.), 1.25);
-  return a * (vec2f(sin(t * .5 + ph + h * .09), cos(t * .37 + ph * 1.3 + h * .07)) + .35 * vec2f(sin(t * 1.3 + ph * 3. + h * .3), cos(t * 1.1 + ph * 2. + h * .23)));
-}
-fn shape2(v: f32) -> f32 { return sin(3.14159 * sat(v)); }
-fn pal(h: f32) -> vec3f {
-  if (h < .3) { return vec3f(1., .62, .08); }
-  if (h < .6) { return vec3f(.12, 1., .22); }
-  if (h < .8) { return vec3f(.2, .85, 1.); }
-  return vec3f(1., .3, .8);
-}
-@vertex fn vs(@builtin(vertex_index) vi: u32, i: LI) -> LO {
-  var o: LO;
-  let u = f32(vi & 1u) * 2. - 1.; let v = sin(f32(vi >> 1u) / (ROWS - 1.) * 1.5708);
-  let ty = i32(i.c.x * 255. + .5); let s1 = i.c.y; let s2 = i.c.z;
-  let t = g.cam.w;
-  let len = i.a.w; let hA = i.b.w;
-  let cy = cos(i.b.x); let sy = sin(i.b.x); let ct = cos(i.b.y); let st = sin(i.b.y);
-  let d = vec3f(st * cy, ct, st * sy); let pe = vec3f(ct * cy, -st, ct * sy); let sd = vec3f(-sy, 0., cy);
-  // per type: x sparkle prob, y translucency, z iridescence, w emissive
-  var col = vec3f(0.); var pr = vec4f(0.); var spc = vec3f(0.); var shp = vec2f(.75, .7); var wav = 1.; var fls = 1.;
-  let hsel = hs(s1 * 13.7 + s2 * 71.3);
-  switch ty {
-    case 0 { col = mix(vec3f(.11, .125, .022), vec3f(.04, .10, .04), s1); col = mix(col, vec3f(.25, .17, .025), step(.72, s2)); pr = vec4f(.24, .9, 0., 0.); spc = pal(hsel * .72); shp = vec2f(.5, .32); wav = 1.9; }
-    case 1 { col = vec3f(.10, .11, .035); pr = vec4f(0., .2, 0., 0.); shp = vec2f(.05, .1); wav = .3; fls = .3; }
-    case 2 { col = mix(vec3f(.05, .20, .16), vec3f(.12, .26, .22), s1); col = mix(col, vec3f(.30, .14, .24), step(.85, s2)); pr = vec4f(.05, 1.0, .25, 0.); spc = vec3f(.6, 1., .9); shp = vec2f(.45, .35); wav = 2.2; }
-    case 3 { col = mix(vec3f(.02, .05, .065), vec3f(.05, .03, .08), s1); col = mix(col, vec3f(.09, .03, .09), step(.8, s2)); pr = vec4f(.2, .85, .55, .02); spc = mix(vec3f(.5, .35, 1.), vec3f(.2, 1., .7), step(.6, hsel)); shp = vec2f(.7, .6); wav = 2.4; }
-    case 4 { col = mix(vec3f(.30, .15, .02), vec3f(.42, .25, .04), s1); pr = vec4f(.2, 1., .1, 0.); spc = vec3f(1., .85, .5); shp = vec2f(.5, .4); wav = 1.8; }
-    case 5 { col = mix(vec3f(.85, .05, .40), vec3f(.60, .10, .80), step(.7, s1)); col = mix(col, vec3f(.95, .25, .55), step(.75, s2)); pr = vec4f(.22, .8, 0., .30); spc = vec3f(1., .35, .8); shp = vec2f(.6, .6); fls = 2.; }
-    case 6 { col = mix(vec3f(.80, .16, .16), vec3f(.92, .36, .42), s1); pr = vec4f(.06, 1., 0., .10); spc = vec3f(1., .5, .5); shp = vec2f(.4, .3); wav = 2.; }
-    default { col = mix(vec3f(.05, .40, .36), vec3f(.10, .52, .58), s1); pr = vec4f(.1, .9, .2, .04); spc = vec3f(.3, 1., .9); shp = vec2f(.6, .5); }
-  }
-  pr.x = step(hs(s1 * 91.7 + s2 * 37.1 + i.b.x), pr.x);
-  let k = (i.c.w - .3) * 2.0 + sin(t * (.8 + s1) * fls + s2 * 40. + hA * .25) * .10 * fls;
-  let wph = v * (3. + 5. * s2) + s1 * 30. + t * 1.1;
-  let wv = sin(wph) * .12 * wav;
-  let kq = k * 1.7; let ka = select(kq, .06, abs(kq) < .06);
-  let sK = sin(ka * v); let cK = cos(ka * v);
-  let c = i.a.xyz + len * (d * (sK / ka) + pe * ((1. - cK) / ka + wv * v));
-  let sl = sK + wv + cos(wph) * .10 * wav * v * (3. + 5. * s2);
-  let N = normalize(pe * cK - d * sl); let T0 = normalize(d * cK + pe * sl);
-  let tw = (s1 - .5) * 2.4 * v + sin(t * .9 + s2 * 20.) * .25 * v;
-  let S = sd * cos(tw) + N * sin(tw); let N2 = N * cos(tw) - sd * sin(tw);
-  let shape = pow(max(sin(3.14159 * pow(v, shp.x)), 0.), shp.y);
-  let shp_ = g.res.x == 0.;
-  let cd = distance(i.a.xyz, g.cam.xyz); let far = FAR * g.mis.z;
-  let nearK = select(1. - ss(26., 40., cd), 0., shp_);
-  let farK = select((1. - ss(far * .8, far, cd)) * ss(.6, 2.2, distance(c, g.cam.xyz)) * ss(len * 1.1 + .5, len * 2.2 + 1.2, distance(i.a.xyz + d * (len * .5), g.cam.xyz)), 1., shp_);
-  let ruf = sin(v * 10. + s2 * 30. + t * .6) * i.b.z * .36 * u * shape2(v) * nearK;
-  var p = c + S * (u * farK * select(i.b.z * .5 * shape, select(max(i.b.z * .5, .09) * shape, 0., ty == 1), shp_));
-  p += N2 * ruf;
-  let sw = sway(i.a.xz, hA + (p.y - i.a.y), t);
-  p.x += sw.x; p.z += sw.y;
-  o.cp = g.vp * vec4f(p, 1.); o.wp = p; o.n = normalize(N2 + S * u * .55 - T0 * cos(v * 10. + s2 * 30. + t * .6) * u * .7 * nearK); o.uv = vec2f(u, v);
-  o.col = col; o.pr = pr; o.sd = vec2f(s1, s2); o.spc = spc;
-  return o;
-}
-struct GO { @builtin(position) cp: vec4f, @location(0) uv: vec2f, @location(1) @interpolate(flat) col: vec3f };
-@vertex fn vsGl(@builtin(vertex_index) vi: u32, @location(0) a: vec4f, @location(1) b: vec4f) -> GO {
-  var o: GO; let q = vec2f(f32(vi & 1u), f32(vi >> 1u)) * 2. - 1.; let t = g.cam.w;
-  var p = a.xyz; let sw = sway(a.xz, a.w, t); p.x += sw.x; p.z += sw.y;
-  p += .1 * vec3f(sin(t * .7 + b.x * 50.), sin(t * .9 + b.x * 70.), cos(t * .8 + b.x * 90.));
-  let d = length(p - g.cam.xyz);
-  if (d > 120. || dot(p - g.cam.xyz, g.fwd.xyz) < -1.) { o.cp = vec4f(0., 0., 2., 1.); return o; }
-  let tw = pow(.5 + .5 * sin(t * (.35 + .9 * hs(b.x)) + b.x * 100.), 4.);
-  let sz = min(max(b.z, d * .0026), d * .0045);
-  let w = p + (g.right.xyz * q.x + g.up.xyz * q.y) * sz;
-  o.cp = g.vp * vec4f(w, 1.); o.uv = q;
-  let z = zone(p);
-  let lit = .3 + 1.8 * shadow1(p) * sunE(p.y, z).g;
-  let e = b.z / sz;
-  o.col = pal(b.y) * (.12 + tw * 1.7) * lit * e * e * exp(-SIG.g * d) * ss(.4, 1.5, d) * 17.;
-  return o;
-}
-@fragment fn fsGl(i: GO) -> @location(0) vec4f {
-  let r = dot(i.uv, i.uv);
-  return vec4f(min(i.col * exp(-r * 7.) * (1. - ss(.7, 1., r)), vec3f(10.)), 0.);
-}
-@fragment fn fs(i: LO, @builtin(front_facing) ff: bool) -> @location(0) vec4f {
-  let dist = length(i.wp - g.cam.xyz);
-  let ca = caus2(i.wp, dist);
-  var n = normalize(i.n); if (!ff) { n = -n; }
-  let V = normalize(g.cam.xyz - i.wp); let L = g.sun.xyz;
-  let z = zone(i.wp);
-  let lt = textureSample(tD, sR, vec2f(i.uv.x * .13 + i.sd.x * 3.7, i.uv.y * .8 + i.sd.y * 5.3));
-  let vv = vol(i.wp + vec3f(0., .8, 0.));
-  let E = sunE(i.wp.y, z) * shadow1(i.wp + L * .3);
-  let ndl = dot(n, L);
-  var alb = i.col * (.72 + .28 * ss(0., .25, abs(i.uv.x))) * mix(.5, 1.12, i.uv.y) * (1. - .45 * ss(30., 8., dist) * ss(.6, 1., sin(i.uv.y * 40. - abs(i.uv.x) * 7. + i.sd.x * 40.))) * (.58 + .42 * ss(0., .13, abs(i.uv.x))) * (.5 + 1.0 * lt.b) * (.65 + .7 * lt.a);
-  let ndv = sat(dot(n, V));
-  let ir = .5 + .5 * cos(TAU * (vec3f(0., .33, .67) + ndv * 1.1 + i.sd.x * .22 + i.uv.y * .5 + .55));
-  alb = mix(alb, alb * .5 + ir * vec3f(.15, .13, .30), i.pr.z * (1. - ndv) * .8);
-  let tr = (max(-ndl, 0.) * .85 + .15) * i.pr.y;
-  let trc = alb * mix(vec3f(1.), vec3f(1.5, 1.4, .75), sat(i.pr.y) * (1. - i.pr.z));
-  let aov = sat((vv.r - .5) * 6.) * mix(.4, 1., i.uv.y);
-  let am = (amb(i.wp, n, vv.g, z) + amb(i.wp, -n, vv.g, z) * i.pr.y * .55 * vec3f(1.1, 1.15, .7) + side(i.wp, n, sat((vv.r - .5) * 4.), z) * .6) * (.3 + .7 * aov);
-  var c = E * (.06 + ca * 1.5) * (alb * max(ndl, 0.) + trc * tr) + alb * am;
-  let H = normalize(V + L);
-  c += E * (pow(sat(dot(n, H)), 40.) * (.45 + ir * i.pr.z * 2.) + pow(sat(dot(n, H)), 9.) * .07) + am * ir * i.pr.z * pow(1. - ndv, 3.) * 1.5;
-  c += E * trc * i.pr.y * pow(sat(dot(-V, L)), 3.) * 1.2;
-  c += alb * i.pr.w * (.5 + 3. * dot(am + E * .3, vec3f(.1, .5, .5)));
-  // sparkle: whole-leaf glints that twinkle slowly
-  let tw = pow(.5 + .5 * sin(g.cam.w * (.5 + i.sd.y * 1.4) + i.sd.x * 90.), 5.);
-  let m = ss(.2, .0, abs(i.uv.y - (.35 + .45 * i.sd.y))) * (1. - i.uv.x * i.uv.x);
-  let lit = .35 + E.g * 1.2;
-  c += i.spc * i.pr.x * (.1 + tw) * m * lit * .6;
-  return fin(fog(c, i.wp, z));
-}
-`;
-
-// ---------------------------------------------------------------- fish + mantas
-const W_ANIM = S_B + /*wgsl*/`
-struct VI { @location(0) p: vec3f, @location(1) n: vec4f, @location(2) a: vec4f, @location(3) b: vec4f };
-struct VO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) n: vec3f, @location(2) op: vec3f, @location(3) @interpolate(flat) sd: f32, @location(4) lt: f32 };
-@vertex fn vsFish(i: VI) -> VO {
-  var o: VO;
-  let s = i.b.x; let h = vec3f(hs(s), hs(s + .37), hs(s + .71));
-  let R = i.a.w; let t = g.cam.w;
-  let ta = t * i.b.y + i.b.w * 6.3 + (h.x - .5) * (26. / R);
-  let ph = i.b.w * 17.;
-  let P = i.a.xyz + vec3f(R * cos(ta), 2.2 * sin(3. * ta + ph), R * .6 * sin(ta));
-  let T = normalize(vec3f(-R * sin(ta), 6.6 * cos(3. * ta + ph), R * .6 * cos(ta))) * sign(i.b.y);
-  let S = normalize(cross(vec3f(0., 1., 0.), T)); let Up = cross(T, S);
-  let off = S * ((h.y - .5) * 5. + sin(t * .6 + s * 40.) * .5) + Up * ((h.z - .5) * 3.2 + cos(t * .5 + s * 31.) * .4);
-  var l = i.p * i.b.z * (.75 + .5 * h.z);
-  l.z += sin(t * 9. + s * 50. + l.x * 5.) * .22 * (.25 * i.b.z - l.x);
-  let w = P + off + T * l.x + Up * l.y + S * l.z;
-  o.cp = g.vp * vec4f(w, 1.); o.wp = w; o.n = T * i.n.x + Up * i.n.y + S * i.n.z; o.op = i.p; o.sd = s;
-  o.lt = shadow1(w);
-  return o;
-}
-@fragment fn fsFish(i: VO) -> @location(0) vec4f {
-  let n = normalize(i.n); let L = g.sun.xyz; let V = normalize(g.cam.xyz - i.wp);
-  let z = zone(i.wp); let vv = vol(i.wp);
-  var alb = mix(vec3f(.50, .68, .80), vec3f(.10, .22, .40), ss(-.05, .2, i.op.y));
-  alb = mix(alb, vec3f(.95, .8, .3), step(.86, fract(i.sd * 7.7)) * .6);
-  let E = sunE(i.wp.y, z) * i.lt;
-  var c = alb * (E * (.25 + .75 * sat(dot(n, L))) + amb(i.wp, n, vv.g, z) * 1.3);
-  c += E * pow(sat(dot(n, normalize(V + L))), 24.) * 1.6 + vec3f(.3, .6, .7) * pow(1. - sat(dot(n, V)), 3.) * .25 * vv.g;
-  return fin(fog(c, i.wp, z));
-}
-@vertex fn vsManta(i: VI) -> VO {
-  var o: VO;
-  let t = g.cam.w; let R = i.a.w; let sz = i.b.z;
-  let ta = t * i.b.y + i.b.x;
-  let P = i.a.xyz + vec3f(R * cos(ta), 2.5 * sin(2. * ta + i.b.w), R * .75 * sin(ta));
-  let T = normalize(vec3f(-R * sin(ta), 5. * cos(2. * ta + i.b.w) * 1., R * .75 * cos(ta))) * sign(i.b.y);
-  var S = normalize(cross(vec3f(0., 1., 0.), T)); var Up = cross(T, S);
-  let bank = -.28 * sign(i.b.y);
-  let S2 = S * cos(bank) + Up * sin(bank); Up = Up * cos(bank) - S * sin(bank); S = S2;
-  let u = i.n.w; let au = abs(u);
-  let fp = t * 1.25 + i.b.w * 5. - au * 1.2;
-  let amp = .36 * pow(au, 1.6);
-  var l = i.p;
-  l.y += amp * sin(fp) - .1 * sin(t * 1.25 + i.b.w * 5.);
-  let tail = ss(-.5, -1.9, l.z) * step(au, .001);
-  l.x += tail * sin(t * .8 + l.z * 2.) * .12;
-  let sl = (.576 * pow(au, .6) * sin(fp) - .43 * pow(au, 1.6) * cos(fp)) * sign(u);
-  let ln = normalize(vec3f(i.n.x - sl * i.n.y, i.n.y + sl * i.n.x, i.n.z));
-  let w = P + (S * l.x + Up * l.y + T * l.z) * sz;
-  o.cp = g.vp * vec4f(w, 1.); o.wp = w; o.n = S * ln.x + Up * ln.y + T * ln.z; o.op = i.p; o.sd = i.b.w;
-  o.lt = 1.;
-  return o;
-}
-@fragment fn fsManta(i: VO) -> @location(0) vec4f {
-  let dist = length(i.wp - g.cam.xyz);
-  let ca = caus(i.wp, dist);
-  let tx = textureSample(tD, sR, i.op.xz * .9 + i.sd);
-  let n = normalize(i.n + (vec3f(tx.r, 0., tx.g) - vec3f(.5, 0., .5)) * .5); let L = g.sun.xyz; let V = normalize(g.cam.xyz - i.wp);
-  let z = zone(i.wp); let vv = vol(i.wp);
-  let top = ss(-.2, .25, normalize(i.n).y);
-  let au = abs(i.op.x);
-  let gill = ss(.25, .0, abs(au - .13) * 8.) * ss(.04, .12, i.op.z) * ss(.34, .26, i.op.z) * ss(.2, .8, sin(i.op.z * 110.));
-  var belly = vec3f(.13, .17, .21) * (.6 + .6 * tx.b) * (1. - .7 * gill);
-  belly = mix(belly, vec3f(.05, .08, .11), sat(ss(.45, .9, au + tx.a * .35) + ss(-.1, -.4, i.op.z + tx.b * .2) * .7));
-  var back = vec3f(.04, .065, .10) + vec3f(.10, .16, .2) * ss(.5, .75, tx.a);
-  back = mix(back, vec3f(.36, .46, .52), ss(.25, .0, abs(au - .26) * 3.5 + abs(i.op.z - .12) * 5.) * .8);
-  var alb = mix(belly, back, top);
-  let E = sunE(i.wp.y, z) * shadow4(i.wp + n * .3);
-  let ndv = sat(dot(n, V));
-  let ir = .5 + .5 * cos(TAU * (vec3f(0., .33, .67) + ndv * 1.1 + tx.a * 1.5 + .55));
-  let fillN = vec3f(n.x, abs(n.y) * .55 + .25, n.z);
-  var c = alb * (E * sat(dot(n, L)) * (.3 + ca) + amb(i.wp, fillN, vv.g, z) * 1.1 + side(i.wp, n, 1., z) * .8);
-  c += ir * vec3f(.35, .16, .6) * (.07 + .22 * tx.b) * (.4 + E.g * .2 * ca.g) * (1. - top * .3);
-  c += E * pow(sat(dot(n, normalize(V + L))), 30.) * .5 * (.3 + ca);
-  let sky = amb(i.wp, vec3f(0., 1., 0.), vv.g, z);
-  c += alb * sky * ca * .45 * (1. - top) + sky * pow(1. - ndv, 3.) * .35;
-  return fin(fog(c, i.wp, z));
-}
-`;
-
-// ---------------------------------------------------------------- water surface seen from below
-const W_SURF = S_B + /*wgsl*/`
-struct VO { @builtin(position) cp: vec4f, @location(0) wp: vec3f };
-@vertex fn vs(@builtin(vertex_index) i: u32) -> VO {
-  var o: VO;
-  let p = vec2f(f32(i & 1u), f32(i >> 1u)) * 2. - 1.;
-  o.wp = vec3f(g.cam.x + p.x * 900., 0., g.cam.z + p.y * 900.);
-  o.cp = g.vp * vec4f(o.wp, 1.);
-  return o;
-}
 @fragment fn fs(i: VO) -> @location(0) vec4f {
-  let v = i.wp - g.cam.xyz; let d = length(v); let V = v / d;
-  let fl = ss(260., 60., d);
-  let s = (textureSample(tW, sR, i.wp.xz / 13.).ba + textureSample(tW, sR, i.wp.zx / 4.7 + .2).ba * .7 + textureSample(tW, sR, i.wp.xz / 37. + .6).ba * .8) * fl;
-  let n = normalize(vec3f(-s.x * .8, -1., -s.y * .8));
-  let ci = sat(dot(V, -n));
-  let k = 1. - 1.769 * (1. - ci * ci);
-  let win = ss(0., .22, k);
-  let rr = refract(V, n, 1.33);
-  let sd = max(dot(rr, g.sun.xyz), 0.);
-  let fr = pow(1. - sqrt(max(k, 0.)), 5.);
-  let sky = (vec3f(.30, .78, 1.) * 1.3 * clamp(1. + 3.8 * (s.x * .6 - s.y * .8), .25, 3.) + vec3f(1., .95, .85) * (pow(sd, 60.) * 1.3 + pow(sd, 500.) * 12.)) * (1. - fr);
-  let z = zone(i.wp);
-  let R = reflect(V, n);
-  let refl = fogIn(i.wp, R, 300., z, g.sun.xyz) * 1.15;
-  let c = mix(refl, sky, win);
-  return fin(fog(c, i.wp, z));
+  let uv = tuv(i.wp.xz); let nt = textureSample(tN, sA, uv); let gw = textureSample(tG, sA, uv);
+  var n0 = vec3f(nt.x * 2. - 1., 0., nt.y * 2. - 1.); n0.y = sqrt(max(1. - dot(n0.xz, n0.xz), .01));
+  let y = i.wp.y; let dist = length(i.wp - g.cam.xyz); let slope = 1. - n0.y;
+  // rock detail at three sizes, each turned a different way so the tiles never line up, each faded out before its repeats show
+  let pa = vec3f(i.wp.x * .8 - i.wp.z * .6, y, i.wp.x * .6 + i.wp.z * .8); let na = vec3f(n0.x * .8 - n0.z * .6, n0.y, n0.x * .6 + n0.z * .8);
+  let pb = vec3f(i.wp.x * .6 + i.wp.z * .8, y, i.wp.z * .6 - i.wp.x * .8); let nb = vec3f(n0.x * .6 + n0.z * .8, n0.y, n0.z * .6 - n0.x * .8);
+  var A = tri(pa, na, .011); var B = tri(pb, nb, .085); let C = tri(i.wp, n0, .66); let Fd = tri(pb, nb, 3.7);
+  let fa = ss(3500., 600., dist); let fb = ss(420., 60., dist); let fk = ss(60., 6., dist); let ff = ss(14., 1.5, dist);
+  A.n = vec3f(A.n.x * .8 + A.n.z * .6, A.n.y, A.n.z * .8 - A.n.x * .6) * fa; A.h = mix(.5, A.h, fa); A.c = mix(.5, A.c, fa);
+  B.n = vec3f(B.n.x * .6 - B.n.z * .8, B.n.y, B.n.x * .8 + B.n.z * .6) * fb; B.h = mix(.5, B.h, fb); B.c = mix(.5, B.c, fb);
+  let big = gn(i.wp.xz, .0021); let big2 = gn(i.wp.zx + 4000., .0068); let big3 = gn(pa.xz + 9000., .0034);
+  let hd = (A.h * .3 + B.h * .4 + C.h * .3 * fk + .15 * (1. - fk)) * mix(1., .6 + .8 * Fd.h, ff);
+  // Every colour below is a liberty (T-L8): no source gives the colour of any rock or soil on the island.
+  // The ring's volcanic pile: beds of lava, scoria and tuff, banded by height, in the red, blue-black and ochre of the
+  // rocks painted in the Akrotiri miniature frieze (grade B: shown, not found).
+  let st = y / 23. + big * 2.6 + big2 * 1.3 + B.h * .3; let bed = hs(floor(st)); let sf = fract(st);
+  var rk = mix(vec3f(.21, .10, .075), vec3f(.07, .072, .085), ss(.34, .5, bed));
+  rk = mix(rk, vec3f(.30, .22, .115), ss(.64, .76, bed));
+  rk = mix(rk, vec3f(.31, .28, .24), ss(.92, .97, bed));
+  rk *= mix(.8, 1.15, hs(bed * 7.3)) * (1. - .25 * ss(.12, 0., sf) * ss(.3, .6, slope));
+  // away from the cliffs the beds are hidden under their own rubble: one weathered brown-grey
+  rk = mix(vec3f(.20, .17, .14) * (.8 + .4 * big), rk, ss(.3, .62, slope));
+  rk = mix(rk, vec3f(.40, .40, .39) * (.8 + .4 * big2), gw.r);
+  rk = mix(rk, vec3f(.135, .135, .15) * (.75 + .5 * big2), gw.g);
+  rk = mix(rk, vec3f(.022, .022, .026) * (.7 + .6 * big2), gw.b);
+  let fol = .8 + .4 * textureSample(tD, sR, vec2f(i.wp.x * .02 + i.wp.z * .05, i.wp.y * .6)).b;
+  rk = mix(rk, mix(vec3f(.21, .23, .20), vec3f(.33, .28, .21), big) * fol, gw.a * (1. - nt.a));
+  rk = mix(rk, vec3f(.47, .46, .43) * (.85 + .3 * B.c), gw.a * nt.a);
+  rk *= .68 + .62 * hd;
+  // loose ground on gentle slopes; bare, because plants come in a later work order
+  var earth = mix(vec3f(.19, .145, .095), vec3f(.265, .215, .15), big2);
+  earth = mix(earth, vec3f(.24, .12, .075), ss(.52, .7, big) * .6);         // rusty scoria soil
+  earth = mix(earth, vec3f(.095, .088, .085), ss(.56, .74, big3) * .6);     // dark cinder and lava rubble
+  earth = mix(earth, rk, .3 * gw.a * nt.a + .25 * gw.r) * (.76 + .48 * B.h);
+  var alb = mix(rk, earth, ss(.42, .2, slope + (C.h - .5) * .1 * fk) * (1. - .92 * gw.b));
+  // the shore: dark sand and shingle, wet at the water's edge
+  alb = mix(alb, mix(vec3f(.15, .145, .135), rk, gw.b) * (.6 + .8 * C.h), ss(3.4, .9, y + (B.h - .5) * 2.4) * ss(.5, .2, slope));
+  let wet = ss(.8, -.1, y);
+  alb *= 1. - .5 * wet;
+  // under water: dark volcanic sand on the flats (pale sediment in the bay), rock on the steeps
+  let sand = mix(vec3f(.15, .145, .13), vec3f(.44, .43, .36), nt.a * (1. - gw.a));
+  alb = mix(alb, mix(sand, rk * 1.1, sat(ss(.2, .55, slope) + gw.b)) * (.7 + .5 * B.h), ss(.1, -1.5, y));
+  let N = normalize(n0 + (A.n * .22 + B.n * .5 + C.n * .6 * fk + vec3f(Fd.n.x * .6 - Fd.n.z * .8, Fd.n.y, Fd.n.x * .8 + Fd.n.z * .6) * .5 * ff) * (1.25 - .6 * ss(.1, -1.5, y)));
+  let L = g.sun.xyz; let V = normalize(g.cam.xyz - i.wp);
+  var E = g.sunc.rgb * shadow(i.wp + n0 * 2.);
+  let ao = nt.b;
+  var am = i.zen * (.3 + .7 * (N.y * .5 + .5)) + skyL(normalize(vec3f(N.x, .1, N.z))) * (.5 - .25 * N.y);
+  // sunlight thrown back by the ground around
+  am += g.sunc.rgb * max(L.y, 0.) * vec3f(.30, .25, .19) * (.45 - .35 * N.y) * .5;
+  let ca = caus(i.wp, dist);
+  if (y < 0.) {
+    // light under the sea: absorbed on the way down, gathered into caustics
+    E *= exp(KD * (y / max(L.y, .25))) * (.3 + ca * .18); am = am * exp(KD * y * 1.3) * .8 + WCOL * wlit() * exp(KD * y) * .12;
+  }
+  let ndl = sat(dot(N, L));
+  var c = alb * (E * ndl + (am + vec3f(.0016, .0022, .004) * g.sunc.w * (.4 + .6 * N.y)) * ao);
+  // sheen on glassy lava and on wet shingle
+  let gl = gw.b * .12 + wet * .5 * step(0., y);
+  c += E * pow(sat(dot(N, normalize(V + L))), 24.) * gl * ndl;
+  return fin(medium(c, i.wp));
 }
-// behind everything: where no terrain is drawn (it stops at ~240 m) the water looks as it does at that distance
-@vertex fn vsB(@builtin(vertex_index) i: u32) -> VO {
-  var o: VO;
-  let p = vec2f(f32(i & 1u), f32(i >> 1u)) * 2. - 1.;
-  o.wp = g.cam.xyz + g.fwd.xyz + g.right.xyz * (p.x * g.right.w) + g.up.xyz * (p.y * g.up.w);
+`;
+
+// ---------------------------------------------------------------- the sea surface (from above and from below)
+const W_SEA = S_B + /*wgsl*/`
+struct VO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) op: vec2f };
+@vertex fn vs(@location(0) q: vec2i, @location(1) lv: vec4f) -> VO {
+  let r = ring(q, lv, true); let p = r.xy;
+  let d = seaD(p, exp2(r.z), max(-hgt(p, r.z - MIP0 + 1.), 0.));
+  let dq = p - g.cam.xz;
+  var o: VO; o.op = p; o.wp = vec3f(p.x + d.x, d.y, p.y + d.z);
+  o.cp = g.vp * vec4f(o.wp.x, o.wp.y - dot(dq, dq) / (2. * RE), o.wp.z, 1.);
+  return o;
+}
+@fragment fn fs(i: VO, @builtin(front_facing) ff: bool) -> @location(0) vec4f {
+  let v = i.wp - g.cam.xyz; let d = length(v); let V = v / d; let L = g.sun.xyz;
+  let pp = d * g.right.w * 2. * g.res.z; let px = pp / max(abs(V.y), .06);
+  let lod = log2(max(pp, 1.) / (DOM / ${TS}.));
+  let dep = -hgt(i.op, lod); let dc = max(dep, 0.);
+  let sl = seaS(i.op, px, dc);
+  // ripples smaller than the wave sum carries: the moving slope texture, twice
+  let rp = (textureSample(tW, sR, i.op / 11.).ba + textureSample(tW, sR, i.op.yx / 2.7 + .4).ba * .7) * (.3 + .8 * g.sun.w) * clamp(dc * 2., .25, 1.) * ss(2.5, .5, pp);
+  let N = normalize(vec3f(-sl.x - rp.x, 1. - sl.z, -sl.y - rp.y));
+  let sh = shadow(i.wp);
+  // (every texture is read before the two cases part: the shader may not sample after branching on the facing)
+  let Rr = refract(V, N, .75); let pl = dc / max(-Rr.y, .25);
+  let bp = i.op + Rr.xz * pl; let bn = textureSample(tN, sA, tuv(bp)); let bg = textureSample(tG, sA, tuv(bp));
+  let cf = ss(1.2, .25, pp); let cs = mix(.75, textureSample(tW, sR, bp / 3.3).r, cf); let cb = mix(.5, textureSample(tW, sR, bp.yx / 6.9 + .37).r, cf);
+  let fm = textureSample(tW, sR, i.op / 5.).r + textureSample(tW, sR, i.op.yx / 1.7).r * .6;
+  let zen = skyL(vec3f(0., 1., 0.));
+  if (!ff) {
+    // from below (upstream's): the sky in Snell's window, the deep reflected around it
+    let ci = sat(dot(V, N)); let k = 1. - 1.769 * (1. - ci * ci); let win = ss(0., .22, k);
+    let rr = refract(V, -N, 1.33); let sd = max(dot(rr, L), 0.);
+    let fr = pow(1. - sqrt(max(k, 0.)), 5.);
+    let sky = (skyL(normalize(vec3f(rr.x, max(rr.y, .03), rr.z))) * 1.6 + g.sunc.rgb * sh * (pow(sd, 120.) * .35 + pow(sd, 1500.) * 5.)) * (1. - fr);
+    let c = mix(fogIn(i.wp, reflect(V, -N), 300.) * 1.15, sky, win);
+    return fin(medium(c, i.wp));
+  }
+  let far = sat(log2(px * 30. + 1.) / 7.);
+  let ci = max(sat(dot(-V, N)), .2 * far); let F = .02 + .98 * pow(1. - ci, 5.);
+  var R = reflect(V, N); R.y = abs(R.y) + .02 + far * (.3 + .2 * g.sun.w);
+  // the sun's glitter: far waves are smaller than a pixel, so their facets spread the sun wider
+  let al = mix(.035, .16 + .12 * g.sun.w, far); let a2 = al * al;
+  let nh = sat(dot(N, normalize(L - V))); let dd = nh * nh * (a2 - 1.) + 1.;
+  let spec = g.sunc.rgb * sh * min(a2 / (dd * dd) * .25 / max(ci, .08), mix(120., 14., far)) * F;
+  // into the water: the bottom through the water column, and the water's own colour
+  let bsl = 1. - sqrt(max(1. - dot(bn.xy * 2. - 1., bn.xy * 2. - 1.), .01));
+  let balb = mix(mix(vec3f(.15, .145, .13), vec3f(.44, .43, .36), bn.a * (1. - bg.a)), vec3f(.08, .08, .09), sat(ss(.2, .55, bsl) + bg.b)) * (.8 + .4 * cb);
+  let bot = balb * (g.sunc.rgb * sh * max(L.y, 0.) * exp(KD * (-dc / max(L.y, .25))) * (.4 + min(pow(cs, 2.3) * 5., 3.) * (.45 + cb * 1.3) * .2 * ss(12., 2., dc)) + zen * exp(-KD * dc * 1.3) * .8);
+  let body = wfog(bot, vec3f(i.wp.x, 0., i.wp.z), Rr, pl);
+  var c = mix(body, skyL(normalize(R)), F) + spec;
+  // foam: swash on the shore, and whitecaps where crests pinch in a breeze
+  let swash = ss(.45, .0, dep) * ss(.25, .8, fm + .5 * sin(dep * 14. - g.cam.w * 1.1 + fm * 3.)) * ss(1500., 300., d) * (.35 + .65 * wamp());
+  let cap = ss(.46, .8, sl.z + fm * .1) * ss(.3, .7, g.sun.w) * ss(2500., 300., d);
+  let foam = sat(swash + cap);
+  c = mix(c, (g.sunc.rgb * sh * (.3 + .7 * max(L.y, 0.)) + zen * 1.5) * .8, foam);
+  let al2 = ss(.0, .18, dep + foam * .15);
+  return vec4f(fin(medium(c, i.wp)).rgb * al2, al2);
+}
+`;
+
+// ---------------------------------------------------------------- the sky behind everything, and specks drifting in the water
+const W_SKY = S_B + /*wgsl*/`
+struct VO { @builtin(position) cp: vec4f, @location(0) rd: vec3f };
+@vertex fn vs(@builtin(vertex_index) i: u32) -> VO {
+  var o: VO; let p = vec2f(f32(i & 1u), f32(i >> 1u)) * 4. - 1.;
+  o.rd = g.fwd.xyz + g.right.xyz * (p.x * g.right.w) + g.up.xyz * (p.y * g.up.w);
   o.cp = vec4f(p, 1e-7, 1.);
   return o;
 }
-@fragment fn fsB(i: VO) -> @location(0) vec4f {
-  let p = g.cam.xyz + normalize(i.wp - g.cam.xyz) * 240.;
-  return fin(fog(vec3f(0.), p, zone(p)));
+@fragment fn fs(i: VO) -> @location(0) vec4f {
+  let rd = normalize(i.rd);
+  // under water with nothing in the way: just the water
+  if (g.cam.y < g.mis.w) { return fin(fogIn(g.cam.xyz, rd, 1e5)); }
+  var c = skyL(rd);
+  let q = rd - g.sun.xyz;
+  c += g.sunc.rgb * ss(2.3e-5, 1.8e-5, dot(q, q)) * 45.;
+  // stars: a random field, not the sky of 1615 BCE (T-L12)
+  let sv = rd * 190.; let id = floor(sv); let hh = fract(sin(vec3f(dot(id, vec3f(12.99, 78.23, 37.72)), dot(id, vec3f(39.35, 11.14, 83.16)), dot(id, vec3f(73.16, 52.24, 9.15)))) * 43758.5453);
+  let sd = length(fract(sv) - .5 - (hh - .5) * .7);
+  c += vec3f(.9, .95, 1.) * step(.9, hh.x) * pow(hh.y, 3.) * ss(.11, 0., sd) * ss(-.02, .25, rd.y) * g.sunc.w * (.75 + .25 * sin(g.cam.w * (2. + hh.z * 4.) + hh.x * 90.)) * .3;
+  return fin(c);
 }
-`;
-
-// ---------------------------------------------------------------- sprites: bubbles (alpha) and drifting particles (additive)
-const W_SPR = S_B + /*wgsl*/`
-struct VO { @builtin(position) cp: vec4f, @location(0) uv: vec2f, @location(1) @interpolate(flat) pr: vec4f, @location(2) wp: vec3f };
-fn quad(i: u32) -> vec2f { return vec2f(f32(i & 1u), f32(i >> 1u)) * 2. - 1.; }
-@vertex fn vsBub(@builtin(vertex_index) vi: u32, @location(0) a: vec4f, @location(1) b: vec4f) -> VO {
-  var o: VO; let q = quad(vi); let t = g.cam.w;
-  let life = fract(t * b.y / b.z + b.x);
-  let h = life * b.z;
-  var p = a.xyz + vec3f(0., h, 0.);
-  let wob = b.w * (.3 + h * .035);
-  p.x += sin(t * 1.7 + b.x * 50. + h * .6) * wob + sin(h * .13 + b.x * 9.) * b.w * 2.;
-  p.z += cos(t * 1.3 + b.x * 33. + h * .5) * wob + cos(h * .11 + b.x * 7.) * b.w * 2.;
-  let sz = a.w * (.55 + .7 * life) * ss(0., .03, life) * ss(0., -1.2, p.y);
-  let w = p + (g.right.xyz * q.x + g.up.xyz * q.y) * sz;
-  o.cp = g.vp * vec4f(w, 1.); o.uv = q; o.wp = p;
-  o.pr = vec4f(b.x, sz, shadow1(p), 0.);
-  return o;
-}
-@fragment fn fsBub(i: VO) -> @location(0) vec4f {
-  let t = g.cam.w;
-  let an = atan2(i.uv.y, i.uv.x + 1e-4);
-  let big = ss(.04, .22, i.pr.y);
-  let r = length(i.uv) / (.9 + big * .05 * sin(an * 3. + t * 5. + i.pr.x * 40.) + big * .02 * sin(an * 5. - t * 7.));
-  let aa = fwidth(r) * 1.5;
-  let disc = 1. - ss(1. - aa, 1., r);
-  let rim = ss(.55, .98, r);
-  let hl = ss(.34, .0, length(i.uv - vec2f(-.36, .42))) + .5 * ss(.2, .0, length(i.uv - vec2f(.4, -.42)));
-  let z = zone(i.wp);
-  let E = sunE(i.wp.y, z) * (.25 + .75 * i.pr.z);
-  let hi = fogIn(i.wp, vec3f(0., 1., 0.), 80., z, g.sun.xyz) * 1.5;
-  let lo = fogIn(i.wp, vec3f(0., -1., 0.), 80., z, g.sun.xyz);
-  var c = mix(lo, hi, ss(-.5, .8, i.uv.y + rim * .4)) * (.5 + 1.2 * rim) + E * hl * 1.6;
-  var al = disc * sat(.03 + rim * rim * rim * .9 + hl);
-  let v = i.wp - g.cam.xyz; let d = length(v);
-  let T = exp(-SIG.g * d) * ss(1.2, 3., d);
-  c = c * T + fogIn(g.cam.xyz, v / d, d, z, g.sun.xyz) * (1. - T);
-  al *= mix(.35, 1., T);
-  return vec4f(min(max(c * al, vec3f(0.)), vec3f(20.)), al);
-}
-@vertex fn vsSnow(@builtin(vertex_index) vi: u32, @location(0) a: vec4f) -> VO {
-  var o: VO; let q = quad(vi); let t = g.cam.w;
-  let B = 44.;
+struct PO { @builtin(position) cp: vec4f, @location(0) uv: vec2f, @location(1) @interpolate(flat) pr: vec2f };
+@vertex fn vsP(@builtin(vertex_index) vi: u32, @location(0) a: vec4f) -> PO {
+  var o: PO; let q = vec2f(f32(vi & 1u), f32(vi >> 1u)) * 2. - 1.; let t = g.cam.w; let B = 44.;
   var p = a.xyz * B + vec3f(t * .22, t * .05, t * .13) + .5 * vec3f(sin(t * .3 + a.x * 60.), sin(t * .23 + a.y * 50.), cos(t * .27 + a.z * 70.));
   p = g.cam.xyz + (fract((p - g.cam.xyz) / B + .5) - .5) * B;
-  let d = length(p - g.cam.xyz);
-  let sz = (.012 + .045 * a.w * a.w * a.w);
+  let d = length(p - g.cam.xyz); let sz = .012 + .045 * a.w * a.w * a.w;
   let w = p + (g.right.xyz * q.x + g.up.xyz * q.y) * max(sz, d * .0011);
-  o.cp = g.vp * vec4f(w, 1.); o.uv = q; o.wp = p;
-  let fade = ss(B * .5, B * .32, d) * ss(.6, 2.5, d) * min(1., sz / (d * .0011)) * ss(-.3, -1.5, p.y);
-  let tw = .6 + .4 * sin(t * (1. + a.w * 2.) + a.x * 100.);
-  o.pr = vec4f(fade * tw, shadow1(p), a.w, d);
+  o.cp = g.vp * vec4f(w, 1.); o.uv = q;
+  let lit = dot(g.sunc.rgb * exp(KD * (p.y / max(g.sun.y, .25))) + skyL(vec3f(0., 1., 0.)) * exp(KD * p.y), vec3f(.2, .5, .3));
+  o.pr = vec2f(ss(B * .5, B * .32, d) * ss(.6, 2.5, d) * min(1., sz / (d * .0011)) * ss(g.mis.w - .3, g.mis.w - 1.5, p.y) * step(hgt(p.xz, 1.), p.y) * (.6 + .4 * sin(t * (1. + a.w * 2.) + a.x * 100.)) * exp(-SIG.g * d) * lit, a.w);
   return o;
 }
-@fragment fn fsSnow(i: VO) -> @location(0) vec4f {
-  let r = length(i.uv);
-  let m = ss(1., .2, r);
-  let z = zone(i.wp);
-  let c = (sunE(i.wp.y, z) * i.pr.y * .8 + amb(i.wp, vec3f(0., 1., 0.), 1., z) * .3) * mix(vec3f(1.), vec3f(.7, 1., .9), i.pr.z);
-  return vec4f(min(max(c * m * m * i.pr.x * exp(-SIG.g * i.pr.w), vec3f(0.)), vec3f(8.)), 0.);
+@fragment fn fsP(i: PO) -> @location(0) vec4f {
+  let m = ss(1., .2, length(i.uv));
+  return vec4f(mix(vec3f(1.), vec3f(.7, 1., .9), i.pr.y) * min(m * m * i.pr.x * .5, 6.), 0.);
 }
 `;
 
-// ---------------------------------------------------------------- volumetric light shafts (half res)
+// ---------------------------------------------------------------- light shafts under water (half resolution; upstream's)
 const W_RAYS = S_G + W_FS + /*wgsl*/`
 @group(0) @binding(0) var<uniform> g: G;
 @group(0) @binding(1) var sR: sampler;
@@ -690,36 +590,29 @@ const W_RAYS = S_G + W_FS + /*wgsl*/`
 @group(0) @binding(3) var tSh: texture_depth_2d;
 @group(0) @binding(4) var tW: texture_2d<f32>;
 @group(0) @binding(5) var tDp: texture_depth${AA > 1 ? '_multisampled' : ''}_2d;
-@group(0) @binding(6) var tV: texture_3d<f32>;
-@group(0) @binding(7) var sC: sampler;
 @fragment fn fs(@builtin(position) fc: vec4f) -> @location(0) vec4f {
   let dp = textureLoad(tDp, vec2i(fc.xy) * 2, 0);
+  let zl = g.fwd.w / max(dp, 1e-6);
+  if (g.cam.y >= g.mis.w) { return vec4f(0., 0., 0., zl); }
   let uv = fc.xy * 2. * g.res.zw;
   let nd = vec2f(uv.x * 2. - 1., 1. - uv.y * 2.);
   let rv = g.fwd.xyz + g.right.xyz * (nd.x * g.right.w) + g.up.xyz * (nd.y * g.up.w);
   let rl = length(rv); let rd = rv / rl;
-  let zl = g.fwd.w / max(dp, 1e-6);
-  var tm = min(zl * rl, 120.);
-  if (rd.y > 1e-4) { tm = min(tm, -g.cam.y / rd.y); }
-  let ro = g.cam.xyz; let sx = g.sun.xyz; let k = kd(g.sun.w); let sgz = sg(g.sun.w);
-  let dt = tm / ${RAYN}.;
-  let j = ign(fc.xy);
+  var tm = min(zl * rl, 110.);
+  if (rd.y > 1e-4) { tm = min(tm, (g.mis.w - g.cam.y) / rd.y); }
+  let ro = g.cam.xyz; let sx = vec3f(g.sun.x, max(g.sun.y, .25), g.sun.z);
+  let dt = tm / ${RAYN}.; let j = ign(fc.xy);
   var acc = vec3f(0.);
   for (var n = 0; n < ${RAYN}; n++) {
-    let t = (f32(n) + j) * dt;
-    let p = ro + rd * t;
+    let t = (f32(n) + j) * dt; let p = ro + rd * t;
     let s = g.sm * vec4f(p, 1.);
-    let vis = textureSampleCompareLevel(tSh, sS, vec2f(s.x * .5 + .5, .5 - s.y * .5), s.z - .0006);
+    let vis = textureSampleCompareLevel(tSh, sS, vec2f(s.x * .5 + .5, .5 - s.y * .5), s.z - .0002);
     let q = p.xz - sx.xz * (p.y / sx.y);
     let pat = ss(.3, .7, textureSampleLevel(tW, sR, q / 27., 2.5).r) * ss(.15, .6, textureSampleLevel(tW, sR, q.yx / 11. + .3, 2.).r);
-    let o = textureSampleLevel(tV, sC, (p - vec3f(-192., -56., -192.)) / vec3f(384., 60., 384.), 0.).r;
-    let mist = sat(1. - (o - .5) * 3.4);
-    acc += exp(-sgz * t + k * (p.y / sx.y)) * (vis * (.012 + pat * 6.) * (1. + 1.2 * mist * mist));
+    acc += exp(-SIG * t + KD * (p.y / sx.y)) * (vis * (.012 + pat * 6.));
   }
-  let mu = max(dot(rd, sx), 0.);
-  let ph = mix(.2 + 2.0 * mu * mu * mu, .8, g.sun.w);
-  let wc = mix(WCOL + vec3f(.04, .07, .05), PCOL + vec3f(.28, .16, .12), g.sun.w);
-  return vec4f(min(acc * dt * sgz * wc * SUNC * ph * g.mis.y * (1. - .55 * g.sun.w), vec3f(20.)), zl);
+  let mu = max(dot(rd, g.sun.xyz), 0.);
+  return vec4f(min(acc * dt * SIG * (WCOL + vec3f(.04, .07, .05)) * g.sunc.rgb * (.2 + 2. * mu * mu * mu) * g.mis.y * .3, vec3f(20.)), zl);
 }
 `;
 // depth-aware 3x3 blur of the half-res shafts (hides the sampling dither)
@@ -765,16 +658,15 @@ fn sat3(x: vec3f) -> vec3f { return clamp(x, vec3f(0.), vec3f(1.)); }
   }
   var c = textureLoad(tS, px, 0).rgb + acc / ws;
   let bl = textureSampleLevel(tB, sC, uv, 0.).rgb;
-  c = mix(c, bl, .06) + bl * .03;
+  c = mix(c, bl, .05) + bl * .02;
   c *= g.mis.x;
   let q = uv - .5;
-  c *= 1. - dot(q, q) * .55;
+  c *= 1. - dot(q, q) * .4;
   c = tmap(c);
   let l0 = dot(c, vec3f(.2126, .7152, .0722));
-  let l = mix(l0, l0 * l0 * (3. - 2. * l0), .55);
+  let l = mix(l0, l0 * l0 * (3. - 2. * l0), .4);
   c *= l / max(l0, 1e-4);
-  c = mix(c, vec3f(l), ss(.55, 1., l) * .1);
-  c = mix(vec3f(l), c, .93) + vec3f(.008, .002, 0.);
+  c = mix(vec3f(l), c, .96);
   c = pow(max(c, vec3f(0.)), vec3f(1. / 2.2));
   let n = ign(fc.xy) + ign(fc.xy + 37.) - 1.;
   return vec4f(c + n / 255., 1.);
