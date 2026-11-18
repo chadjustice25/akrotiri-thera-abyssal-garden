@@ -1,8 +1,9 @@
 // ============================================================================
-// audio: procedural underwater ambience (no sample files)
+// audio: procedural underwater ambience (no sample files); heard while the camera is under the sea
 // ============================================================================
 // A fixed Web Audio graph, built on the first click / key / touch and driven by a 10 Hz timer, not the frame loop.
-// Layers: rumble, surface wash, water rush (follows camera speed), drone, bubbles, chimes and distant whale calls.
+// Layers: rumble, surface wash, water rush (follows camera speed), drone, bubbles and chimes. (Upstream's whale calls
+// are left out: no animal is in this world until a work order brings its evidence. Sound above the water is a later order.)
 let AC, OUT, muted = false;
 const VOL = 0.78; // master level: about -18.5 LUFS, peaks near -5.5 dBFS
 function mkSound(ac) {
@@ -31,7 +32,7 @@ function mkSound(ac) {
   [73.42, 110, 164.81, 246.94, 369.99].forEach((f, i) => { const g = G(0.022 - i * 0.003, pad); N(OscillatorNode, { frequency: f }, g); N(OscillatorNode, { frequency: f + rr(0.03, 0.11) }, g); });
   // pooled voices: oscillator -> envelope -> pan -> dry + reverb
   const pool = (n, send, type) => Array.from({ length: n }, () => { const p = N(StereoPannerNode, {}, out, G(send, wet)), g = G(0, p); return { p, g, o: N(OscillatorNode, { type }, g) }; });
-  const bub = pool(4, 0.12), chime = pool(3, 1.2), whale = pool(2, 2, 'triangle');
+  const bub = pool(4, 0.12), chime = pool(3, 1.2);
   // one note: pitch glides f0 -> f1 over dur, level rises to vol in att then dies away
   const play = (vs, t, f0, f1, dur, vol, att) => {
     const v = vs.shift(), f = v.o.frequency, g = v.g.gain; vs.push(v);
@@ -40,13 +41,13 @@ function mkSound(ac) {
     g.setValueAtTime(0, t); g.linearRampToValueAtTime(vol, t + att); g.setTargetAtTime(0, t + att, (dur - att) / 5);
   };
   const NOTES = [0, 2, 5, 7, 9, 12, 14, 17, 19]; // D major pentatonic, in semitones above A4
-  let lt = ac.currentTime, tB = lt + 1.5, tC = lt + 5, tW = lt + 12, lx = F[CX], ly = F[CY], lz = F[CZ];
-  out.gain.setTargetAtTime(VOL, lt, 1);
+  let lt = ac.currentTime, tB = lt + 1.5, tC = lt + 5, lx = F[CX], ly = F[CY], lz = F[CZ];
   return () => {
     const now = ac.currentTime, t = now + 0.05, dt = now - lt;
     if (dt <= 0) return;
     let v = hypot(F[CX] - lx, F[CY] - ly, F[CZ] - lz) / dt; if (v > 60) v = 0; // ignore jumps to a viewpoint
     lt = now; lx = F[CX]; ly = F[CY]; lz = F[CZ];
+    out.gain.setTargetAtTime(muted || ly > F[HSEA] ? 0 : VOL, t, 0.25); // silent above the surface
     rush.gain.setTargetAtTime(0.5 * pow(min(v / 26, 1), 1.2), t, 0.3); rushF.frequency.setTargetAtTime(220 + v * 14, t, 0.3);
     const s = clamp(1 + ly / 30, 0, 1); wash.gain.setTargetAtTime(0.25 + 0.55 * s * s, t, 0.5);
     if (t > tB) { // a burst of 1-6 bubbles: short rising blips, smaller bubbles higher and shorter
@@ -55,11 +56,6 @@ function mkSound(ac) {
       tB = tt + rr(0.5, 5);
     }
     if (t > tC) { const f = 440 * pow(2, NOTES[rnd() * 9 | 0] / 12); play(chime, t, f, f, 5, rr(0.02, 0.04), 0.03); tC = t + rr(2.5, 9); }
-    if (t > tW) { // a phrase of 2-3 slow glides
-      let tt = t;
-      for (let n = 2 + rnd() * 2 | 0; n--;) { const f = rr(170, 380), d = rr(1.6, 3.2); play(whale, tt, f, f * rr(0.6, 1.7), d, 0.08, d * 0.4); tt += d * 0.8; }
-      tW = tt + rr(20, 50);
-    }
   };
 }
 // called on every click / key / touch: builds the graph once and resumes it when the browser allows
@@ -67,5 +63,5 @@ function sound() {
   if (!AC) { AC = new AudioContext({ latencyHint: 'playback' }); setInterval(mkSound(AC), 100); }
   if (AC.state === 'suspended' && !document.hidden) AC.resume();
 }
-const mute = () => { muted = !muted; OUT.gain.setTargetAtTime(muted ? 0 : VOL, AC.currentTime, 0.08); };
+const mute = () => { muted = !muted; };
 document.addEventListener('visibilitychange', () => { if (AC) document.hidden ? AC.suspend() : AC.resume(); });

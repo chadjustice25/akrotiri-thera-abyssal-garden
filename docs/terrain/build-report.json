@@ -34,9 +34,9 @@
       "channelFloorKm2": 0.44
     },
     "E4": {
-      "volumeAddedKm3": 13.32,
-      "volumeAddedAboveSeaKm3": 4.92,
-      "restoredLandKm2": 44.06,
+      "volumeAddedKm3": 13.45,
+      "volumeAddedAboveSeaKm3": 5.04,
+      "restoredLandKm2": 44.1,
       "highestRestoredPointMetres": 292.3,
       "allowedRangeKm3": [
         9.1,
@@ -82,25 +82,25 @@
     }
   },
   "rockClassLandKm2": {
-    "0 undivided volcanic": 103.84,
+    "0 undivided volcanic": 103.87,
     "1 light-grey andesite": 7.8,
-    "2 dark-grey andesite": 11.01,
+    "2 dark-grey andesite": 11.02,
     "3 black glassy andesite": 16.31,
     "4 phyllite and schist": 3.02,
     "5 marble": 3.44
   },
   "island": {
-    "landKm2In1615": 145.42,
+    "landKm2In1615": 145.46,
     "landKm2Today": 90.96,
     "highestPointMetres": 558.3
   },
   "data": {
-    "bytes": 54404,
-    "sha256": "9982fd196dc68db27b32e8ae48a946a47c465a205f16b1b9b4dd1a7013c6ad56",
+    "bytes": 54807,
+    "sha256": "9e6b1bc60dca50ae00bd018ba6c67ad45e24c68061ef7bf31ee433d02c002400",
     "heightUnitMetres": 0.25,
-    "fineCellsStored": 138272,
-    "maxErrorMetresOnLand": 4.32,
+    "fineCellsStored": 138224,
+    "maxErrorMetresOnLand": 3.99,
     "rmsErrorMetresOnLand": 0.37,
-    "maxErrorMetresUnderwater": 35.13
+    "maxErrorMetresUnderwater": 36.69
   }
 }

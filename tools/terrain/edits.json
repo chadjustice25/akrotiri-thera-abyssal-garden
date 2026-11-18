@@ -34,6 +34,8 @@
     "positionWindowMetres": 360, "positionRangeMetres": 14,
     "slopeThinStart": 0.25, "slopeThinEnd": 0.7,
     "basementFactor": 0.12,
+    "zones": [],
+    "zonesNote": "When a checked source gives the thickness at a named place, add { \"name\", \"claims\", \"outline\": [[x, z], ...], and \"metres\" (a fixed thickness) or \"scale\" (times the model) } here.",
     "keepAboveSeaFraction": 0.2
   },
 
@@ -46,7 +48,7 @@
     "rimCrest": [[2500, 880, 250], [1200, 1380, 255], [-200, 1500, 260], [-1800, 1380, 255], [-3400, 900, 235], [-4500, 260, 205], [-5050, -700, 175]],
     "southWestCrest": [[-4500, 260, 205], [-5000, 1300, 190], [-5200, 2400, 180], [-4900, 3500, 150], [-4300, 4500, 120]],
     "outerCoast": [[-4440, 5240], [-5300, 4500], [-5900, 3300], [-6200, 2000], [-6500, 700], [-6900, -600], [-7160, -1440]],
-    "wallWidthMetres": 620, "wallExponent": 0.62,
+    "wallWidthMetres": 430, "wallExponent": 0.55,
     "reliefMetres": 26, "reliefWavelengthMetres": 1300, "coastWobbleMetres": 260,
     "erosion": { "rounds": 70, "rate": 0.022, "creep": 0.12, "routingJitterMetres": 2.5 }
   },
@@ -102,7 +104,7 @@
   "rock": {
     "name": "Rock classes",
     "liberty": "T-L7",
-    "note": "0 undivided volcanic rocks of the ring (default); 1 light-grey andesite, Akrotiri peninsula (T1#23); 2 dark-grey andesite, Therasia (T1#23); 3 black glassy andesite, Pre-Kameni (T1b#43); 4 phyllite and schist basement (T1#21); 5 marble (T1b#56). The claims name places, not boundaries: every outline here is a liberty. Athinios (T1#21) is not drawn: its basement crops out in the caldera wall that the eruption exhumed (T1#20), which in 1615 BCE lay under the restored land.",
+    "note": "0 undivided volcanic rocks of the ring (default); 1 light-grey andesite, Akrotiri peninsula (T1#23); 2 dark-grey andesite, Therasia (T1#23); 3 black glassy andesite, Pre-Kameni (T1b#43); 4 phyllite and schist basement (T1#21); 5 marble (T1b#56); 6 the floor of the bay, shown as pale sediment (T1#12: aragonite buildups and shallow-marine, lagoonal life in the bay; its colour is a liberty). The claims name places, not boundaries: every outline here is a liberty. Athinios (T1#21) is not drawn: its basement crops out in the caldera wall that the eruption exhumed (T1#20), which in 1615 BCE lay under the restored land.",
     "akrotiriPeninsula": [[-4700, 5600], [-4400, 4700], [-3300, 4500], [-2200, 4600], [-800, 4900], [500, 4700], [1100, 5200], [900, 6500], [-200, 6700], [-2000, 6600], [-3500, 6100]],
     "therasia": [[-7800, -1400], [-7500, -4500], [-6400, -6700], [-5300, -6300], [-4000, -4200], [-4700, -2600], [-4100, -300], [-5500, -900], [-7000, -1300]]
   }

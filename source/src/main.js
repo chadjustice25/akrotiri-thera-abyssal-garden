@@ -35,34 +35,35 @@ const TU = GPUTextureUsage, BU = GPUBufferUsage, SS = GPUShaderStage;
 
 const mod = (code) => device.createShaderModule({ code });
 const buf = (data, usage) => { const b = device.createBuffer({ size: (data.byteLength + 3) & ~3, usage: usage | BU.COPY_DST }); Q.writeBuffer(b, 0, data.buffer || data, data.byteOffset || 0, data.byteLength); return b; };
-const tex = (w, h, format, usage, o = {}) => device.createTexture({ size: [w, h, o.d || 1], format, usage, mipLevelCount: o.mips || 1, sampleCount: o.samples || 1, dimension: o.d ? '3d' : '2d' });
+const tex = (w, h, format, usage, mips = 1, samples = 1) => device.createTexture({ size: [w, h], format, usage, mipLevelCount: mips, sampleCount: samples });
+const RT = TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING;
 
 // ---------------------------------------------------------------- static resources
 const sRep = device.createSampler({ addressModeU: 'repeat', addressModeV: 'repeat', magFilter: 'linear', minFilter: 'linear', mipmapFilter: 'linear', maxAnisotropy: LV > 1 ? 1 : 8 });
-const sClamp = device.createSampler({ magFilter: 'linear', minFilter: 'linear' });
+const sClamp = device.createSampler({ magFilter: 'linear', minFilter: 'linear', mipmapFilter: 'linear' });
+const sAniso = device.createSampler({ magFilter: 'linear', minFilter: 'linear', mipmapFilter: 'linear', maxAnisotropy: LV > 1 ? 1 : 8 });
 const sCmp = device.createSampler({ compare: 'less-equal', magFilter: 'linear', minFilter: 'linear' });
-const tShadow = tex(SHADOW, SHADOW, DEPTH, TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING);
-const tDummy = tex(1, 1, DEPTH, TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING);
-const tWater = tex(WATER, WATER, HDR, TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING, { mips: 5 });
-const tDetail = tex(1024, 1024, 'rgba8unorm', TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING, { mips: 11 });
-const tVol = tex(NX / 2, NY / 2, 'rg8unorm', TU.TEXTURE_BINDING | TU.COPY_DST, { d: NZ / 2 });
-const tMap = tex(512, 512, 'rgba8unorm', TU.TEXTURE_BINDING | TU.COPY_DST);
+const TM = log2(TS) + 1; // mip levels of the baked terrain textures
+const tShadow = tex(SHADOW, SHADOW, DEPTH, RT), tDummy = tex(1, 1, DEPTH, RT);
+const tWater = tex(WATER, WATER, HDR, RT, 5), tDetail = tex(1024, 1024, 'rgba8unorm', RT, 11);
+const tH = tex(TS, TS, 'r16float', RT | TU.COPY_SRC, TM), tNrm = tex(TS, TS, 'rgba8unorm', RT, TM), tGeo = tex(1024, 1024, 'rgba8unorm', RT, 11);
+const tSky = tex(SKYW, SKYH, HDR, RT);
 
-const UB = new Float32Array(60), UBS = new Float32Array(60);
-const ubo = device.createBuffer({ size: 240, usage: BU.UNIFORM | BU.COPY_DST }), uboS = device.createBuffer({ size: 240, usage: BU.UNIFORM | BU.COPY_DST });
+// the per-frame block (struct G in shaders.js): one for the scene, one for drawing the shadow map
+const UB = new Float32Array(64), UBS = new Float32Array(64);
+const ubo = device.createBuffer({ size: 256, usage: BU.UNIFORM | BU.COPY_DST }), uboS = device.createBuffer({ size: 256, usage: BU.UNIFORM | BU.COPY_DST });
 const WT = new Float32Array(4), uboW = device.createBuffer({ size: 16, usage: BU.UNIFORM | BU.COPY_DST });
+const uboWaves = buf(WAVES, BU.UNIFORM);
 
-const VF = SS.VERTEX | SS.FRAGMENT;
+const VF = SS.VERTEX | SS.FRAGMENT, T2 = { binding: 0, visibility: VF, texture: {} };
 const bgl0 = device.createBindGroupLayout({ entries: [
   { binding: 0, visibility: VF, buffer: {} },
   { binding: 1, visibility: VF, sampler: {} }, { binding: 2, visibility: VF, sampler: {} }, { binding: 3, visibility: VF, sampler: { type: 'comparison' } },
   { binding: 4, visibility: VF, texture: { sampleType: 'depth' } },
-  { binding: 5, visibility: VF, texture: {} }, { binding: 6, visibility: VF, texture: {} },
-  { binding: 7, visibility: VF, texture: { viewDimension: '3d' } }, { binding: 8, visibility: VF, texture: {} }] });
-const mkBG0 = (u, sh) => device.createBindGroup({ layout: bgl0, entries: [
-  { binding: 0, resource: { buffer: u } }, { binding: 1, resource: sRep }, { binding: 2, resource: sClamp }, { binding: 3, resource: sCmp },
-  { binding: 4, resource: sh.createView() }, { binding: 5, resource: tWater.createView() }, { binding: 6, resource: tDetail.createView() },
-  { binding: 7, resource: tVol.createView() }, { binding: 8, resource: tMap.createView() }] });
+  ...[5, 6, 7, 8, 9, 10].map((binding) => ({ ...T2, binding })),
+  { binding: 11, visibility: VF, buffer: {} }, { binding: 12, visibility: VF, sampler: {} }] });
+const mkBG0 = (u, sh) => device.createBindGroup({ layout: bgl0, entries: [u, sRep, sClamp, sCmp, sh, tWater, tDetail, tH, tNrm, tGeo, tSky, uboWaves, sAniso]
+  .map((r, binding) => ({ binding, resource: r.createView ? r.createView() : r.size ? { buffer: r } : r })) });
 const bg0 = mkBG0(ubo, tShadow), bg0s = mkBG0(uboS, tDummy);
 const pl0 = device.createPipelineLayout({ bindGroupLayouts: [bgl0] });
 
@@ -71,177 +72,146 @@ const plBlit = device.createPipelineLayout({ bindGroupLayouts: [bglBlit] });
 const mBlit = mod(W_BLIT);
 const blitPipe = (entry, format, add) => device.createRenderPipeline({ layout: plBlit, vertex: { module: mBlit, entryPoint: 'vs' },
   fragment: { module: mBlit, entryPoint: entry, targets: [{ format, blend: add ? { color: { srcFactor: 'one', dstFactor: 'one' }, alpha: { srcFactor: 'one', dstFactor: 'one' } } : undefined }] } });
-const pMip8 = blitPipe('fsMip', 'rgba8unorm'), pMip16 = blitPipe('fsMip', HDR), pDown0 = blitPipe('fsDown0', HDR), pDown = blitPipe('fsDown', HDR), pUp = blitPipe('fsUp', HDR, true);
+const pMip8 = blitPipe('fsMip', 'rgba8unorm'), pMip16 = blitPipe('fsMip', HDR), pMipR = blitPipe('fsMip', 'r16float'), pDown0 = blitPipe('fsDown0', HDR), pDown = blitPipe('fsDown', HDR), pUp = blitPipe('fsUp', HDR, true);
+const mipView = (t, m) => t.createView({ baseMipLevel: m, mipLevelCount: 1 });
 const blitBG = (view) => device.createBindGroup({ layout: bglBlit, entries: [{ binding: 0, resource: view }, { binding: 1, resource: sClamp }] });
 const colorAtt = (view, clear) => ({ view, loadOp: clear ? 'clear' : 'load', storeOp: 'store', clearValue: [0, 0, 0, 0] });
+// a full-screen pass with its own bindings: res = what goes in bindings 0, 1, 2 ... (null leaves a binding out)
+const fsPipe = (code, format) => { const m = mod(code); return device.createRenderPipeline({ layout: 'auto', vertex: { module: m, entryPoint: 'vs' }, fragment: { module: m, entryPoint: 'fs', targets: [{ format }] } }); };
+const fsBG = (p, res) => device.createBindGroup({ layout: p.getBindGroupLayout(0), entries: res.map((r, binding) => r && { binding, resource: r.createView ? r.createView() : r.size ? { buffer: r } : r }).filter((e) => e) });
+// one draw into every mip of a texture: level 0 with `p`, the rest by halving
+const bake = (e, t, mips, p, bg, pm) => {
+  for (let i = 0; i < mips; i++) {
+    const r = e.beginRenderPass({ colorAttachments: [colorAtt(mipView(t, i), true)] });
+    r.setPipeline(i ? pm : p); if (i || bg) r.setBindGroup(0, i ? blitBG(mipView(t, i - 1)) : bg); r.draw(3); r.end();
+  }
+};
 
-// vertex layouts
+const BLEND = { color: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' }, alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' } };
+const ADD = { color: { srcFactor: 'one', dstFactor: 'one' }, alpha: { srcFactor: 'one', dstFactor: 'one' } };
 const A = (shaderLocation, offset, format) => ({ shaderLocation, offset, format });
-const vbSolid = { arrayStride: 16, attributes: [A(0, 0, 'float32x3'), A(1, 12, 'snorm8x4')] };
-const ibSolid = { arrayStride: 48, stepMode: 'instance', attributes: [A(2, 0, 'float32x4'), A(3, 16, 'float32x4'), A(4, 32, 'float32x4')] };
-const ibLeaf = { arrayStride: 36, stepMode: 'instance', attributes: [A(0, 0, 'float32x4'), A(1, 16, 'float32x4'), A(2, 32, 'unorm8x4')] };
-const ibAnim = { arrayStride: 32, stepMode: 'instance', attributes: [A(2, 0, 'float32x4'), A(3, 16, 'float32x4')] };
-const ibBub = { arrayStride: 32, stepMode: 'instance', attributes: [A(0, 0, 'float32x4'), A(1, 16, 'float32x4')] };
-const ibSnow = { arrayStride: 16, stepMode: 'instance', attributes: [A(0, 0, 'float32x4')] };
-
+const vbGrid = { arrayStride: 4, attributes: [A(0, 0, 'sint16x2')] }, ibLevel = { arrayStride: 16, stepMode: 'instance', attributes: [A(1, 0, 'float32x4')] };
+const ibSpeck = { arrayStride: 16, stepMode: 'instance', attributes: [A(0, 0, 'float32x4')] };
 const scenePipe = (m, vsE, fsE, buffers, o = {}) => device.createRenderPipeline({ layout: pl0,
-  vertex: { module: m, entryPoint: vsE, buffers, constants: o.constants },
+  vertex: { module: m, entryPoint: vsE, buffers },
   fragment: { module: m, entryPoint: fsE, targets: [{ format: HDR, blend: o.blend }] },
   primitive: { topology: o.strip ? 'triangle-strip' : 'triangle-list', cullMode: o.cull || 'none' },
-  depthStencil: { format: DEPTH, depthWriteEnabled: !o.blend, depthCompare: 'greater' }, multisample: { count: AA } });
-const shadowPipe = (m, vsE, buffers, o = {}) => device.createRenderPipeline({ layout: pl0,
-  vertex: { module: m, entryPoint: vsE, buffers, constants: o.constants },
-  primitive: { topology: o.strip ? 'triangle-strip' : 'triangle-list', cullMode: o.cull || 'none' },
-  depthStencil: { format: DEPTH, depthWriteEnabled: true, depthCompare: 'less', depthBias: 2, depthBiasSlopeScale: 1.5 } });
+  depthStencil: { format: DEPTH, depthWriteEnabled: !o.blend || !!o.dw, depthCompare: 'greater' }, multisample: { count: AA } });
 
-await say('Compiling shaders…', 0.05, 300);
-const mSolid = mod(W_SOLID), mLeaf = mod(W_LEAF), mAnim = mod(W_ANIM), mSurf = mod(W_SURF), mSpr = mod(W_SPR);
-const pTerrain = scenePipe(mSolid, 'vs', 'fs', [vbSolid, ibSolid], { cull: 'back' });
-const pSolid = scenePipe(mSolid, 'vs', 'fs', [vbSolid, ibSolid]);
-const pLeaf = scenePipe(mLeaf, 'vs', 'fs', [ibLeaf], { strip: true, constants: { ROWS: 9 } });
-const pLeaf5 = scenePipe(mLeaf, 'vs', 'fs', [ibLeaf], { strip: true, constants: { ROWS: 5 } });
-const pLeafS = scenePipe(mLeaf, 'vs', 'fs', [ibLeaf], { strip: true, constants: { ROWS: 3, FAR: 70 } });
-const pLeafF = scenePipe(mLeaf, 'vs', 'fs', [ibLeaf], { strip: true, constants: { ROWS: 3 } });
-const pFish = scenePipe(mAnim, 'vsFish', 'fsFish', [vbSolid, ibAnim]);
-const pManta = scenePipe(mAnim, 'vsManta', 'fsManta', [vbSolid, ibAnim]);
-const pSurf = scenePipe(mSurf, 'vs', 'fs', [], { strip: true }), pBack = scenePipe(mSurf, 'vsB', 'fsB', [], { strip: true });
-const pBub = scenePipe(mSpr, 'vsBub', 'fsBub', [ibBub], { strip: true, blend: { color: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' }, alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' } } });
-const ADD = { color: { srcFactor: 'one', dstFactor: 'one' }, alpha: { srcFactor: 'one', dstFactor: 'one' } };
-const pSnow = scenePipe(mSpr, 'vsSnow', 'fsSnow', [ibSnow], { strip: true, blend: ADD });
-const pGl = scenePipe(mLeaf, 'vsGl', 'fsGl', [ibBub], { strip: true, blend: ADD, constants: { ROWS: 7 } });
-const pSolidSh = shadowPipe(mSolid, 'vs', [vbSolid, ibSolid]), pTerrSh = shadowPipe(mSolid, 'vs', [vbSolid, ibSolid], { cull: 'front' });
-const pLeafSh = shadowPipe(mLeaf, 'vs', [ibLeaf], { strip: true, constants: { ROWS: 3 } });
+await say('Compiling shaders…', 0.08, 300);
+const mTerr = mod(W_TERR), mSea = mod(W_SEA), mSky = mod(W_SKY);
+const pTerrain = scenePipe(mTerr, 'vs', 'fs', [vbGrid, ibLevel], { cull: 'back' });
+const pSea = scenePipe(mSea, 'vs', 'fs', [vbGrid, ibLevel], { blend: BLEND, dw: 1 });
+const pSky = scenePipe(mSky, 'vs', 'fs', []);
+const pSpeck = scenePipe(mSky, 'vsP', 'fsP', [ibSpeck], { strip: true, blend: ADD });
+const pShadow = device.createRenderPipeline({ layout: pl0, vertex: { module: mTerr, entryPoint: 'vsS' }, primitive: { cullMode: 'none' },
+  depthStencil: { format: DEPTH, depthWriteEnabled: true, depthCompare: 'less', depthBias: 2, depthBiasSlopeScale: 2 } });
+const pWater = fsPipe(W_WATER, HDR), bgWater = fsBG(pWater, [uboW]);
+const waterViews = [0, 1, 2, 3, 4].map((m) => mipView(tWater, m)), waterBG = waterViews.map((v) => blitBG(v)), waterPass = waterViews.map((v) => ({ colorAttachments: [colorAtt(v, true)] }));
+const pSkyLut = fsPipe(W_SKYLUT, HDR), bgSkyLut = fsBG(pSkyLut, [ubo]), passSky = { colorAttachments: [colorAtt(tSky.createView(), true)] };
+const pRays = fsPipe(W_RAYS, HDR), pRB = fsPipe(W_RBLUR, HDR), pPost = fsPipe(W_POST, FMT);
+const passShadow = { colorAttachments: [], depthStencilAttachment: { view: tShadow.createView(), depthClearValue: 1, depthLoadOp: 'clear', depthStoreOp: 'store' } };
 
-const mWater = mod(W_WATER);
-const pWater = device.createRenderPipeline({ layout: 'auto', vertex: { module: mWater, entryPoint: 'vs' }, fragment: { module: mWater, entryPoint: 'fs', targets: [{ format: HDR }] } });
-const bgWater = device.createBindGroup({ layout: pWater.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: uboW } }] });
-const waterViews = [0, 1, 2, 3, 4].map((m) => tWater.createView({ baseMipLevel: m, mipLevelCount: 1 }));
-const waterBG = waterViews.map((v) => blitBG(v));
-const waterPass = waterViews.map((v) => ({ colorAttachments: [colorAtt(v, true)] }));
-
-const mRays = mod(W_RAYS), mPost = mod(W_POST), mRB = mod(W_RBLUR);
-const pRB = device.createRenderPipeline({ layout: 'auto', vertex: { module: mRB, entryPoint: 'vs' }, fragment: { module: mRB, entryPoint: 'fs', targets: [{ format: HDR }] } });
-const pRays = device.createRenderPipeline({ layout: 'auto', vertex: { module: mRays, entryPoint: 'vs' }, fragment: { module: mRays, entryPoint: 'fs', targets: [{ format: HDR }] } });
-const pPost = device.createRenderPipeline({ layout: 'auto', vertex: { module: mPost, entryPoint: 'vs' }, fragment: { module: mPost, entryPoint: 'fs', targets: [{ format: FMT }] } });
-
-// ---------------------------------------------------------------- sun + shadow matrix
-const SUN = (() => { const v = [0.27, 1, -0.24], l = hypot(...v); return v.map((c) => c / l); })();
-{
-  const L = SUN, lr = [L[1], -L[0], 0], ll = hypot(...lr); lr[0] /= ll; lr[1] /= ll;
-  const lu = [L[1] * lr[2] - L[2] * lr[1], L[2] * lr[0] - L[0] * lr[2], L[0] * lr[1] - L[1] * lr[0]];
-  const R = 225, d0 = -175, d1 = 125, m = UBS;
-  m[0] = lr[0] / R; m[4] = lr[1] / R; m[8] = lr[2] / R; m[12] = 0;
-  m[1] = lu[0] / R; m[5] = lu[1] / R; m[9] = lu[2] / R; m[13] = 0;
-  m[2] = -L[0] / (d1 - d0); m[6] = -L[1] / (d1 - d0); m[10] = -L[2] / (d1 - d0); m[14] = d1 / (d1 - d0);
-  m[3] = 0; m[7] = 0; m[11] = 0; m[15] = 1;
-  for (let i = 0; i < 16; i++) { UBS[16 + i] = m[i]; UB[16 + i] = m[i]; }
-  for (let i = 0; i < 3; i++) { UB[48 + i] = UBS[48 + i] = SUN[i]; }
-  UBS[32] = 0; UBS[33] = -20; UBS[34] = 0; UBS[35] = 0; UBS[58] = 1;
-  Q.writeBuffer(uboS, 0, UBS);
-}
-
-// ---------------------------------------------------------------- world generation
-await say('Sculpting the seabed…', 0.25, 1200);
+// ---------------------------------------------------------------- the island: read the data, bake it into textures
+await say('Reading the island…', 0.3, 700);
 // marks a load in progress (quality.js); leaving the page before it ends is not a crash
 keep('abyssalLoad', 1);
 addEventListener('pagehide', () => keep('abyssalLoad', ''));
-let D;
+const HN = 2048, HG = new Float32Array(HN * HN), HP = []; // heights on the CPU, for the camera: a 12.5 m grid, and its maxima at 200 m, 400 m ...
 {
-  const prims = primBuffer();
-  const m = mod(W_DENS), p = device.createComputePipeline({ layout: 'auto', compute: { module: m, entryPoint: 'main' } });
-  const size = NX * NY * NZ * 4;
-  const u = new ArrayBuffer(48), uu = new Uint32Array(u), uf = new Float32Array(u);
-  uu[0] = NX; uu[1] = NY; uu[2] = NZ; uf[4] = OX; uf[5] = OY; uf[6] = OZ; uf[7] = VS;
-  uu[8] = MESAS.length; uu[9] = ARCHES.length; uu[10] = HOLES.length; uu[11] = CLEARS.length;
-  const bu = buf(new Uint8Array(u), BU.UNIFORM), bp = buf(prims, BU.STORAGE);
-  const bd = device.createBuffer({ size, usage: BU.STORAGE | BU.COPY_SRC }), br = device.createBuffer({ size, usage: BU.MAP_READ | BU.COPY_DST });
-  const bg = device.createBindGroup({ layout: p.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: bu } }, { binding: 1, resource: { buffer: bd } }, { binding: 2, resource: { buffer: bp } }] });
-  const e = device.createCommandEncoder(), c = e.beginComputePass();
-  c.setPipeline(p); c.setBindGroup(0, bg); c.dispatchWorkgroups(NX / 4, NY / 4, NZ / 4); c.end();
-  e.copyBufferToBuffer(bd, 0, br, 0, size);
+  const D = decodeTerrain(Uint8Array.from(atob(TERRAIN), (c) => c.charCodeAt(0))), n = D.N;
+  const tC = tex(n, n, 'r32float', TU.TEXTURE_BINDING | TU.COPY_DST), tK = tex(n, n, 'r8uint', TU.TEXTURE_BINDING | TU.COPY_DST);
+  Q.writeTexture({ texture: tC }, Float32Array.from(D.q, (v) => v * 0.25), { bytesPerRow: n * 4 }, [n, n]);
+  Q.writeTexture({ texture: tK }, D.rock, { bytesPerRow: n }, [n, n]);
+  await say('Raising the land…', 0.75, 1500);
+  const pH = fsPipe(W_BAKEH, 'r16float'), pN = fsPipe(W_BAKEN, 'rgba8unorm'), pG = fsPipe(W_BAKEG, 'rgba8unorm'), pD = fsPipe(W_DETAIL, 'rgba8unorm');
+  const m = log2(TS / HN), br = device.createBuffer({ size: HN * HN * 2, usage: BU.MAP_READ | BU.COPY_DST });
+  const e = device.createCommandEncoder();
+  bake(e, tDetail, 11, pD, null, pMip8);
+  bake(e, tH, TM, pH, fsBG(pH, [tC, tK]), pMipR);
+  bake(e, tNrm, TM, pN, fsBG(pN, [null, tK, tH, sClamp]), pMip8);
+  bake(e, tGeo, 11, pG, fsBG(pG, [null, tK]), pMip8);
+  e.copyTextureToBuffer({ texture: tH, mipLevel: m }, { buffer: br, bytesPerRow: HN * 2 }, [HN, HN]);
   Q.submit([e.finish()]);
   await br.mapAsync(GPUMapMode.READ);
-  D = new Float32Array(br.getMappedRange().slice(0));
-  br.unmap(); br.destroy(); bd.destroy();
-  // rock connected to the seabed: each column's unbroken run up from the bottom is, and the rock above a gap
-  // (overhangs, specks) is when it touches rock that is. What never connects is a speck of noise floating in
-  // the water (surface nets would make it a small box), so it becomes water
-  const S = NX * NY, R = new Uint8Array(D.length), O = [1, -1, NX, -NX, S, -S], b = new Uint8Array(NX), L = [];
-  for (let i = 0; i < D.length;) { b.fill(1); for (let y = 0; y < NY; y++) for (let x = 0; x < NX; x++, i++) if (D[i] <= 0) b[x] = 0; else if (b[x]) R[i] = 1; else L.push(i); }
-  for (let k = 1; k; L.reverse()) { k = 0; for (const i of L) if (!R[i] && O.some((o) => R[i + o])) R[i] = k = 1; }
-  for (const i of L) if (!R[i]) D[i] = -D[i];
-}
-// Distance to the rock for collide(), in 1/127 m (> 0 in rock, clamped to ±1 m), kept only in the 4x4x4-voxel
-// bricks near the surface within the camera's reach (~2 MB). CI per brick: 0 all water, 1 all rock, n brick n-2 in CG.
-const CO = 52, CN = 102, CI = new Uint16Array(CN * CN * NY / 4);
-let CG = new Int8Array(64 * 65534);
-{
-  let n = 0;
-  for (let bz = 0; bz < CN; bz++) for (let by = 1; by < NY / 4 - 1; by++) for (let bx = 0; bx < CN; bx++) {
-    if (hypot(bx - CN / 2 + 0.5, bz - CN / 2 + 0.5) > 52) continue; // more than 156 m out: never reached
-    let lo = 127, hi = -127;
-    for (let z = 0; z < 4; z++) for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) {
-      const i = CO + bx * 4 + x + NX * (by * 4 + y + NY * (CO + bz * 4 + z)), gz = D[i + NX * NY] - D[i - NX * NY];
-      const gx = D[i + 1] - D[i - 1], g = D[i + NX] - D[i - NX], l = sqrt(gx * gx + g * g + gz * gz) / 1.5;
-      const q = round(clamp(D[i] / max(l, 0.05), -1, 1) * 127);
-      CG[n * 64 + x + 4 * y + 16 * z] = q; if (q < lo) lo = q; if (q > hi) hi = q;
-    }
-    CI[bx + CN * (by + NY / 4 * bz)] = lo === hi && lo * lo === 16129 ? +(lo > 0) : (n++, n + 1);
+  const h = new Uint16Array(br.getMappedRange());
+  for (let i = 0; i < h.length; i++) { const v = h[i], x = (v >> 10) & 31, f = x ? (1 + (v & 1023) / 1024) * 2 ** (x - 15) : (v & 1023) * 2 ** -24; HG[i] = v & 32768 ? -f : f; }
+  br.unmap(); br.destroy(); tC.destroy(); tK.destroy();
+  for (let w = 128, src = HG, sw = HN; w >= 1; sw = w, w >>= 1) {
+    const d = new Float32Array(w * w).fill(-1e9), k = sw / w;
+    for (let j = 0; j < sw; j++) for (let i = 0; i < sw; i++) { const o = ((j / k) | 0) * w + ((i / k) | 0); if (src[j * sw + i] > d[o]) d[o] = src[j * sw + i]; }
+    HP.push(d); src = d;
   }
-  CG = CG.slice(0, n * 64);
 }
-await say('Carving canyons…', 0.32, 400);
-const T = buildTerrain(D);
+// ground height at (x, z) (per frame: no allocations)
+function hAt(x, z) {
+  let u = (x / DOM + 0.5) * HN - 0.5, v = (z / DOM + 0.5) * HN - 0.5;
+  u = u < 0 ? 0 : u > HN - 1.001 ? HN - 1.001 : u; v = v < 0 ? 0 : v > HN - 1.001 ? HN - 1.001 : v;
+  const i = u | 0, j = v | 0, k = j * HN + i, a = HG[k], b = HG[k + HN];
+  u -= i; v -= j;
+  return (a + (HG[k + 1] - a) * u) * (1 - v) + (b + (HG[k + HN + 1] - b) * u) * v;
+}
+// the highest ground within about r metres of (x, z)
+function hMax(x, z, r) {
+  let l = Math.ceil(log2(r / 200)); l = l < 0 ? 0 : l > 7 ? 7 : l;
+  const w = 128 >> l, d = HP[l], ci = floor((x / DOM + 0.5) * w), cj = floor((z / DOM + 0.5) * w); let m = -1e9;
+  for (let j = cj - 1; j <= cj + 1; j++) for (let i = ci - 1; i <= ci + 1; i++) { const v = d[(j < 0 ? 0 : j >= w ? w - 1 : j) * w + (i < 0 ? 0 : i >= w ? w - 1 : i)]; if (v > m) m = v; }
+  return m;
+}
 
-// preset viewpoints (position, look-at), keys 1-6; the world generator dresses the scene around them
-const POSES = [
-  [10, 1.3, 7, -9, -31, -10],
-  [50, 1.3, 34, 58, -23, 8],
-  [-26, 2.2, -100, 0, -9, -108],
-  [-55, 1.5, -18, -60, -30, 8],
-  [10, 1.2, -62, 6, -22, -90],
-  [3, 1.6, 62, 1, -28, 100],
-];
-// 60 s camera path (position + look-at, Catmull-Rom): the world generator keeps it clear, dev.js flies along it
-const FLY = new Float32Array([
-  10, -42.2, 7, -9, -31, -10,
-  7.5, -41.8, 5.5, -10, -31, -12,
-  9, -40.5, 18, 17, -37, 42,
-  22, -39.2, 40, 48, -36, 45,
-  38, -39.2, 46, 57, -27, 18,
-  50, -40.4, 35, 58, -24, 8,
-  55, -39, 20, 60, -18, -10,
-  58, -34, -12, 40, -26, -60,
-  50, -30, -44, 10, -26, -80,
-  30, -30, -70, 4, -28, -90,
-  12, -38.5, -62, 6, -27, -90,
-  -4, -36.5, -70, 0, -14, -100,
-  -16, -37, -84, 0, -22, -108,
-  -29, -38, -90, -44, -34, -60,
-  -41, -38, -70, -56, -34, -40,
-  -53, -38, -50, -60, -34, -20,
-  -58, -38, -28, -60, -32, 0,
-  -57, -38, -10, -60, -30, 16,
-  -60, -38, 10, -50, -36, 40,
-  -52, -37, 36, -20, -35, 44,
-  -22, -38, 43, 4, -38, 52,
-  -6, -39.2, 44.5, 4, -37, 70,
-  3, -40.6, 53, 3, -35, 84,
-  3, -41.5, 62, 1, -30, 100,
-  4, -39, 76, 3, -22, 100,
-]);
-const FLYN = FLY.length / 6, FLYT = 60, LUTN = 1024, flyLUT = new Float32Array(LUTN + 1);
-const flyPts = [];
+// ---------------------------------------------------------------- meshes
+const GM = gridMesh(), vbMesh = buf(GM.v, BU.VERTEX), ibMesh = buf(GM.idx, BU.INDEX);
+const LT = new Float32Array(64), LS = new Float32Array(64), ibTerr = buf(LT, BU.VERTEX), ibSea = buf(LS, BU.VERTEX); // one [x, z, cell, level] per ring
+let ibShadowGrid;
+{
+  const n = SG + 1, ix = new Uint32Array(SG * SG * 6);
+  for (let j = 0, k = 0; j < SG; j++) for (let i = 0; i < SG; i++) { const a = j * n + i; ix[k++] = a; ix[k++] = a + n; ix[k++] = a + 1; ix[k++] = a + 1; ix[k++] = a + n; ix[k++] = a + n + 1; }
+  ibShadowGrid = buf(ix, BU.INDEX);
+}
+const NSPECK = 6000 >> LV, ibSpecks = buf(Float32Array.from({ length: NSPECK * 4 }, rnd), BU.VERTEX);
+
+// ---------------------------------------------------------------- camera state, viewpoints, the scripted path
 // per-frame float state lives in one preallocated array, so the frame loop allocates no heap numbers
-const F = new Float64Array(32), P6 = new Float64Array(6);
-const CX = 0, CY = 1, CZ = 2, YAW = 3, PIT = 4, FX = 5, FY = 6, FZ = 7, RX = 8, RZ = 9, UX = 10, UY = 11, UZ = 12, VX = 13, VY = 14, VZ = 15, TIME = 16, FLT = 17, LAST = 18, GPU = 19, HUDT = 20, SPL = 21, MX = 22, MY = 23, MZ = 24;
+const F = new Float64Array(40), P6 = new Float64Array(6), V3 = new Float64Array(3);
+const CX = 0, CY = 1, CZ = 2, YAW = 3, PIT = 4, FX = 5, FY = 6, FZ = 7, RX = 8, RZ = 9, UX = 10, UY = 11, UZ = 12, VX = 13, VY = 14, VZ = 15, TIME = 16, FLT = 17, LAST = 18, GPU = 19, HUDT = 20, SPL = 21, HOUR = 22, HSEA = 23;
+// a height given above the ground (or the sea), or a depth below the surface, as an absolute height
+const lift = (p) => { p[1] = p[1] < 0 ? p[1] : max(hAt(p[0], p[2]), 0) + p[1]; };
+for (const p of POSES) lift(p);
 // aim the camera from P6 = position + look-at point
 function aim() {
   const dx = P6[3] - P6[0], dy = P6[4] - P6[1], dz = P6[5] - P6[2];
   F[CX] = P6[0]; F[CY] = P6[1]; F[CZ] = P6[2];
   F[YAW] = atan2(dx, -dz); F[PIT] = atan2(dy, sqrt(dx * dx + dz * dz));
 }
-const lookAt = (x, y, z, tx, ty, tz) => { P6[0] = x; P6[1] = y; P6[2] = z; P6[3] = tx; P6[4] = ty; P6[5] = tz; aim(); };
+const lookAt = (x, y, z, tx, ty, tz) => { P6[0] = x; P6[1] = y; P6[2] = z; P6[3] = tx; P6[4] = ty; P6[5] = tz; aim(); F[VX] = F[VY] = F[VZ] = 0; };
+// A two-minute camera path (position + look-at, Catmull-Rom) through the six viewpoints, for dev.js: from the sea below
+// Akrotiri over the restored land to the rim, down into the bay, up over the island, to Profitis Ilias and under the sea.
+const FLY = new Float32Array([
+  -40, 2.6, 6900, -135, 30, 5937,
+  -60, 12, 6500, -135, 30, 5600,
+  -150, 90, 5700, -200, 150, 3500,
+  -220, 160, 4200, -250, 250, 1600,
+  -250, 30, 2400, -900, 200, -1500,
+  -250, 2.5, 1560, -1250, 60, -2500,
+  100, 120, 900, -900, 120, -2400,
+  900, 20, 300, -700, 160, -2600,
+  1250, 1.5, -450, -900, 150, -2700,
+  1500, 60, -2200, -300, 150, -3200,
+  900, 500, -5000, -1200, 0, -2000,
+  -2500, 2500, -7500, -800, 0, -1000,
+  -6000, 6000, -3000, 0, 0, 0,
+  -3000, 9000, 9000, -300, 0, -200,
+  300, 9200, 13800, -300, 0, -200,
+  4000, 3000, 9000, 4500, 400, 4500,
+  5600, 300, 5200, 4800, 480, 4200,
+  5270, 3, 4050, -900, 100, -1600,
+  4200, 250, 4800, 1500, 100, 5500,
+  1800, 60, 6100, 400, 0, 6300,
+  700, 6, 6520, 100, 0, 6400,
+  250, -7, 6560, -135, -1, 6200,
+]);
+for (let i = 0; i < FLY.length; i += 6) FLY[i + 1] = FLY[i + 1] < 0 ? FLY[i + 1] : max(hAt(FLY[i], FLY[i + 2]), 0) + FLY[i + 1];
+const FLYN = FLY.length / 6, FLYT = 120, LUTN = 1024, flyLUT = new Float32Array(LUTN + 1);
 // camera spline (Catmull-Rom over position + look-at) at parameter F[SPL]
 function flyRaw() {
   const s = F[SPL]; let i = floor(s) | 0; if (i > FLYN - 2) i = FLYN - 2;
@@ -257,81 +227,43 @@ function flyRaw() {
   for (let k = 0; k <= M; k++) { F[SPL] = k / M * (FLYN - 1); flyRaw(); if (k) len[k] = len[k - 1] + hypot(F[CX] - px, F[CY] - py, F[CZ] - pz); px = F[CX]; py = F[CY]; pz = F[CZ]; }
   for (let k = 0, j = 0; k <= LUTN; k++) { const d = k / LUTN * len[M]; while (j < M - 1 && len[j + 1] < d) j++; flyLUT[k] = (j + (d - len[j]) / max(len[j + 1] - len[j], 1e-6)) / M * (FLYN - 1); }
 }
-// camera on the scripted path at time F[FLT]
+// camera on the scripted path at time F[FLT] (kept off the ground: the spline cuts corners)
 function flyAt() {
   let s = F[FLT] / FLYT; s = s < 0 ? 0 : s > 1 ? 1 : s; s = s * s * (3 - 2 * s) * 0.25 + s * 0.75;
   s *= LUTN; let k = floor(s) | 0; if (k > LUTN - 1) k = LUTN - 1;
   F[SPL] = flyLUT[k] + (flyLUT[k + 1] - flyLUT[k]) * (s - k); flyRaw();
+  F[CY] = max(F[CY], hAt(F[CX], F[CZ]) + 1);
 }
-for (let t = 0; t <= FLYT; t += 0.1) { F[FLT] = t; flyAt(); flyPts.push([F[CX], F[CY], F[CZ]]); }
-for (const p of POSES) flyPts.push([p[0], -40, p[2]]);
 
-await say('Growing kelp…', 0.73, 2500);
-const Wd = makeWorld(D, T, flyPts, POSES);
-for (const p of POSES) p[1] += Wd.gy(p[0], p[2]);
-D = Wd.gy = T.smp = null; // with gy goes the generator's working memory (about 200 MB)
-
-await say('Building set pieces…', 0.94, 1200);
-// mesh ids: 0-3 boulders, 4-6 sponges, 7-8 coral, 9 tube sponge, 10 whale fluke, 11 ship, 12 manta, 13 fish,
-// 14-20 rock chunks + pebbles, 21-22 coral LOD, 23-25 far LOD of the large rock chunks
-const meshes = [meshChunk(1, 3), meshChunk(7, 3), meshChunk(13, 3), meshChunk(22, 3),
-  meshLathe([[0, 0, 0.5], [0.34, 0, 0.6], [0.5, 0.2, 0.85], [0.6, 0.6, 1], [0.55, 0.95, 1], [0.47, 1.08, 1], [0.38, 1.1, 0.9], [0.3, 1.0, 0.45], [0.26, 0.6, 0.15], [0, 0.35, 0.05]], 18, 0.3, 9),
-  meshLathe([[0, 0, 0.5], [0.2, 0, 0.6], [0.26, 0.5, 0.85], [0.4, 1.25, 1], [0.4, 1.42, 1], [0.33, 1.48, 0.9], [0.26, 1.38, 0.4], [0.18, 0.8, 0.12], [0, 0.5, 0.05]], 16, 0.35, 8),
-  meshLathe([[0, 0, 0.5], [0.5, 0, 0.7], [0.72, 0.18, 1], [0.74, 0.38, 1], [0.62, 0.5, 0.9], [0.48, 0.42, 0.45], [0.4, 0.2, 0.15], [0, 0.14, 0.06]], 18, 0.25, 10),
-  meshCoral(0), meshCoral(1), meshTubes()].map((m) => m.build());
-meshes.push(meshFluke(), meshShip().build(), meshManta().build(), meshFish().build(),
-  meshChunk(3).build(), meshChunk(11).build(), meshChunk(29).build(), meshChunk(5, 3).build(), meshChunk(17, 3).build(), meshChunk(41, 3).build(), meshChunk(9, 1).build(), meshCoral(0, 1).build(), meshCoral(1, 1).build(), meshChunk(5, 2, 1).build(), meshChunk(17, 2, 1).build(), meshChunk(41, 2, 1).build());
-let nV = 0, nI = 0;
-for (const m of meshes) { m.v0 = nV; m.i0 = nI; nV += m.nv; nI += m.ib.length; }
-const allV = new Uint8Array(nV * 16), allI = new Uint32Array(nI);
-for (const m of meshes) { allV.set(new Uint8Array(m.vb), m.v0 * 16); allI.set(m.ib, m.i0); }
-const vbMesh = buf(allV, BU.VERTEX), ibMesh = buf(allI, BU.INDEX);
-const vbTerrain = buf(new Uint8Array(T.vb), BU.VERTEX), ibTerrain = buf(T.ib, BU.INDEX);
-const nSolid = Wd.solids.data.length / 12;
-const solidData = new Float32Array((nSolid + 1) * 12); solidData.set(Wd.solids.data); solidData.set([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0], nSolid * 12);
-const ibSolids = buf(solidData, BU.VERTEX);
-const ibChunk = Wd.chunks.map((c) => buf(c.data, BU.VERTEX)), ibProp = Wd.props.map((c) => buf(c.data, BU.VERTEX));
-const ibBig = buf(new Uint8Array(Wd.big.buf), BU.VERTEX), ibBigF = buf(new Uint8Array(Wd.bigF.buf), BU.VERTEX), ibSmall = buf(new Uint8Array(Wd.small.buf), BU.VERTEX);
-const ibFish = buf(Wd.fish, BU.VERTEX), ibManta = buf(Wd.mantas, BU.VERTEX), ibBubbles = buf(Wd.bubbles, BU.VERTEX), ibSnowB = buf(Wd.snow, BU.VERTEX);
-const ibGl = buf(Wd.glints, BU.VERTEX), nGl = Wd.glints.length / 8;
-const nFish = Wd.fish.length / 8, nManta = Wd.mantas.length / 8, nBub = Wd.bubbles.length / 8, nSnow = Wd.snow.length / 4;
-const MANTA = meshes[12], FISH = meshes[13];
-Q.writeTexture({ texture: tVol }, Wd.volD, { bytesPerRow: NX, rowsPerImage: NY / 2 }, [NX / 2, NY / 2, NZ / 2]);
-Q.writeTexture({ texture: tMap }, Wd.gm, { bytesPerRow: 2048 }, [512, 512]);
-
-// ---------------------------------------------------------------- one-time bakes: detail texture, shadow map
-{
-  const m = mod(W_DETAIL), p = device.createRenderPipeline({ layout: 'auto', vertex: { module: m, entryPoint: 'vs' }, fragment: { module: m, entryPoint: 'fs', targets: [{ format: 'rgba8unorm' }] } });
-  const e = device.createCommandEncoder();
-  let r = e.beginRenderPass({ colorAttachments: [colorAtt(tDetail.createView({ baseMipLevel: 0, mipLevelCount: 1 }), true)] });
-  r.setPipeline(p); r.draw(3); r.end();
-  for (let i = 1; i < 11; i++) {
-    r = e.beginRenderPass({ colorAttachments: [colorAtt(tDetail.createView({ baseMipLevel: i, mipLevelCount: 1 }), true)] });
-    r.setPipeline(pMip8); r.setBindGroup(0, blitBG(tDetail.createView({ baseMipLevel: i - 1, mipLevelCount: 1 }))); r.draw(3); r.end();
-  }
-  r = e.beginRenderPass({ colorAttachments: [], depthStencilAttachment: { view: tShadow.createView(), depthClearValue: 1, depthLoadOp: 'clear', depthStoreOp: 'store' } });
-  r.setBindGroup(0, bg0s);
-  r.setPipeline(pTerrSh);
-  r.setVertexBuffer(0, vbTerrain); r.setVertexBuffer(1, ibSolids); r.setIndexBuffer(ibTerrain, 'uint32');
-  r.drawIndexed(T.ib.length, 1, 0, 0, nSolid);
-  r.setPipeline(pSolidSh); r.setVertexBuffer(0, vbMesh); r.setIndexBuffer(ibMesh, 'uint32');
-  for (let i = 0; i < 12; i++) { const g = Wd.solids.ranges[i]; if (g[1]) r.drawIndexed(meshes[i].ib.length, g[1], meshes[i].i0, meshes[i].v0, g[0]); }
-  // small rocks, sponges and corals (~35M triangles) only on High: too much for a phone's driver
-  if (!LV) for (let i = 0; i < NCHUNK; i++) { r.setVertexBuffer(1, ibChunk[i]); r.drawIndexed(meshes[14 + i].ib.length, Wd.chunks[i].n, meshes[14 + i].i0, meshes[14 + i].v0, 0); }
-  if (!LV) for (let i = 0; i < 6; i++) if (Wd.props[i].n) { r.setVertexBuffer(1, ibProp[i]); r.drawIndexed(meshes[4 + i].ib.length, Wd.props[i].n, meshes[4 + i].i0, meshes[4 + i].v0, 0); }
-  r.setPipeline(pLeafSh); r.setVertexBuffer(0, ibBig); r.draw(6, Wd.big.n);
-  r.end();
-  Q.submit([e.finish()]);
+// ---------------------------------------------------------------- the sun, the time of day
+// The hour moves towards hourTo (always forwards, as the sun does). While it moves, and whenever the sun has moved
+// since the shadow map was drawn, the map is drawn again from the new direction.
+let hourTo = TIMES[2][1], shadowAt = -1, expo = 1, wet = 0; // wet: 0 in the air to 1 under water, following the camera with a short delay, as eyes do
+F[HOUR] = hourTo;
+function setSun() {
+  const el = sunAt(F[HOUR], V3);
+  UB[48] = V3[0]; UB[49] = V3[1]; UB[50] = V3[2]; UB[51] = windAt(F[HOUR]);
+  sunLight(el, V3); UB[60] = V3[0]; UB[61] = V3[1]; UB[62] = V3[2];
+  const deg = el * 180 / PI, nt = sstep(-3, -11, deg);
+  UB[63] = nt;
+  // exposure: steady by day, opening up through dusk to a night lit only by stars (far brighter than the eye would see it)
+  expo = 0.42 * exp(2.9 * sstep(9, -5, deg) + 2 * sstep(-3, -12, deg));
+  // the shadow map looks along the sun's rays at the whole island (a sun under the horizon lights nothing)
+  let lx = UB[48], ly = max(UB[49], 0.03), lz = UB[50]; const ll = hypot(lx, ly, lz); lx /= ll; ly /= ll; lz /= ll;
+  const rl = hypot(ly, lx), rx = ly / rl, ry = -lx / rl, ux = -lz * ry, uy = lz * rx, uz = lx * ry - ly * rx, R = 18200, D = 19000, m = UBS;
+  m[0] = rx / R; m[4] = ry / R; m[8] = 0; m[12] = 0;
+  m[1] = ux / R; m[5] = uy / R; m[9] = uz / R; m[13] = 0;
+  m[2] = -lx / (2 * D); m[6] = -ly / (2 * D); m[10] = -lz / (2 * D); m[14] = 0.5;
+  m[3] = 0; m[7] = 0; m[11] = 0; m[15] = 1;
+  for (let i = 0; i < 16; i++) UB[16 + i] = m[i];
 }
-// the GPU has its own copies now: let go of the generator's (about 300 MB)
-for (const o of [Wd.big, Wd.bigF, Wd.small, ...Wd.chunks, ...Wd.props]) o.buf = o.data = 0;
-Wd.glints = Wd.volD = Wd.gm = T.vb = T.ib = T.wp = T.wn = 0;
+setSun();
 
 // ---------------------------------------------------------------- render targets (rebuilt on resize)
-// The scene is drawn at `pix` pixels and scaled up to the window. frame() tunes it and the draw distance scale `det`
-// for 60 fps; both start where the last visit left them.
-const PIXMAX = 2560 * 1440, PIXMIN = mob ? 25e4 : 5e5, DETMIN = 0.4;
-let W = 0, H = 0, DW = 0, DH = 0, pix = +SV[1] || (LV > 1 ? 41e4 : mob ? 1280 * 720 : PIXMAX), det = +SV[2] || 1, dynN = 0, dynT = 0, dynG = 0, dynGN = 0, dynBad = 0, dynOk = 0, dynWait = 3;
+// The scene is drawn at `pix` pixels and scaled up to the window. frame() tunes it for 60 fps; it starts where the last
+// visit left it.
+const PIXMAX = 2560 * 1440, PIXMIN = mob ? 25e4 : 5e5;
+let W = 0, H = 0, DW = 0, DH = 0, pix = +SV[1] || (LV > 1 ? 41e4 : mob ? 1280 * 720 : PIXMAX), dynN = 0, dynT = 0, dynG = 0, dynGN = 0, dynBad = 0, dynOk = 0, dynWait = 3;
 let passScene, passRays, passBlur, bgBlur, passPost, bgRays, bgPost, bloomPass = [], bloomBG = [], targets = [];
 const NB = 6;
 function resize() {
@@ -343,23 +275,21 @@ function resize() {
   W = w; H = h; canvas.width = W; canvas.height = H;
   ctx.configure({ device, format: FMT, alphaMode: 'opaque' });
   for (const t of targets) t.destroy();
-  const tMS = tex(AA > 1 ? W : 1, H, HDR, TU.RENDER_ATTACHMENT, { samples: AA }), tDp = tex(W, H, DEPTH, TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING, { samples: AA });
-  const tRes = tex(W, H, HDR, TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING), tRay = tex(W / 2, H / 2, HDR, TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING), tRay2 = tex(W / 2, H / 2, HDR, TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING);
+  const tMS = tex(AA > 1 ? W : 1, H, HDR, TU.RENDER_ATTACHMENT, 1, AA), tDp = tex(W, H, DEPTH, RT, 1, AA);
+  const tRes = tex(W, H, HDR, RT), tRay = tex(W / 2, H / 2, HDR, RT), tRay2 = tex(W / 2, H / 2, HDR, RT);
   targets = [tMS, tDp, tRes, tRay, tRay2];
   const bl = [];
-  for (let i = 0; i < NB; i++) { const t = tex(max(1, W >> (i + 1)), max(1, H >> (i + 1)), HDR, TU.RENDER_ATTACHMENT | TU.TEXTURE_BINDING); bl.push(t); targets.push(t); }
-  const vDp = tDp.createView(), vRes = tRes.createView(), vRay = tRay.createView(), vRay2 = tRay2.createView(), vBl = bl.map((t) => t.createView());
+  for (let i = 0; i < NB; i++) { const t = tex(max(1, W >> (i + 1)), max(1, H >> (i + 1)), HDR, RT); bl.push(t); targets.push(t); }
+  const vRes = tRes.createView(), vBl = bl.map((t) => t.createView());
   // without anti-aliasing (Low) the scene goes straight into the resolve target, and tMS is one unused column
   passScene = { colorAttachments: [{ view: AA > 1 ? tMS.createView() : vRes, resolveTarget: AA > 1 ? vRes : undefined, loadOp: 'clear', storeOp: AA > 1 ? 'discard' : 'store', clearValue: [0, 0, 0, 1] }],
-    depthStencilAttachment: { view: vDp, depthClearValue: 0, depthLoadOp: 'clear', depthStoreOp: 'store' } };
-  passRays = { colorAttachments: [colorAtt(vRay, true)] };
-  passBlur = { colorAttachments: [colorAtt(vRay2, true)] };
-  bgBlur = device.createBindGroup({ layout: pRB.getBindGroupLayout(0), entries: [{ binding: 0, resource: vRay }] });
+    depthStencilAttachment: { view: tDp.createView(), depthClearValue: 0, depthLoadOp: 'clear', depthStoreOp: 'store' } };
+  passRays = { colorAttachments: [colorAtt(tRay.createView(), true)] };
+  passBlur = { colorAttachments: [colorAtt(tRay2.createView(), true)] };
+  bgBlur = fsBG(pRB, [tRay]);
   passPost = { colorAttachments: [{ view: null, loadOp: 'clear', storeOp: 'store', clearValue: [0, 0, 0, 1] }] };
-  bgRays = device.createBindGroup({ layout: pRays.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: ubo } }, { binding: 1, resource: sRep }, { binding: 2, resource: sCmp },
-    { binding: 3, resource: tShadow.createView() }, { binding: 4, resource: tWater.createView() }, { binding: 5, resource: vDp }, { binding: 6, resource: tVol.createView() }, { binding: 7, resource: sClamp }] });
-  bgPost = device.createBindGroup({ layout: pPost.getBindGroupLayout(0), entries: [{ binding: 0, resource: { buffer: ubo } }, { binding: 1, resource: sClamp }, { binding: 2, resource: vRes },
-    { binding: 3, resource: vRay2 }, { binding: 4, resource: vBl[0] }, { binding: 5, resource: vDp }] });
+  bgRays = fsBG(pRays, [ubo, sRep, sCmp, tShadow, tWater, tDp]);
+  bgPost = fsBG(pPost, [ubo, sClamp, tRes, tRay2, bl[0], tDp]);
   bloomPass = []; bloomBG = [];
   // down: res -> b0 -> ... -> b5 ; up: b5 -> b4 (additive) ... -> b0
   for (let i = 0; i < NB; i++) { bloomPass.push({ colorAttachments: [colorAtt(vBl[i], true)] }); bloomBG.push(blitBG(i ? vBl[i - 1] : vRes)); }
@@ -389,38 +319,16 @@ if (hasTS) {
 
 // ---------------------------------------------------------------- frame
 let hud = false;
-let kf = 0, kb = 0, kl = 0, kr = 0, ku = 0, kd = 0, ks = 0, mdx = 0, mdy = 0, lkx = 0, lky = 0, l2x = 0, l2y = 0, hN = 0, hMax = 0, hMin = 1e9, hPer = 1e9, hLate = 0, hTot = 0, tId = -1, tN = 0, tx0 = 0, ty0 = 0, tx = 0, ty = 0;
-const TANH = 0.6, NEAR = 0.1, EXPO = 0.62, RAYS = 0.54;
+let kf = 0, kb = 0, kl = 0, kr = 0, ku = 0, kd = 0, ks = 0, mdx = 0, mdy = 0, lkx = 0, lky = 0, l2x = 0, l2y = 0, hN = 0, hMax_ = 0, hMin = 1e9, hPer = 1e9, hLate = 0, hTot = 0, tId = -1, tN = 0, tx0 = 0, ty0 = 0, tx = 0, ty = 0;
+const TANH = 0.6, NEAR = 0.1, RAYS = 0.5;
 const submitList = [null];
-const rowOrd = new Uint8Array(CELLS);
-// Draws the cells of a cell-sorted buffer that are in view and within [minD, maxD) (scaled by `det`, but not for the
-// terrain) as merged runs, nearest rows first.
-function drawCells(r, start, lo, hi, mar, indexed, verts, minD, maxD) {
-  const cx = F[CX], cy = F[CY], cz = F[CZ], fx = F[FX], fy = F[FY], fz = F[FZ], rx = F[RX], rz = F[RZ], ux = F[UX], uy = F[UY], uz = F[UZ];
-  const ds = indexed === 1 ? 1 : det * det;
-  const tx = TANH * W / H, hw = CELLW * 0.5, ex = hw + mar, min2 = minD * minD * ds, max2 = maxD * maxD * ds;
-  for (let k = 0; k < CELLS; k++) {
-    const rw = rowOrd[k], row = rw * CELLS, pz = OZ + (rw + 0.5) * CELLW - cz, hz = max(abs(pz) - hw, 0);
-    let run = -1;
-    for (let x = 0; x <= CELLS; x++) {
-      const c = row + x; let v = false;
-      if (x < CELLS) {
-        const l = lo[c], h = hi[c];
-        if (l <= h) {
-          const px = OX + (x + 0.5) * CELLW - cx, py = (l + h) * 0.5 - cy, ey = (h - l) * 0.5 + mar, hx = max(abs(px) - hw, 0), h2 = hx * hx + hz * hz;
-          if (h2 < max2 && h2 >= min2) {
-            const lim = px * fx + py * fy + pz * fz + ex * abs(fx) + ey * abs(fy) + ex * abs(fz);
-            if (lim >= 0 && abs(px * rx + pz * rz) - ex * (abs(rx) + abs(rz)) <= lim * tx) v = abs(px * ux + py * uy + pz * uz) - ex * (abs(ux) + abs(uz)) - ey * abs(uy) <= lim * TANH;
-          }
-        }
-      }
-      if (v) { if (run < 0) run = c; } else if (run >= 0) {
-        const a = start[run], n = start[c] - a;
-        if (n > 0) { if (indexed === 1) r.drawIndexed(n * 6, 1, a * 6, 0, nSolid); else if (indexed) r.drawIndexed(indexed.ib.length, n, indexed.i0, indexed.v0, a); else r.draw(verts, n, 0, a); }
-        run = -1;
-      }
-    }
-  }
+// The rings to draw around the camera: fills `out` with [x, z, cell, level] from the finest level worth drawing to the
+// coarsest, and returns how many. A level is skipped when the camera is so far above everything it could show (the
+// sea, or the highest ground under that ring) that the shader would blend all of it into the next level anyway.
+function rings(out, n, sea) {
+  let l0 = 0; while (l0 < n - 1 && (sea ? abs(F[CY]) - 2 : F[CY] - hMax(F[CX], F[CZ], GN / 2 * 2 ** l0)) >= 2 * LK * 2 ** l0) l0++;
+  for (let l = l0, k = 0; l < n; l++, k += 4) { const s = 2 ** l; out[k] = floor(F[CX] / (2 * s)) * 2 * s; out[k + 1] = floor(F[CZ] / (2 * s)) * 2 * s; out[k + 2] = s; out[k + 3] = l; }
+  return n - l0;
 }
 function render() {
   // camera basis (right vector is horizontal)
@@ -437,14 +345,15 @@ function render() {
   m[36] = rx; m[37] = 0; m[38] = rz; m[39] = TANH * asp;
   m[40] = ux; m[41] = uy; m[42] = uz; m[43] = TANH;
   m[44] = fx; m[45] = fy; m[46] = fz; m[47] = NEAR;
-  const zx = cx - PURPLE[0], zz = cz - PURPLE[1]; let zt = (44 - sqrt(zx * zx + zz * zz)) / 18; zt = zt < 0 ? 0 : zt > 1 ? 1 : zt;
-  m[51] = zt * zt * (3 - 2 * zt);
-  let ek = (-cy - 8) / 26; ek = ek < 0 ? 0 : ek > 1 ? 1 : ek;
-  m[56] = EXPO * (0.6 + 0.4 * ek); m[57] = RAYS; m[58] = det;
+  m[57] = RAYS; m[59] = F[HSEA];
+  const moved = shadowAt !== F[HOUR];
+  if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); shadowAt = F[HOUR]; }
+  m[56] = expo * (1 + 0.6 * wet);
   Q.writeBuffer(ubo, 0, UB);
   WT[0] = F[TIME]; Q.writeBuffer(uboW, 0, WT);
+  const nT = rings(LT, TLV, 0), nS = rings(LS, SLV, 1);
+  Q.writeBuffer(ibTerr, 0, LT); Q.writeBuffer(ibSea, 0, LS);
 
-  { let cr = floor((cz - OZ) / CELLW) | 0; cr = cr < 0 ? 0 : cr > CELLS - 1 ? CELLS - 1 : cr; let n = 0; rowOrd[n++] = cr; for (let d = 1; d < CELLS; d++) { if (cr - d >= 0) rowOrd[n++] = cr - d; if (cr + d < CELLS) rowOrd[n++] = cr + d; } }
   const e = device.createCommandEncoder();
   let slot = null;
   if (hasTS) { for (let i = 0; i < qRead.length; i++) if (!qRead[i].busy) { slot = qRead[i]; break; } }
@@ -453,35 +362,18 @@ function render() {
   // animated water texture + mips
   let r = e.beginRenderPass(waterPass[0]); r.setPipeline(pWater); r.setBindGroup(0, bgWater); r.draw(3); r.end();
   for (let i = 1; i < 5; i++) { r = e.beginRenderPass(waterPass[i]); r.setPipeline(pMip16); r.setBindGroup(0, waterBG[i - 1]); r.draw(3); r.end(); }
-  // scene
+  // the sky, and the shadow map when the sun has moved
+  r = e.beginRenderPass(passSky); r.setPipeline(pSkyLut); r.setBindGroup(0, bgSkyLut); r.draw(3); r.end();
+  if (moved) { r = e.beginRenderPass(passShadow); r.setPipeline(pShadow); r.setBindGroup(0, bg0s); r.setIndexBuffer(ibShadowGrid, 'uint32'); r.drawIndexed(SG * SG * 6); r.end(); }
+  // scene: land, sea, sky, and specks in the water when the camera is in it
   r = e.beginRenderPass(passScene);
-  r.setBindGroup(0, bg0);
-  r.setPipeline(pTerrain); r.setVertexBuffer(0, vbTerrain); r.setVertexBuffer(1, ibSolids); r.setIndexBuffer(ibTerrain, 'uint32');
-  drawCells(r, T.start, T.lo, T.hi, 1.5, 1, 0, 0, 240);
-  r.setPipeline(pSolid); r.setVertexBuffer(0, vbMesh); r.setIndexBuffer(ibMesh, 'uint32');
-  for (let i = 0; i < 12; i++) { const g = Wd.solids.ranges[i]; if (g[1]) r.drawIndexed(meshes[i].ib.length, g[1], meshes[i].i0, meshes[i].v0, g[0]); }
-  for (let i = 0; i < NCHUNK; i++) {
-    const c = Wd.chunks[i], big = i > 2 && i < 6; r.setVertexBuffer(1, ibChunk[i]);
-    drawCells(r, c.start, c.lo, c.hi, 3, meshes[14 + i], 0, 0, i > 5 ? 30 : big ? 40 : 96);
-    if (big) drawCells(r, c.start, c.lo, c.hi, 3, meshes[20 + i], 0, 40, 150);
-  }
-  for (let i = 0; i < 6; i++) {
-    const lod = i === 3 || i === 4; r.setVertexBuffer(1, ibProp[i]);
-    drawCells(r, Wd.props[i].start, Wd.props[i].lo, Wd.props[i].hi, 3, meshes[4 + i], 0, 0, lod ? 6 : 110);
-    if (lod) drawCells(r, Wd.props[i].start, Wd.props[i].lo, Wd.props[i].hi, 3, meshes[18 + i], 0, 6, 110);
-  }
-  r.setPipeline(pManta); r.setVertexBuffer(1, ibManta); r.drawIndexed(MANTA.ib.length, nManta, MANTA.i0, MANTA.v0, 0);
-  r.setPipeline(pFish); r.setVertexBuffer(1, ibFish); r.drawIndexed(FISH.ib.length, nFish, FISH.i0, FISH.v0, 0);
-  // kelp and plants: 9-row blades up close, 5 rows mid-range, a decimated set far away
-  r.setPipeline(pLeaf); r.setVertexBuffer(0, ibBig); drawCells(r, Wd.big.start, Wd.big.lo, Wd.big.hi, 5, false, 18, 0, 24);
-  r.setPipeline(pLeaf5); drawCells(r, Wd.big.start, Wd.big.lo, Wd.big.hi, 5, false, 10, 24, 58);
-  r.setPipeline(pLeafF); r.setVertexBuffer(0, ibBigF); drawCells(r, Wd.bigF.start, Wd.bigF.lo, Wd.bigF.hi, 5, false, 6, 58, 150);
-  r.setPipeline(pLeafS); r.setVertexBuffer(0, ibSmall); drawCells(r, Wd.small.start, Wd.small.lo, Wd.small.hi, 1.5, false, 6, 0, 70);
-  r.setPipeline(pSurf); r.draw(4);
-  r.setPipeline(pBack); r.draw(4);
-  r.setPipeline(pBub); r.setVertexBuffer(0, ibBubbles); r.draw(4, nBub);
-  r.setPipeline(pGl); r.setVertexBuffer(0, ibGl); r.draw(4, nGl);
-  r.setPipeline(pSnow); r.setVertexBuffer(0, ibSnowB); r.draw(4, nSnow);
+  r.setBindGroup(0, bg0); r.setVertexBuffer(0, vbMesh); r.setIndexBuffer(ibMesh, 'uint16');
+  r.setPipeline(pTerrain); r.setVertexBuffer(1, ibTerr);
+  r.drawIndexed(GM.nFull, 1, 0, 0, 0); if (nT > 1) r.drawIndexed(GM.nRing, nT - 1, GM.nFull, 0, 1);
+  r.setPipeline(pSea); r.setVertexBuffer(1, ibSea);
+  r.drawIndexed(GM.nFull, 1, 0, 0, 0); if (nS > 1) r.drawIndexed(GM.nRing, nS - 1, GM.nFull, 0, 1);
+  r.setPipeline(pSky); r.draw(3);
+  if (cy < F[HSEA]) { r.setPipeline(pSpeck); r.setVertexBuffer(0, ibSpecks); r.draw(4, NSPECK); }
   r.end();
   // light shafts
   r = e.beginRenderPass(passRays); r.setPipeline(pRays); r.setBindGroup(0, bgRays); r.draw(3); r.end();
@@ -499,40 +391,11 @@ function render() {
   if (slot) { slot.busy = true; slot.b.mapAsync(GPUMapMode.READ).then(slot.done); }
 }
 
-// CS[j] = distance to the rock (metres, < 0 in water) at the camera + CE[3j..3j+2]: the camera, then ±0.375 m on
-// each axis for the gradient
-const CE = new Float64Array([0, 0, 0, .375, 0, 0, -.375, 0, 0, 0, .375, 0, 0, -.375, 0, 0, 0, .375, 0, 0, -.375]), CS = new Float64Array(7);
-const cv = (x, y, z) => { const b = CI[(x >> 2) + CN * ((y >> 2) + NY / 4 * (z >> 2))]; return b > 1 ? CG[b * 64 - 128 + (x & 3) + 4 * (y & 3) + 16 * (z & 3)] : b * 254 - 127; };
-function sd(j) {
-  const x = (F[CX] + CE[j * 3] - OX) / VS - CO, y = (F[CY] + CE[j * 3 + 1] - OY) / VS, z = (F[CZ] + CE[j * 3 + 2] - OZ) / VS - CO;
-  const ix = x | 0, iy = y | 0, iz = z | 0, u = x - ix, v = y - iy, a = cv(ix, iy, iz), b = cv(ix, iy + 1, iz), c = cv(ix, iy, iz + 1), d = cv(ix, iy + 1, iz + 1);
-  const p = a + (cv(ix + 1, iy, iz) - a) * u, q = b + (cv(ix + 1, iy + 1, iz) - b) * u, r = c + (cv(ix + 1, iy, iz + 1) - c) * u, s = d + (cv(ix + 1, iy + 1, iz + 1) - d) * u;
-  const e = p + (q - p) * v; CS[j] = (e + (r + (s - r) * v - e) * (z - iz)) / 127;
-}
-// Moves the camera by F[MX..MZ] in steps shorter than its radius CR (so it can't pass through thin rock), pushing it
-// back out after each step and dropping velocity into the rock, so it slides along.
-const CR = 0.5;
-function collide() {
-  const n = floor(sqrt(F[MX] * F[MX] + F[MY] * F[MY] + F[MZ] * F[MZ]) / 0.4) + 1;
-  for (let i = 0; i < n; i++) {
-    F[CX] += F[MX] / n; F[CY] += F[MY] / n; F[CZ] += F[MZ] / n;
-    for (let k = 0; k < 2; k++) {
-      sd(0); const s = CS[0] + CR; if (s <= 0) break;
-      for (let j = 1; j < 7; j++) sd(j);
-      let gx = CS[1] - CS[2], gy = CS[3] - CS[4], gz = CS[5] - CS[6]; const l = sqrt(gx * gx + gy * gy + gz * gz);
-      if (l < 0.075) break; // flat: deep in rock
-      gx /= l; gy /= l; gz /= l; const vn = F[VX] * gx + F[VY] * gy + F[VZ] * gz;
-      F[CX] -= gx * s; F[CY] -= gy * s; F[CZ] -= gz * s;
-      if (vn > 0) { F[VX] -= gx * vn; F[VY] -= gy * vn; F[VZ] -= gz * vn; }
-    }
-  }
-}
-
 function frame(now) {
   requestAnimationFrame(frame);
   const dtr = now - F[LAST]; F[LAST] = now;
   let dt = dtr / 1000; if (dt > 0.1) dt = 0.1;
-  // Dynamic resolution for 60 fps: every second (0.4 s behind the menu) scale the load by k
+  // Dynamic resolution for 60 fps: every second (0.4 s behind the menu) scale the pixel count by k
   if (dtr < 1e3 && (dynT += dtr) > 0 && (dynN++, dynT > (menu ? 400 : 1000))) {
     const a = dynT / dynN, g = dynGN ? dynG / dynGN : 0; let k = 1;
     // with GPU timing: keep it between 9.8 and 13.6 ms
@@ -541,16 +404,15 @@ function frame(now) {
     else if (a > 17.6) { dynOk = 0; if (++dynBad > 1) { k = 15 / a; dynBad = 0; dynWait = min(dynWait * 2, 60); } }
     // at the display's rate there is no telling if there is room, so try a little more now and then
     else { dynBad = 0; if (a < 12.5) k = 15 / a; else if (++dynOk > dynWait) { k = 1.17; dynOk = 0; } }
-    k = k < 0.5 ? 0.5 : k > 1.7 ? 1.7 : k; const top = min(PIXMAX, DW * DH), mid = max(top / 2, PIXMIN), was = pix + det;
-    // too slow: pixels down to `mid` first, then draw distance, then the remaining pixels; faster goes back the same way
-    if (k < 1 ? pix > mid || det <= DETMIN : pix < mid || det >= 1) {
-      const end = k < 1 ? (det > DETMIN ? mid : PIXMIN) : det < 1 ? mid : top;
-      pix *= k; if (k < 1 ? pix < end : pix > end) pix = end;
-    } else { det *= sqrt(k); det = det < DETMIN ? DETMIN : det > 1 ? 1 : det; }
-    if (was !== pix + det) keep('abyssal', [LV, pix < top ? pix | 0 : '', det]); // nothing kept at full resolution
+    k = k < 0.5 ? 0.5 : k > 1.7 ? 1.7 : k; const top = min(PIXMAX, DW * DH), was = pix;
+    pix *= k; pix = pix < PIXMIN ? PIXMIN : pix > top ? top : pix;
+    if (was !== pix) keep('abyssal', [LV, pix < top ? pix | 0 : '']); // nothing kept at full resolution
     dynN = dynT = dynG = dynGN = 0; resize();
   }
   F[TIME] += dt;
+  wet += ((F[CY] < F[HSEA] ? 1 : 0) - wet) * (1 - exp(-dt * 4));
+  // the hour glides to the chosen moment, forwards through the day
+  if (F[HOUR] !== hourTo) { const gap = (hourTo - F[HOUR] + 24) % 24, st = max(gap * 2.2, 1.5) * dt; F[HOUR] = st >= gap ? hourTo : (F[HOUR] + st) % 24; }
   {
     // touch: holding the finger away from where it went down keeps turning, like a joystick
     if (tId >= 0) {
@@ -563,23 +425,35 @@ function frame(now) {
     const ax = lkx * kq, ay = lky * kq; lkx -= ax; lky -= ay; l2x += ax; l2y += ay;
     const dyw = l2x * kq, dpt = l2y * kq; l2x -= dyw; l2y -= dpt;
     const yaw = F[YAW] + dyw; let pitch = F[PIT] - dpt; pitch = pitch < -1.55 ? -1.55 : pitch > 1.55 ? 1.55 : pitch;
-    const sp = ks || tN > 1 ? 26 : 7, k = 1 - exp(-dt * 4.5), mf = tId >= 0 ? 0.7 : kf - kb, mr = kr - kl, mu = ku - kd, cp = cos(pitch), sy = sin(yaw), cw = cos(yaw);
-    const vx = F[VX] + ((sy * cp * mf + cw * mr) * sp - F[VX]) * k, vy = F[VY] + ((sin(pitch) * mf + mu) * sp - F[VY]) * k, vz = F[VZ] + ((-cw * cp * mf + sy * mr) * sp - F[VZ]) * k;
+    // Swimming under the surface, flying above it: one free camera. In the water it moves at upstream's swimming pace;
+    // in the air the pace grows with the height above the ground, so the whole island is a short flight from anywhere.
+    const g0 = hAt(F[CX], F[CZ]), agl = F[CY] - (g0 > 0 ? g0 : 0);
+    const sp = (F[CY] < F[HSEA] ? 7 : 7 + min(max(agl, 0) * 0.45, 500)) * (ks || tN > 1 ? 3.7 : 1);
+    const k = 1 - exp(-dt * 4.5), mf = tId >= 0 ? 0.7 : kf - kb, mr = kr - kl, mu = ku - kd, cp = cos(pitch), sy = sin(yaw), cw = cos(yaw);
+    let vx = F[VX] + ((sy * cp * mf + cw * mr) * sp - F[VX]) * k, vy = F[VY] + ((sin(pitch) * mf + mu) * sp - F[VY]) * k, vz = F[VZ] + ((-cw * cp * mf + sy * mr) * sp - F[VZ]) * k;
     let x = F[CX] + vx * dt, y = F[CY] + vy * dt, z = F[CZ] + vz * dt;
-    const rad = sqrt(x * x + z * z); if (rad > 150) { x *= 150 / rad; z *= 150 / rad; }
-    y = y < -52 ? -52 : y > -1.2 ? -1.2 : y;
-    F[YAW] = yaw; F[PIT] = pitch; F[VX] = vx; F[VY] = vy; F[VZ] = vz; F[MX] = x - F[CX]; F[MY] = y - F[CY]; F[MZ] = z - F[CZ];
-    collide();
+    x = x < -6e4 ? -6e4 : x > 6e4 ? 6e4 : x; z = z < -6e4 ? -6e4 : z > 6e4 ? 6e4 : z;
+    // the ground is solid: the camera rides over it, and loses the speed that carried it down
+    const lo = hAt(x, z) + 0.7; if (y < lo) { y = lo; if (vy < 0) vy = 0; }
+    if (y > 14e3) y = 14e3;
+    F[YAW] = yaw; F[PIT] = pitch; F[VX] = vx; F[VY] = vy; F[VZ] = vz; F[CX] = x; F[CY] = y; F[CZ] = z;
   }
   render();
   if (hud) {
-    hN++; if (dtr > hMax) hMax = dtr; if (dtr < hMin) hMin = dtr; if (dtr > hPer * 1.5) { hLate++; hTot++; }
+    hN++; if (dtr > hMax_) hMax_ = dtr; if (dtr < hMin) hMin = dtr; if (dtr > hPer * 1.5) { hLate++; hTot++; }
     F[HUDT] += dtr / 1000;
-    if (F[HUDT] > 0.5) { info.textContent = `${(hN / F[HUDT]).toFixed(0)} fps  ·  worst frame ${hMax.toFixed(1)} ms  ·  late frames ${hLate} (total ${hTot})  ·  GPU ${F[GPU].toFixed(2)} ms  ·  ${W}x${H} (${W * 100 / DW | 0}%)`; F[HUDT] = 0; hPer = hMin; hN = 0; hMax = 0; hMin = 1e9; hLate = 0; }
+    if (F[HUDT] > 0.5) { info.textContent = `${(hN / F[HUDT]).toFixed(0)} fps  ·  worst frame ${hMax_.toFixed(1)} ms  ·  late frames ${hLate} (total ${hTot})  ·  GPU ${F[GPU].toFixed(2)} ms  ·  ${W}x${H} (${W * 100 / DW | 0}%)`; F[HUDT] = 0; hPer = hMin; hN = 0; hMax_ = 0; hMin = 1e9; hLate = 0; }
   }
 }
+// the sea surface over the camera, for the shaders, the camera's pace and the sound; called before every drawn frame
+const draw = render;
+render = () => { F[HSEA] = seaAt(F[CX], F[CZ], F[TIME], max(-hAt(F[CX], F[CZ]), 0), UB[51]); draw(); };
 
 // ---------------------------------------------------------------- input
+const bTime = $('t').querySelectorAll('button');
+const setTime = (i) => { hourTo = TIMES[i][1]; bTime.forEach((b, j) => { b.className = i === j ? 'on' : ''; }); };
+bTime.forEach((b, i) => { b.onclick = () => setTime(i); });
+setTime(2);
 const key = (e, v) => {
   switch (e.code) {
     case 'KeyW': kf = v; break; case 'KeyS': kb = v; break; case 'KeyA': kl = v; break; case 'KeyD': kr = v; break;
@@ -587,6 +461,7 @@ const key = (e, v) => {
     default: if (v && !e.repeat) {
       if (e.code === 'KeyH') { hud = !hud; hTot = 0; hPer = 1e9; info.textContent = ''; }
       else if (e.code === 'KeyM') mute();
+      else if (e.code === 'KeyT') setTime((TIMES.findIndex((t) => t[1] === hourTo) + 1) % TIMES.length);
       else if (e.code === 'Escape') ui(true);
       else if (e.code >= 'Digit1' && e.code <= 'Digit6') lookAt(...POSES[e.code.charCodeAt(5) - 49]);
     }
@@ -620,7 +495,7 @@ const bDive = $('d');
 const ui = (m) => {
   if (dead) return;
   menu = m; body.className = m ? 'm' : document.pointerLockElement ? 'g p' : 'g';
-  // focus the dive button so Enter works (delayed: it can't take focus while still hidden)
+  // focus the start button so Enter works (delayed: it can't take focus while still hidden)
   if (m) { release(); setTimeout(() => menu && bDive.focus(), 100); } else document.activeElement.blur();
 };
 const go = () => {
