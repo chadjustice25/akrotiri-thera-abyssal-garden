@@ -4,9 +4,9 @@ As of 2026-11-15, end of session 1 (setup). Only Chad's session edits this file.
 
 ## Where things stand
 - **Repository:** <https://github.com/chadjustice25/akrotiri-thera-abyssal-garden>, public, forked from `Noniv/abyssal-garden` (MIT). The local clone is `~/Developer/akrotiri-thera-abyssal-garden`, with remotes `origin` (the fork) and `upstream` (Noniv). `main` is upstream's `a596354`. The scene is still upstream's underwater world.
-- **Session 1 added these files (uncommitted until Chad commits):** `AGENTS.md` (the rulebook), `CLAUDE.md` and `GEMINI.md` (both import it), this handoff, `LESSONS.md`, `docs/DECISIONS.md` (D1–D7, O1–O6), `docs/HISTORICAL_STANDARD.md`, the research kit in `docs/research/` (W1, W2, T1–T7 and a template for new places), `docs/tasks/README.md`, `.harness/project.json`, the gate `checks/build.sh` (`npm run check` in `source/`), `.gitignore` additions, and a fork note at the top of `README.md`.
+- **Session 1 added these files (uncommitted until Chad commits):** `AGENTS.md` (the rulebook), `CLAUDE.md` and `GEMINI.md` (both import it), this handoff, `LESSONS.md`, `docs/DECISIONS.md` (D1–D10, O1–O6), `docs/HISTORICAL_STANDARD.md`, the research kit in `docs/research/` (W1, W2, T1–T7 and a template for new places), `docs/tasks/README.md`, `.harness/project.json`, the gate `checks/build.sh` (`npm run check` in `source/`), the views check `checks/views.mjs` (`npm run views`), `.gitignore` additions, and a fork note at the top of `README.md`.
 - **Checked:** `checks/build.sh` prints PASS on the current tree. It FAILs on a stale page, on going over budget and on a runtime script, and gives ERROR when esbuild is missing. `harness config show project` passes.
-- **Not checked:** nothing has been rendered. No WebGPU check runs here, and the scene is unchanged.
+- **Rendering (2026-11-16):** `checks/views.mjs` (D10) photographs the six viewpoints in headless Chrome on the Mac's GPU. It PASSes on upstream's scene, and the pictures are in the **Thera Views** artifact, <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L>. To refresh it, run the check and publish `.harness/views/latest/index.html` with its six JPEGs to that URL. The scene is still upstream's.
 
 ## Next
 1. **Chad:** review, then commit and push (commands below). The fork is public, so the push publishes it.

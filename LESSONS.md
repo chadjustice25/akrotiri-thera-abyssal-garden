@@ -8,3 +8,8 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 - **From unghost: export through Google Docs, then File → Download → Markdown.** This keeps the claims tables intact. Copying from the chat view can flatten them.
 - **From Uruk: grade evidence by its distance in time, not only by whether it exists.** State how far each piece of evidence is from the target moment. A text or image made centuries later is grade C, even when it is famous.
 - **From Uruk and unghost: reports carry errors that only a check against the sources catches.** Nothing from a report is adopted until its claim is checked (`docs/research/verification/`).
+
+## Rendering checks (2026-11-16)
+- Headless Chrome 157 on this Mac (`--headless=new`, no GPU flags) gives the real Apple `metal-3` WebGPU adapter with timestamp queries. The Chromium doc says headless needs `--enable-gpu` for hardware rendering; on macOS it did not. `checks/views.mjs` fails if it ever gets a software fallback, so a change in Chrome shows up.
+- `navigator.gpu` is missing on `about:blank` (not a secure context). Serve the page from `http://127.0.0.1`.
+- `Page.captureScreenshot` captures the WebGPU canvas correctly on macOS. Reports say Linux and Windows headless capture black, so check each picture's pixel spread rather than trusting a screenshot that "succeeded".

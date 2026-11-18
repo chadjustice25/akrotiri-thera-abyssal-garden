@@ -7,7 +7,8 @@
     "build": "node build.mjs",
     "build:readable": "node build.mjs --readable",
     "build:dev": "node build.mjs --dev",
-    "check": "bash ../checks/build.sh"
+    "check": "bash ../checks/build.sh",
+    "views": "node ../checks/views.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.2"

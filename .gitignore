@@ -13,3 +13,4 @@ akrotiri-frescoes-sources/
 # Third-party project skills and personal Claude settings stay out of git
 .claude/skills/
 .claude/settings.local.json
+.harness/views/

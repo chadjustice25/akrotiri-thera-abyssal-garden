@@ -35,7 +35,8 @@ A fork of Noniv's [Abyssal Garden](https://github.com/Noniv/abyssal-garden) (MIT
 
 ## 6. Checks
 - **The gate is `checks/build.sh`** (also `cd source && npm run check`). It builds `source/` in a scratch folder, requires the committed `index.html` to match byte for byte, checks the size budget, and refuses anything loaded at run time. Exit 0 PASS, 1 FAIL, 3 ERROR; the last line is the result. Run it before every commit that touches `source/` or `index.html`.
-- WebGPU rendering is not checked automatically yet. Visual changes are verified by looking in Chrome or Edge. Say so in a report; never report a visual pass you did not see.
+- **The views check is `checks/views.mjs`** (also `cd source && npm run views`, Mac only). It opens the page in headless Chrome on the Mac's real GPU, presses Dive in and keys 1–6, and saves a JPEG of each viewpoint with its stats line in `.harness/views/<time>/` and `.harness/views/latest/` (both ignored by git). It PASSes when the page starts on a hardware adapter, logs no error, loads nothing at run time and all six pictures have content. Run it after every change that affects what the world looks like, then publish `.harness/views/latest/index.html` with its six JPEGs to the **Thera Views** artifact (<https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L>) so Chad can look from the iPad.
+- A views PASS proves the page rendered. It does not prove the picture is right. Say who looked at the pictures: an agent's look is not Chad's, and never report a visual pass nobody saw.
 
 ## 7. Research
 - Deep Research runs on **Gemini 4 Argon** (Chad's Google plan) from prompts in `docs/research/prompts/`. Reports land in `docs/research/argon/`. `docs/research/README.md` has the steps.
