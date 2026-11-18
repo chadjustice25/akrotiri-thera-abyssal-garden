@@ -17,4 +17,4 @@ One file per task: `docs/tasks/NNN-slug.md`, numbered from 001. A work order is 
 
 | # | Order | Status |
 |---|---|---|
-| 001 | `001-terrain-and-sea.md`: Thera's land, sea and sky in 1615 BCE (Fable 5.2, D14) | open |
+| 001 | `001-terrain-and-sea.md`: Thera's land, sea and sky in 1615 BCE (Fable 5.2, D14) | done: merged into `main` 2026-11-18 (`7651a39`) |

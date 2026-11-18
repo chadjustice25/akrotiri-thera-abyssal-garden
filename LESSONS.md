@@ -9,6 +9,15 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 - **From Uruk: grade evidence by its distance in time, not only by whether it exists.** State how far each piece of evidence is from the target moment. A text or image made centuries later is grade C, even when it is famous.
 - **From Uruk and unghost: reports carry errors that only a check against the sources catches.** Nothing from a report is adopted until its claim is checked (`docs/research/verification/`).
 
+## Work order 001 (2026-11-18)
+- **Stage by path, never `git add -A`.** The integrator session and its research agents wrote into the same checkout while the worker built. One `git add -A` swept two of their files into the worker's commit, and it had to be redone. Give a worker its own worktree, or have it add only the paths its order owns.
+- **A work order's Result section sat in a path the order forbade** (`docs/tasks/`), so the worker could only give the Result in its report. Either let a worker fill in the Result of its own order, or say in the order that the Result comes back in the report.
+- **Keeping every figure as a parameter paid off.** The T1c check landed in the middle of the build, and its corrections went into `tools/terrain/edits.json` without a change to the method.
+- **The build strips comments, so a licence notice in a source file never reaches `index.html`.** Notices that must travel with the page go in the menu text. Copy them character for character from the checked source: the first pass wrote "(c)" for "©" and reworded a sentence.
+- **Tell the range a source gives from the measure behind it.** E4's volume fits T1#14's range by one measure (against today's surface) and misses it by another (above sea level only), and the abstract does not say which it used.
+- **Shader text is squeezed by the build.** Write no `- -` in WGSL, and take every texture sample before a branch on a varying. Chrome reports both only when the page runs, which the gate does not do, so run the views check after any shader change.
+- **Headless Chrome will not go narrower than 500 px**, so a phone-width look at the menu needs a real device or device emulation.
+
 ## Rendering checks (2026-11-16)
 - Headless Chrome 157 on this Mac (`--headless=new`, no GPU flags) gives the real Apple `metal-3` WebGPU adapter with timestamp queries. The Chromium doc says headless needs `--enable-gpu` for hardware rendering; on macOS it did not. `checks/views.mjs` fails if it ever gets a software fallback, so a change in Chrome shows up.
 - `navigator.gpu` is missing on `about:blank` (not a secure context). Serve the page from `http://127.0.0.1`.

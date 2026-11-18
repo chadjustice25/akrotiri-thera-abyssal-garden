@@ -38,4 +38,26 @@ Departures from the evidence, made for the experience. One row each; nothing is 
 
 | # | Liberty | Why | Where | Decision |
 |---|---|---|---|---|
-| L1 | The scene is underwater swimming until the Thera terrain replaces it. | It is still upstream's world; nothing is Theran yet. | whole scene | D1 |
+| L1 | *Ended 2026-11-18.* The scene was underwater swimming until the Thera terrain replaced it. | It was still upstream's world; nothing was Theran yet. | whole scene | D1; ended by work order 001 |
+
+**The terrain's liberties** (work order 001, recorded 2026-11-18). The numbers are the terrain record's (`docs/terrain/README.md` §4), which gives each one in full, and `tools/terrain/edits.json` holds the parameters.
+
+| # | Liberty | Why | Where | Decision |
+|---|---|---|---|---|
+| T-L1 | The thickness of the eruption deposits between the places where it is measured. | No thickness map could be opened. Without stripping, the land of 1615 BCE would wear the eruption's ash. | terrain edit E3 | work order 001 |
+| T-L2 | The shape of the restored ring land on the caldera side. | Its volume range and rim height are sourced (T1#14, T1b#51); its surface is gone. | E4 | work order 001 |
+| T-L3 | The bay's depth (5 m), its south shore, and Therasia's east cliffs as its west wall. | "No more than a few metres" (T1b#46) is contested, and no outline is published. | E5 | work order 001 |
+| T-L4 | The channel's width (280 m), depth (3 m) and course, and the height of the low ground beside it. | Only "low, narrow, if any" and an upper bound of 1 km are sourced. | E6 | work order 001 |
+| T-L5 | The outline, profile, height (231 m) and lava-flow relief of the island in the bay (Pre-Kameni, a modern label). | Only its volume, rock and rough position are published. | E7 | work order 001 |
+| T-L6 | The form of the terrace at Akrotiri. | The town needs ground to stand on; the buried surface there is not published. | E8 | work order 001 |
+| T-L7 | Every rock-class boundary, and the heights above which marble is drawn. | The claims name places, not boundaries. | rock map | work order 001 |
+| T-L8 | Every colour of rock, soil, sand and water. The banding of the volcanic cliffs uses the red, blue-black and ochre of the rocks in the miniature frieze. | No source gives a colour. The frieze is grade B (shown, not found), and its banded rocks are also a painting convention. | terrain shading | work order 001 |
+| T-L9 | The day shown: late May, with the Earth's tilt of the time (23.89°), in local solar time. | The season is open between spring and early summer (T3). The tilt is computed, not from a research lane. | sun | work order 001 |
+| T-L10 | Calm mornings and a north breeze that builds through the afternoon. | Today's summer Etesians carried back (T1#50, grade C). | sea state | work order 001 |
+| T-L11 | The amount of haze. | A clear Aegean summer day was chosen; nothing dates the air. | sky | work order 001 |
+| T-L12 | The stars are a random field, and there is no moon. | The real sky of 1615 BCE needs a star catalogue and precession: a later order. | night sky | work order 001 |
+| T-L13 | Sea level 3.6 m below today's, and the land and sea-floor data joined with no offset between their height references. | Two estimates disagree (3.6 m and under 0.5 m), and neither is measured on Santorini. It stays a parameter. | E1 | work order 001 |
+| T-L14 | The coastline is today's, moved only by the sea-level change. The sea floor is today's too. | The pre-eruption coast is not known, and the harbour has not been found. | E3, E8 | work order 001 |
+| T-L15 | Ground detail finer than the 40 m data. | It has zero mean, stays within a few metres and fades out at the shore, so it does not contradict the data. | terrain detail | work order 001 |
+| T-L16 | The ground is bare. | Plants come in a later order. The island was not bare: Akrotiri's charcoal shows oak, pine and olive (T1#46, T1#47). | whole island | work order 001, until plants are in |
+| T-L17 | The night is far brighter than starlight, and the water's clarity, colour and light shafts are the original engine's. | So that the island can be seen at night; the water was tuned for beauty upstream. | light, water | work order 001 |

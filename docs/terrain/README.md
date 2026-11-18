@@ -98,7 +98,7 @@ The island in 1615 BCE: 145.4 km² of land (91.0 km² today), highest point 568.
 
 ## 4. Liberties
 
-Departures from the evidence, or choices where there is none. Chad's session records the ones it accepts in `docs/HISTORICAL_STANDARD.md` §6.
+Departures from the evidence, or choices where there is none. They were recorded in `docs/HISTORICAL_STANDARD.md` §6 on 2026-11-18 under the same numbers.
 
 | # | Liberty | Why | Where |
 |---|---|---|---|
@@ -122,7 +122,7 @@ Departures from the evidence, or choices where there is none. Chad's session rec
 
 ## 5. What was looked at
 
-Claude (Fable 5.2) looked at these pictures on 2026-11-18, from `checks/views.mjs` and from extra screenshots taken the same way. **Chad has not looked yet.** The views are at <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L>.
+Claude (Fable 5.2) looked at these pictures on 2026-11-18, from `checks/views.mjs` and from extra screenshots taken the same way. The table below is Claude's look. **Chad ran the page itself on the Mac the same day** and said it "looks great and the controls are pretty intuitive"; he did not report on the views one by one (see the Review section of the work order). The views are at <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L>.
 
 | View | What it shows | What was seen |
 |---|---|---|
@@ -135,7 +135,7 @@ Claude (Fable 5.2) looked at these pictures on 2026-11-18, from `checks/views.mj
 
 Also looked at: dawn, noon, golden hour, dusk and night from views 1, 2, 4 and 5; the camera just above, at and just below the surface in the bay; the ground from 3 m up; the menu; one set of views each on Low and Medium detail; and nine frames from the 2-minute fly-through in `dev.html`, which ran at 60 fps with no late frame and showed no seam between the terrain's rings.
 
-**Not checked by anyone:** the scene in motion (that the terrain's levels of detail blend without popping was reasoned out and seen only in stills), touch controls on a real device, and the sound.
+**Not checked by anyone:** touch controls on a real device. **Flown by Chad with no problem reported, but not reported on specifically:** popping as the terrain's levels of detail change (reasoned out, and seen by Claude only in stills), and the sound.
 
 **Known weaknesses:**
 - The land is bare and reads as desert.
