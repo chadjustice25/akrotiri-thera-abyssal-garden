@@ -33,12 +33,13 @@
   },
   "E3": {
     "name": "Strip the Minoan eruption deposits from the land",
-    "claims": ["T1#24", "T1c#1", "T1c#7", "T1c#8", "T1c#9", "T1c#11", "T1c#12", "T1c#19"],
+    "claims": ["T1#24", "T1c#1", "T1c#7", "T1c#8", "T1c#9", "T1c#11", "T1c#12", "T1c#19", "T1c#22"],
     "liberty": "T-L1",
-    "note": "No thickness map could be opened (T1c gap): the figures are thicknesses at named places, and the surface built from them is a liberty. The model: thickest along the caldera rim (the whole pile reaches about 55 m at the caldera wall and about 40 m on the rim: T1c#1, #7) and in the coastal fans (up to 40 m: T1c#8, #9); close to nothing on the outer flanks of Profitis Ilias, Mikro Profitis Ilias and Megalo Vouno (T1c#11, correction 5) and on west Akrotiri around Loumarades and Kokkino Vouno (T1c#12); elsewhere thin on ridges and steep slopes and thicker in hollows. Never more than 55 m, and never enough to move the coast (the pre-eruption coastline is not known). The mean on land comes out near the 17 m that the published volumes imply (T1c#19, an inference). Mavrorachidi's ~25 m is depth to bedrock at one core and is not used (T1 correction 1).",
+    "note": "No thickness map could be opened (T1c gap): the figures are thicknesses at named places, and the surface built from them is a liberty. The model: thickest along the caldera rim (the whole pile reaches about 55 m at the caldera wall and about 40 m on the rim: T1c#1, #7) and in the coastal fans (up to 40 m: T1c#8, #9); close to nothing on the outer flanks of Profitis Ilias, Mikro Profitis Ilias and Megalo Vouno (T1c#11, correction 5) and on west Akrotiri around Loumarades and Kokkino Vouno (T1c#12); elsewhere thin on ridges and steep slopes and thicker in hollows. Never more than 55 m, the most reported for the whole pile (T1c#1, correction 1; another source gives 50 m, recorded as the alternative), and never enough to move the coast (the pre-eruption coastline is not known). The mean on land comes out near the 17 m that the published volumes imply (T1c#19, an inference). Mavrorachidi's ~25 m is depth to bedrock at one core and is not used (T1 correction 1).",
     "ridgeMetres": 4,
     "valleyMetres": 30,
     "maxMetres": 55,
+    "alternativeMaxMetres": 50,
     "rimMetres": 36,
     "rimWidthMetres": 900,
     "positionWindowMetres": 360,
@@ -80,6 +81,16 @@
         "metres": 30
       }
     ],
+    "atTown": {
+      "name": "The deposits over the town of Akrotiri, as first reported",
+      "claims": ["T1c#22"],
+      "grade": "B, to verify",
+      "correction": "T1c corrections 2 and 11",
+      "firstPumiceFallCentimetres": [1, 2],
+      "thenAshFallMetres": [1, 2],
+      "setsStripDepth": false,
+      "note": "A 1978 conference report, its author unnamed for these figures: a fall of fine pumice of about 1-2 cm, then an ash fall of about 1-2 m over the town, then the main pumice as a base surge. It is recorded here and not used: it conflicts with today's description of metres of first-phase pumice, so it does not set a strip depth (T1c correction 2). build.mjs reports what the model strips at the town site (E8) so the two can be read side by side."
+    },
     "zonesNote": "Each zone: \"metres\" sets the thickness there, \"scale\" multiplies the model, \"aboveMetres\" limits it to higher ground."
   },
   "E4": {

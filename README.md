@@ -11,9 +11,9 @@
 
 **Data credits.** The terrain inside `index.html` and `source/src/terrain-data.js` is **not under the MIT licence** of the code. It is derived from two datasets and stays under their terms; if you pass the page on, these notices must go with it:
 
-- Land: produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved. The organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30. The use made of the data here is not endorsed by the Copernicus programme.
-- Sea floor: EMODnet Bathymetry Consortium (2024), EMODnet Digital Bathymetry (DTM 2024), <https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1>. This data product was created by EMODnet (<https://emodnet.ec.europa.eu/en/>), and is owned by the EU and licensed under the Creative Commons Attribution 4.0 International ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)) license. Not for navigation.
-- Both were changed: resampled, joined, and reshaped to undo the eruption.
+- **Land** (Copernicus DEM GLO-30, under the Licence for the use of the Copernicus WorldDEM-30): "produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved". "The organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30". The use made of the data here is not endorsed by the Copernicus programme, and whoever receives the page from you is bound by the same terms.
+- **Sea floor** (EMODnet DTM 2024): "This data product was created by EMODnet ( https://emodnet.ec.europa.eu/en/ ), and is owned by the EU and licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license." Licence text: <https://creativecommons.org/licenses/by/4.0/>. Citation: EMODnet Bathymetry Consortium (2024), EMODnet Digital Bathymetry (DTM 2024), https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1. Not for navigation.
+- Both were changed: resampled, cropped, joined, and reshaped to undo the eruption.
 
 Everything below is the original Abyssal Garden README, by Noniv, under the MIT License ([`LICENSE`](LICENSE)).
 

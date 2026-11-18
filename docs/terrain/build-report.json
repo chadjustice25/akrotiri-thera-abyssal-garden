@@ -42,7 +42,19 @@
       "landKm2": 96.54,
       "meanThicknessMetres": 15.49,
       "maxThicknessMetres": 36,
-      "volumeStrippedKm3": 1.496
+      "volumeStrippedKm3": 1.496,
+      "atTownSite": {
+        "modelStripsMetres": 20.1,
+        "reportedFirstPumiceFallCentimetres": [
+          1,
+          2
+        ],
+        "reportedThenAshFallMetres": [
+          1,
+          2
+        ],
+        "reportedFiguresUsed": false
+      }
     },
     "E2": {
       "landRemovedKm2": 4.09,
