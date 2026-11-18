@@ -14,3 +14,6 @@ akrotiri-frescoes-sources/
 .claude/skills/
 .claude/settings.local.json
 .harness/views/
+# downloaded source copies never belong in the repo (D6, licences)
+docs/research/**/*.pdf
+docs/research/claude/*.txt

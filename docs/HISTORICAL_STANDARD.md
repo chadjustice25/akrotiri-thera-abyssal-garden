@@ -4,7 +4,7 @@ The evidence rules for every place in this world: Thera now, and Crete, Egypt, B
 
 ## 1. The moment
 - **Window:** c. 1650 BCE, give or take 100–150 years, so about 1800–1500 BCE. Evidence from outside the window can be used only as grade C, with its distance from the window stated.
-- **Each place shows the same moment.** For Thera that moment is the town's last season before the eruption. Its absolute year is open (O1) until research lanes W1 and W2 are checked. Then it is written in `docs/WORLD_CLOCK.md`, and every other place takes its "now" from that file.
+- **Each place shows the same moment.** For Thera that moment is the living town in its final phase: after its rebuilding from the earthquake of c. 1650 BCE and before the final earthquake and evacuation, under the high chronology (D15). The year is **1615 BCE** (D16); `docs/WORLD_CLOCK.md` gives the details. Every other place takes its "now" from that file.
 
 ## 2. One world clock
 - `docs/WORLD_CLOCK.md` (to be written from W1 and W2) lists every region's period, dates, rulers and main centres in the window, plus the objects and texts that link regions.
