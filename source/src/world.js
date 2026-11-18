@@ -133,7 +133,7 @@ function gridMesh() {
 // the surface. main.js turns it into a height once the terrain is built.
 const POSES = [
   [-40, 2.6, 6900, -135, 30, 5937],        // 1 the Akrotiri terrace from the sea to its south
-  [-250, 2.2, 1540, -1250, 60, -2500],     // 2 the north bay and Pre-Kameni (a modern label) from the ring rim
+  [-250, 6, 1345, -1250, 40, -2500],       // 2 the north bay and Pre-Kameni (a modern label) from the ring rim
   [300, 9200, 13800, -300, 0, -200],       // 3 high above the whole island, looking north
   [5270, 2.5, 4050, -900, 100, -1600],     // 4 Profitis Ilias summit, looking across the island
   [1250, 1.3, -450, -900, 150, -2700],     // 5 sea level inside the bay

@@ -13,15 +13,36 @@
       "cellsChanged": 1271,
       "meanLoweringMetres": 2.03
     },
+    "E9": {
+      "summits": {
+        "Profitis Ilias": {
+          "publishedMetres": 565,
+          "onTheGridBeforeMetres": 554.8,
+          "raisedByMetres": 10.2
+        },
+        "Mesa Vouno": {
+          "publishedMetres": 369,
+          "onTheGridBeforeMetres": 358.7,
+          "raisedByMetres": 10.3
+        }
+      },
+      "summitInTheSourceDemMetres": 557.5,
+      "summitOnTheGridMetresAbove1615Sea": 568.2,
+      "summitLonLat": [
+        25.4641,
+        36.3684
+      ],
+      "strippedAtSummitMetres": 0.13
+    },
     "E1": {
       "seaLevelBelowPresentMetres": 3.6,
       "landGainedKm2": 5.59
     },
     "E3": {
       "landKm2": 96.54,
-      "meanThicknessMetres": 11.13,
-      "maxThicknessMetres": 38,
-      "volumeStrippedKm3": 1.074
+      "meanThicknessMetres": 15.49,
+      "maxThicknessMetres": 36,
+      "volumeStrippedKm3": 1.496
     },
     "E2": {
       "landRemovedKm2": 4.09,
@@ -34,10 +55,10 @@
       "channelFloorKm2": 0.44
     },
     "E4": {
-      "volumeAddedKm3": 13.45,
-      "volumeAddedAboveSeaKm3": 5.04,
-      "restoredLandKm2": 44.1,
-      "highestRestoredPointMetres": 292.3,
+      "volumeAddedKm3": 13.16,
+      "volumeAddedAboveSeaKm3": 4.76,
+      "restoredLandKm2": 44.01,
+      "highestRestoredPointMetres": 259.4,
       "allowedRangeKm3": [
         9.1,
         17.1
@@ -68,39 +89,31 @@
         5.7,
         42
       ],
-      "groundAtSiteBeforeMetres": 10.1,
+      "groundAtSiteBeforeMetres": 13.6,
       "groundAtSiteMetres": 24
-    },
-    "E9": {
-      "summitInTheSourceDemMetres": 557.5,
-      "summitOnTheGridMetresAbove1615Sea": 558.3,
-      "summitLonLat": [
-        25.4641,
-        36.3684
-      ],
-      "strippedAtSummitMetres": 0.09
     }
   },
   "rockClassLandKm2": {
-    "0 undivided volcanic": 103.87,
+    "0 undivided volcanic": 103.78,
     "1 light-grey andesite": 7.8,
     "2 dark-grey andesite": 11.02,
     "3 black glassy andesite": 16.31,
-    "4 phyllite and schist": 3.02,
-    "5 marble": 3.44
+    "4 phyllite and schist": 3.01,
+    "5 marble": 3.45
   },
   "island": {
-    "landKm2In1615": 145.46,
+    "landKm2In1615": 145.37,
     "landKm2Today": 90.96,
-    "highestPointMetres": 558.3
+    "highestPointMetres": 568.2
   },
   "data": {
-    "bytes": 54807,
-    "sha256": "9e6b1bc60dca50ae00bd018ba6c67ad45e24c68061ef7bf31ee433d02c002400",
+    "bytes": 54257,
+    "sha256": "026887f55b4c80df7cfed05cf0e6fd71fdce1861705da9f2f3ebd09cd5fd592c",
     "heightUnitMetres": 0.25,
-    "fineCellsStored": 138224,
-    "maxErrorMetresOnLand": 3.99,
-    "rmsErrorMetresOnLand": 0.37,
-    "maxErrorMetresUnderwater": 36.69
+    "fineCellsStored": 138272,
+    "maxErrorMetresOnLand": 3.45,
+    "rmsErrorMetresOnLand": 0.35,
+    "maxErrorMetresUnderwater": 34.44,
+    "pageDecoderAgrees": true
   }
 }

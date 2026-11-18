@@ -520,8 +520,8 @@ struct VO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) o
     return fin(medium(c, i.wp));
   }
   let far = sat(log2(px * 30. + 1.) / 7.);
-  let ci = max(sat(dot(-V, N)), .14 * far); let F = .02 + .98 * pow(1. - ci, 5.);
-  var R = reflect(V, N); R.y = abs(R.y) + .02 + far * (.16 + .14 * g.sun.w);
+  let ci = max(sat(dot(-V, N)), .2 * far); let F = .02 + .98 * pow(1. - ci, 5.);
+  var R = reflect(V, N); R.y = abs(R.y) + .02 + far * (.3 + .2 * g.sun.w);
   // the sun's glitter: far waves are smaller than a pixel, so their facets spread the sun wider
   let al = mix(.035, .16 + .12 * g.sun.w, far); let a2 = al * al;
   let nh = sat(dot(N, normalize(L - V))); let dd = nh * nh * (a2 - 1.) + 1.;
@@ -533,7 +533,7 @@ struct VO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) o
   let body = wfog(bot, vec3f(i.wp.x, 0., i.wp.z), Rr, pl);
   var c = mix(body, skyL(normalize(R)), F) + spec;
   // foam: swash on the shore, and whitecaps where crests pinch in a breeze
-  let swash = ss(.9, .0, dep) * ss(.25, .8, fm + .5 * sin(dep * 9. - g.cam.w * 1.1 + fm * 3.)) * ss(3000., 500., d);
+  let swash = ss(.45, .0, dep) * ss(.25, .8, fm + .5 * sin(dep * 14. - g.cam.w * 1.1 + fm * 3.)) * ss(1500., 300., d) * (.35 + .65 * wamp());
   let cap = ss(.46, .8, sl.z + fm * .1) * ss(.3, .7, g.sun.w) * ss(2500., 300., d);
   let foam = sat(swash + cap);
   c = mix(c, (g.sunc.rgb * sh * (.3 + .7 * max(L.y, 0.)) + zen * 1.5) * .8, foam);

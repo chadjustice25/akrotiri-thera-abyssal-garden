@@ -57,6 +57,15 @@ for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
   today.d[j * N + i] = s / 9;
 }
 
+// ---------------------------------------------------------------- E9, first part: summits at their published heights
+// 30 m cells shave peaks: the data reads several metres low on both basement summits (T1c correction 3)
+report.edits.E9 = { summits: {} };
+for (const sm of E.E9.summits) {
+  let top = -1; for (let k = 0; k < N * N; k++) if (Math.hypot(X(k) - sm.at[0], Z(k) - sm.at[1]) < 200 && today.d[k] > top) top = today.d[k];
+  for (let k = 0; k < N * N; k++) { const d = Math.hypot(X(k) - sm.at[0], Z(k) - sm.at[1]); if (d < sm.radiusMetres) today.d[k] += (sm.metres - top) * (0.5 + 0.5 * Math.cos(Math.PI * d / sm.radiusMetres)) ** 2; }
+  report.edits.E9.summits[sm.name] = { publishedMetres: sm.metres, onTheGridBeforeMetres: r1(top), raisedByMetres: r1(sm.metres - top) };
+}
+
 // ---------------------------------------------------------------- E1: sea level
 const T = today.clone(); // today's surface in the 1615 BCE datum
 for (let k = 0; k < N * N; k++) T.d[k] += E.E1.seaLevelBelowPresent;
@@ -70,15 +79,29 @@ const h = T.clone();
 const basement = new Uint8Array(N * N); // 0 none, 1 + index of the massif
 Object.keys(E.E9.basement).forEach((name, n) => { const m = mask(E.E9.basement[name]); for (let k = 0; k < N * N; k++) if (m[k]) basement[k] = n + 1; });
 
+// ---------------------------------------------------------------- where the caldera side will be rebuilt (E2, E4, E5, E6), needed by E3 too
+const inSouth = mask(E.E4.southLand), inBridge = mask(E.E6.bridge), inKameni = mask(E.E2.outline);
+const M = new Uint8Array(N * N), bay = new Uint8Array(N * N); // M: modelled (restored) land and its submarine slope; bay: the bay floor
+for (let k = 0; k < N * N; k++) if (inSouth[k] || inBridge[k]) M[k] = 1;
+{ // the bay: today's caldera water (and the Kameni islands) reached from the seed without crossing restored land
+  const seed = Math.round(g0.fi(E.E5.seed[1])) * N + Math.round(g0.fi(E.E5.seed[0])), stack = [seed]; bay[seed] = 1;
+  while (stack.length) { const k = stack.pop(); for (const o of [-1, 1, -N, N]) { const q = k + o; if (q < 0 || q >= N * N || bay[q] || M[q] || !(T.d[q] <= 0.5 || inKameni[q])) continue; bay[q] = 1; stack.push(q); } }
+  for (let i = 0; i < N; i++) if (bay[i] || bay[(N - 1) * N + i] || bay[i * N] || bay[i * N + N - 1]) { console.error('E5: the bay leaks to the open sea: E4 southLand or E6 bridge does not close the ring'); process.exit(1); }
+}
+
 // ---------------------------------------------------------------- E3: strip the Minoan deposits (a liberty: no sourced thickness map)
 {
-  const p = E.E3, zones = (p.zones || []).map((zn) => ({ ...zn, m: mask(zn.outline) })), pos = blur(T.d, N, Math.round(p.positionWindowMetres / CELL)), base = blur(Float32Array.from(basement, (v) => (v ? 1 : 0)), N, 3), t = new Float32Array(N * N);
+  const p = E.E3, pos = blur(T.d, N, Math.round(p.positionWindowMetres / CELL)), base = blur(Float32Array.from(basement, (v) => (v ? 1 : 0)), N, 3), t = new Float32Array(N * N);
+  const zones = (p.zones || []).map((zn) => ({ ...zn, w: blur(Float32Array.from(mask(zn.outline)), N, 3, 2) })), dRim = near(Uint8Array.from(M, (v, k) => (v || bay[k] ? 1 : 0)));
   for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
     const k = j * N + i, v = T.d[k]; if (v <= 0) continue;
     const valley = sstep(p.positionRangeMetres, -p.positionRangeMetres, v - pos[k]); // 1 in valleys, 0.5 on even ground, 0 on ridges
     const sl = Math.hypot(T.at(i + 1, j) - T.at(i - 1, j), T.at(i, j + 1) - T.at(i, j - 1)) / (2 * CELL);
-    let d = mix(p.ridgeMetres, p.valleyMetres, valley) * (1 - sstep(p.slopeThinStart, p.slopeThinEnd, sl)) * mix(1, p.basementFactor, base[k]);
-    for (const zn of zones) if (zn.m[k]) d = zn.metres !== undefined ? zn.metres : d * zn.scale; // a sourced figure for a named place replaces the model there
+    let d = mix(p.ridgeMetres, p.valleyMetres, valley);
+    d = mix(d, p.rimMetres, 1 - sstep(0, p.rimWidthMetres, dRim[k] * CELL)); // thickest along the caldera rim
+    // a checked figure for a named place replaces or scales the model there
+    for (const zn of zones) { const w = zn.w[k] * (zn.aboveMetres === undefined ? 1 : sstep(zn.aboveMetres - 40, zn.aboveMetres + 40, v)); if (w > 0) d = mix(d, zn.metres !== undefined ? zn.metres : d * zn.scale, w); }
+    d *= (1 - sstep(p.slopeThinStart, p.slopeThinEnd, sl)) * mix(1, p.basementFactor, base[k]);
     t[k] = Math.min(d, p.maxMetres, v * (1 - p.keepAboveSeaFraction));
   }
   const ts = blur(t, N, 1, 2); let sum = 0, n = 0, mx = 0;
@@ -88,14 +111,6 @@ Object.keys(E.E9.basement).forEach((name, n) => { const m = mask(E.E9.basement[n
 const afterE3 = h.clone();
 
 // ---------------------------------------------------------------- E2, E4, E5, E6: the caldera side
-const inSouth = mask(E.E4.southLand), inBridge = mask(E.E6.bridge), inKameni = mask(E.E2.outline);
-const M = new Uint8Array(N * N), bay = new Uint8Array(N * N); // M: modelled (restored) land and its submarine slope; bay: the bay floor
-for (let k = 0; k < N * N; k++) if (inSouth[k] || inBridge[k]) M[k] = 1;
-{ // the bay: today's caldera water (and the Kameni islands) reached from the seed without crossing restored land
-  const seed = Math.round(g0.fi(E.E5.seed[1])) * N + Math.round(g0.fi(E.E5.seed[0])), stack = [seed]; bay[seed] = 1;
-  while (stack.length) { const k = stack.pop(); for (const o of [-1, 1, -N, N]) { const q = k + o; if (q < 0 || q >= N * N || bay[q] || M[q] || !(T.d[q] <= 0.5 || inKameni[q])) continue; bay[q] = 1; stack.push(q); } }
-  for (let i = 0; i < N; i++) if (bay[i] || bay[(N - 1) * N + i] || bay[i * N] || bay[i * N + N - 1]) { console.error('E5: the bay leaks to the open sea: E4 southLand or E6 bridge does not close the ring'); process.exit(1); }
-}
 { // E2: what the Kameni outline removes from today's surface
   let area = 0, vol = 0, top = 0;
   for (let k = 0; k < N * N; k++) if (inKameni[k] && today.d[k] > 0) { area++; vol += today.d[k]; if (today.d[k] > top) top = today.d[k]; }
@@ -207,7 +222,7 @@ const dome = new Uint8Array(N * N);
 {
   let top = -1, tk = 0, raw = -1; for (let k = 0; k < N * N; k++) if (basement[k] === 1 && h.d[k] > top) { top = h.d[k]; tk = k; }
   for (let la = 36.36; la < 36.38; la += dem.dLat) for (let lo = 25.455; lo < 25.47; lo += dem.dLon) raw = Math.max(raw, sampleGeo(dem, lo, la));
-  report.edits.E9 = { summitInTheSourceDemMetres: r1(raw), summitOnTheGridMetresAbove1615Sea: r1(top), summitLonLat: [r3(toLon(X(tk)) * 10) / 10, r3(toLat(Z(tk)) * 10) / 10], strippedAtSummitMetres: r2(T.d[tk] - h.d[tk]) };
+  Object.assign(report.edits.E9, { summitInTheSourceDemMetres: r1(raw), summitOnTheGridMetresAbove1615Sea: r1(top), summitLonLat: [r3(toLon(X(tk)) * 10) / 10, r3(toLat(Z(tk)) * 10) / 10], strippedAtSummitMetres: r2(T.d[tk] - h.d[tk]) });
 }
 
 // ---------------------------------------------------------------- rock classes
@@ -217,7 +232,7 @@ const rock = new Uint8Array(N * N);
   const dDome = near(dome); // Pre-Kameni's rock carries on under the water around its shore
   for (let k = 0; k < N * N; k++) {
     let c = 0;
-    if (dome[k] || (bay[k] && dDome[k] < 6)) c = 3;
+    if (dome[k] || (bay[k] && dDome[k] < 4)) c = 3;
     else if (bay[k]) c = 6;
     else if (basement[k]) c = h.d[k] > E.E9.marbleAboveMetres[names[basement[k] - 1]] ? 5 : 4;
     else if (th[k]) c = 2;
@@ -235,6 +250,14 @@ const rock = new Uint8Array(N * N);
 }
 const enc = encodeTerrain(h.d, rock, N, CF);
 report.data = { bytes: enc.bytes.length, sha256: createHash('sha256').update(enc.bytes).digest('hex'), heightUnitMetres: UNIT, fineCellsStored: enc.fineStored, maxErrorMetresOnLand: r2(enc.maxErrLand), rmsErrorMetresOnLand: r2(enc.rmsLand), maxErrorMetresUnderwater: r2(enc.maxErrSea) };
+// the page's own reader (source/src/world.js) must give back exactly this grid
+{
+  const w = readFileSync(path.join(root, 'source', 'src', 'world.js'), 'utf8'), a = w.indexOf('// <terrain-decoder>'), b = w.indexOf('// </terrain-decoder>');
+  if (a < 0 || b < 0) { console.error('source/src/world.js has no terrain-decoder marks'); process.exit(1); }
+  const page = new Function(w.slice(a, b) + '\nreturn decodeTerrain;')()(enc.bytes);
+  for (let k = 0; k < N * N; k++) if (page.q[k] !== enc.q[k] || page.rock[k] !== rock[k]) { console.error('the page\'s terrain decoder disagrees with the data at cell ' + k); process.exit(1); }
+  report.data.pageDecoderAgrees = true;
+}
 const b64 = Buffer.from(enc.bytes).toString('base64');
 writeFileSync(path.join(root, 'source', 'src', 'terrain-data.js'),
   `// GENERATED by tools/terrain/build.mjs from tools/terrain/edits.json. Do not edit: change the edits and rebuild.\n`
@@ -249,8 +272,8 @@ writeFileSync(path.join(root, 'source', 'src', 'terrain-data.js'),
   + `// Copernicus DEM instance COP-DEM-GLO-30-F, article 6). The use of the data here is not endorsed by the Copernicus programme.\n`
   + `//\n`
   + `// Sea floor: EMODnet Bathymetry Consortium (2024), EMODnet Digital Bathymetry (DTM 2024), https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1.\n`
-  + `// This data product was created by EMODnet (https://emodnet.ec.europa.eu/en/), is owned by the EU, and is licensed under the Creative\n`
-  + `// Commons Attribution 4.0 International (CC BY 4.0) licence. Not to be used for navigation.\n`
+  + `// This data product was created by EMODnet ( https://emodnet.ec.europa.eu/en/ ), and is owned by the EU and licensed under the Creative\n`
+  + `// Commons Attribution 4.0 International (CC BY 4.0) license: https://creativecommons.org/licenses/by/4.0/. Not to be used for navigation.\n`
   + `//\n`
   + `// Both datasets were changed: resampled, joined, and reshaped into a reconstruction of the island before the Late Bronze Age eruption\n`
   + `// by the edits recorded in docs/terrain/README.md. The heights here are a model of the past, not a survey of the present.\n`
