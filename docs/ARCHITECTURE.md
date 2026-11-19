@@ -1,0 +1,156 @@
+# Architecture: where the engine stands, and what the bigger world needs
+
+A review, written on 2026-11-19 at Chad's request, after the project's scope grew in one day from one moment to a world with layers, seasons and a year the viewer can move. **It proposes; it decides nothing.** The decisions it needs are in §9. Sizes and frame times under "measured" were measured; everything called an estimate is the session's estimate and has to be measured before it is relied on.
+
+## 1. What changed
+
+| Before 2026-11-19 | Now |
+|---|---|
+| One moment: late May of one year | A date, a season and a year the viewer moves, about 1800–1500 BCE (D33, D34), opening in 1628 BCE (D36) |
+| One state of the island | The living island, then the damaged town, the eruption and the island it left (D37) |
+| Evidence and reconstruction told apart by one switch, for the town only | Three layers over everything: Found, Inferred, Imagined (D31, D38) |
+| A random night sky | A sky computed for the date and place, with eclipses and the planets (D33) |
+| Changes might reload or rebuild | Changing layer, date or year never reloads or pauses: things fade in and out (D31) |
+
+Still to come, as before: plants, the harbour and ships, people and animals, interiors and wall paintings, labels for what was found, and other places.
+
+Chad's four words for the result: **high performing, efficient, small and fluid.**
+
+## 2. Where the engine stands (measured)
+
+| | |
+|---|---|
+| The page | 165.6 kB, 97.9 kB gzipped, of a 256 kB budget (D17) |
+| What it is made of, as source text | terrain data 74 kB; shaders 50 kB; `main.js` 43 kB; `world.js` 35 kB; town data 16 kB; menu and styles 10 kB; sound 6 kB |
+| Frame rate | 60 fps at full resolution in all nine views, High detail, on this Mac (Apple GPU). GPU time 5.6–12.7 ms a frame in work order 002's run |
+| Load | The world builds in about half a second |
+| Other devices | **Not measured.** Nobody has run it on an iPad yet |
+
+How it works today:
+- Everything is generated once, at load, into fixed GPU buffers: the terrain mesh, the town as one mesh, a shadow map for the island and one for the town.
+- JavaScript does almost nothing each frame, and allocates nothing (engine law 3).
+- The town's mesh already marks each vertex as excavated or reconstructed. That flag, and the pale wash the `L` key applies, are the seed of the layers.
+
+Nearly half the page is terrain data. The engine itself is small.
+
+## 3. What the new scope asks of the engine
+
+Every thing in the world now carries three tags: its **layer**, the **years** it stands for, and, if it grows, its **season**. Six requirements follow.
+
+1. **Nothing is rebuilt when a tag's control moves.** Whether a thing shows is worked out on the GPU from three numbers: the layer, the year, the day of the year.
+2. **Numerous things are placed by rule, not stored one by one.** A field of barley is a rule and a patch on a map, not ten thousand positions in the page.
+3. **Hidden things cost nothing.** What a layer or a year hides is culled before it is drawn.
+4. **Fades need no sorting.** Sorting transparent things is slow and fragile.
+5. **Shadows and collision follow what is shown.** A house that has faded away casts no shadow and stops nobody.
+6. **The evidence stays attached.** Each rule and each tag keeps its claim reference in the tools' data, as now. The page carries only numbers.
+
+## 4. Proposed design
+
+### 4.1 One visibility function
+A thing's visibility is one number from 0 to 1: its layer's fade, times its years' fade, times its season's state. Three values go to every shader: the layer (0 to 2, moving smoothly during a change), the year, and the day of the year.
+
+- **Fixed meshes such as the town** keep one mesh. Each building's tags live in a small table, looked up by the building number its vertices already carry, so tags cost a few bytes a building.
+- **The fade is a dither**, not transparency: a fading thing is drawn through a fine pattern of holes that closes or opens. It needs no sorting, and the shadow pass uses the same pattern, so shadows fade with their owners.
+- **Collision** reads the same table, and a viewer standing on something that fades is lowered gently (D31).
+
+### 4.2 The GPU places everything numerous
+For plants, and later people and animals, a compute pass runs each frame. It scatters instances from a land-cover map and the rules, drops what is hidden or out of view, chooses a level of detail, and writes the draw lists itself. The CPU does no per-instance work, and the page stores no instance.
+
+This is the design of the Formosa Forest fork (§7), which draws a forested island this way. The three tags become three more inputs to the same pass.
+
+### 4.3 The island through time
+Two whole islands would cost 74 kB each. The island after the eruption is today's island, which is the data the tools already start from. So the page would hold the island of 1628 BCE, as now, and a compact **difference** to the later one, which is smooth and confined to the caldera and the ash blanket. The vertex shader blends the two. The eruption itself is an effect, not data.
+
+### 4.4 The sky
+An ephemeris inside the page, by the method of Beyond the Gates of Uruk: short series for the Sun, Moon and planets fitted to NASA's ephemeris over the window, a catalogue of bright stars with their own motion, and precession. It is worked out when the date changes, not every frame.
+
+### 4.5 Time as data
+Each place gets a timeline in the tools: what begins and ends when, each entry with its claim and its grade. The build turns it into the year tags. A thing with no dated beginning or end stands for the whole span.
+
+### 4.6 Seasons
+Each plant species gets a few numbers from lane T3c: when it leafs, flowers, fruits and dries, and the colour of each state. The day of the year picks the state.
+
+## 5. The size budget
+
+Estimates only, in kB of page, uncompressed.
+
+| Part | Estimate |
+|---|---|
+| The page today | 166 |
+| Layers, dates and years in the engine, with their controls | 8–12 |
+| Plants: forms, rules, land-cover map, seasons | 20–30 |
+| The sky: ephemeris and stars | 15–25 |
+| The island after the eruption, as a difference, and the eruption | 15–25 |
+| The harbour and ships | 10–15 |
+| People and animals | 25–40 |
+| Interiors and wall paintings | 30–60 |
+| Labels and the text of what was found | 10–20 |
+| **Total** | **about 300–390** |
+
+So one 256 kB page will not hold the whole plan. Three ways to answer that:
+
+1. **Keep one file and raise the budget when a work order's numbers require it** (recommended). The page stays one file that needs nothing else and works offline. What travels is the compressed size, 98 kB today.
+2. **One page plus data files loaded when needed.** The first load is smaller, but it gives up "nothing loaded at run time", the gate's rule, and offline use from a single file. It is the natural shape once there is a second place (O5).
+3. **Keep 256 kB and cut scope.**
+
+There is also room to recover: the terrain data is 45% of the page. A coarser grid away from the town and the caldera could return an estimated 15–25 kB.
+
+## 6. Performance
+
+A frame has 16.7 ms at 60 fps. On this Mac the GPU uses 5.6–12.7 ms of it today. New costs, none yet measured: the placement pass, the overdraw of foliage, more shadow casters, and multisampling if it is adopted.
+
+Rules proposed:
+- No per-frame allocation in JavaScript (kept).
+- Everything numerous is placed and culled on the GPU.
+- A fade costs nothing while nothing is fading.
+- A change of date or year recomputes only small tables: the sky, the season, three numbers.
+- **The floor is set on a real iPad, not on this Mac**, whose numbers flatter. The touch test will give the first reading.
+
+## 7. What others have built on Abyssal Garden
+
+Upstream has 2,499 stars and 375 forks (GitHub, 2026-11-19). **Only READMEs were read for this review; no fork's source has been read yet.**
+
+| Fork | What it is | What is worth taking |
+|---|---|---|
+| `emersonliuuu/forest` (Formosa Forest) | A walkable island modelled on Taiwan, with six forest zones by altitude and 25 plant and animal meshes, in one HTML file | A compute pass that scatters, culls and picks detail for every plant and animal into indirect draw lists. Distant trees as impostors baked on the GPU. Foliage drawn with alpha-to-coverage under 4× multisampling. A leaf atlas made by code. Two shadow cascades. Address parameters for fixed test poses and a scripted benchmark that prints frame times |
+| `fofrem/manhattan-at-dusk` | 36 city blocks at dusk, with lit windows and moving cabs | A browser test that checks shader compilation, the controls, the touch interface and the missing-GPU message. Window lights for the town at night |
+| `JNobleA/15-Eunomia` | Walking and flying round a small asteroid | Another take on walking over terrain |
+| `yiroutesu/abyssal-garden-editor` | An editor | Not read |
+
+Others include a space scene, a mine, an extended sea and a Godot port.
+
+**Voidstruck** (`vitaminclaude/voidstruck`, playable at <https://voidstruck.com/>), which Chad pointed to, is not a fork of Abyssal Garden but is built the same way: a whole galaxy, with planets to land and walk on, in one HTML file of 299 kB (about 114 kB compressed), on WebGPU with no libraries. Its README describes five things this project should learn from:
+
+| Voidstruck's way | What it means here |
+|---|---|
+| **A function, not data.** Every star and planet is worked out from a seed and its coordinates, and nothing is stored | The same rule as §3.2. Only what evidence fixes (the terrain, the excavated plan) is data; everything else is a rule |
+| **The ground is a mesh of seven nested grids**, each twice as coarse as the last, over a surface baked into a small map | A better terrain than today's single fixed mesh: fine near the viewer and coarse far away. Because its heights come from a map, blending two islands by the year (§4.3) is one line in a shader |
+| **Plants and animals are recipes**: a family with a handful of dials | How species are built in §4.6, with the dials set from lane T3c and not from a seed |
+| **The rules are separate from the picture**: plain functions stepped at a fixed rate, with 192 automated tests that run outside the browser | The layer, date and year logic and the sky are written this way, so the sky can be tested against a reference ephemeris, as Uruk's is |
+| **Staying small was planned**: a budget of 300 kB from the start, a build that shortens shaders and numbers, a table of where every kB goes, and the real size shown on the title screen | A per-part size report in the build, and a precedent for a single file of about 300 kB |
+
+**Voidstruck's code cannot be borrowed.** It is under the PolyForm Strict License 1.0.0, which does not allow changing or redistributing it. What is taken from it is technique, learned from its public README and from playing it.
+
+**Before borrowing code from any fork:** read its licence. Upstream is MIT and forks usually keep it, but each has to be checked, and what is taken is credited in `README.md`. A technique is free to learn from.
+
+**Next:** read Formosa Forest's placement pass and its impostor baking in full, before the work order for layers and time is written.
+
+## 8. Order of work proposed
+
+1. **A measuring spike**, before any work order: a dithered fade on the town with a layer value; a placement pass drawing fifty thousand plain instances on the island; the terrain as nested grids over a height map; and the size of the island's difference. Its numbers replace the estimates above.
+2. **Work order 003, layers and time:** the three tags, the fades, the controls (layer, date, year), the town retagged, shadows and collision following, and the change to edit E4 (D29).
+3. **Work order 004, plants**, placed by the GPU, with seasons.
+4. **The sky and the calendar**, after its own research lane.
+5. **The end of the town**, from lane T7.
+
+Then the harbour and ships, people and animals, interiors, and labels.
+
+## 9. Decisions this needs from Chad
+
+| # | Question | Leaning |
+|---|---|---|
+| 1 | The size budget, when a work order's numbers pass 256 kB | Keep one file and raise the budget (§5, option 1) |
+| 2 | Whether the layers and time are built first, as work order 003 (O14) | Yes, after the measuring spike |
+| 3 | Which iPad is the slowest device the world must run well on | The one used in the touch test, until a slower one matters |
+| 4 | Whether to study Formosa Forest's source and credit what is learned | Yes |
+| 5 | Whether the terrain is rebuilt as nested grids over a height map, as Voidstruck's ground is | Decide from the spike's numbers. It is the largest change to working code in this review |

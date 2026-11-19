@@ -58,6 +58,7 @@ This project uses the unghost harness (`~/Developer/agent-lab/unghost/harness/bi
 | `tools/town/`, `docs/town/` | How the town is traced and laid out, and its record. |
 | `docs/HISTORICAL_STANDARD.md` | Evidence rules for every site. |
 | `docs/DECISIONS.md` | Numbered decisions and open questions. |
+| `docs/ARCHITECTURE.md` | How the engine is built and how it should grow: layers, dates, years, size and speed. |
 | `docs/research/` | Research prompts, reports and verifications. |
 | `docs/tasks/` | Work orders. |
 | `.harness/` | Harness config and evidence logs. |
