@@ -1,5 +1,5 @@
 # 002-town-of-akrotiri: the town at Akrotiri in 1615 BCE, from outside, and walking
-**Status:** open · **Branch:** `task/002-town-of-akrotiri`
+**Status:** merged · **Branch:** `task/002-town-of-akrotiri`
 
 **Ready to run.** Research lane T2b is back and checked, this order is finished from it, and Chad confirmed its decisions on 2026-11-18 (D18–D20, D22).
 
@@ -9,7 +9,7 @@
  "id": "002-town-of-akrotiri",
  "family": "code",
  "task_type": "procedural-world",
- "status": "open",
+ "status": "merged",
  "assignee": {"person": "Chad", "agent": "claude-code", "model": "claude-fable-5-2"},
  "branch": "task/002-town-of-akrotiri",
  "owns": [
@@ -230,7 +230,86 @@ If the page cannot stay within the budget at a quality worth showing, or the pla
 Interiors and wall paintings; furniture and other objects, apart from the one stone pithos; people, animals and plants; ships, a harbour or quay; fields, terraces, roads and other settlements outside the town; lamps and fires; sound above the water; the final earthquake, the abandonment and the eruption.
 
 ## Result
-(Given by the worker in its final report and pasted in by Chad's session: what was built, the gate and views outputs, the size of `index.html`, the number of buildings, the liberties list, how walking was tested, and what was seen at each viewpoint and by whom.)
+By the worker session (Claude Fable 5.2, effort xhigh, as Chad set it), 2026-11-18. Branch `task/002-town-of-akrotiri`, eleven commits, `4b0a3c7` to `4949dd0`, and `23ad3c8` after the review. The full record is `docs/town/README.md`; the numbers are in `docs/town/build-report.json`.
+
+**What was built**
+- **The plan, traced repeatably.** `tools/town/fetch.mjs` downloads Dörrbecker's Commons map and refuses any file but the checked SHA-1. `trace.mjs` finds its wall shapes and the edge of the excavated walls (97 points round 4,638 m²). The plan draws wall fragments, not closed outlines, so each building is the convex hull of the plan's own walls inside a hand-marked region, and every edge is measured against the drawn walls.
+- **The rest of the town by rule.** `build.mjs` lays out 9.95 ha running north and north-east, with streets, alleys, blind alleys and stepped fronts. Nothing stands south or west of the walls; eight houses stand to the east.
+- **Houses in the engine.** `buildTown` in `world.js` builds each house from its outline: walls round their openings, tuff frames, corner blocks, timber lines, parapet, earth roof and spout. Named buildings get their sourced features (Xeste 3's dressed front and benches, Xeste 4's tuff, the West House's large window and pier-and-window walls, the light-well of the House of the Ladies, Delta 16's low storey, the pithos).
+- **Light and ground.** The town has its own shadow map (about 0.15 m a texel on High), flagstone paving and street shading. All six times of day work; the night is unlit.
+- **Where the evidence ends.** Key `L`, or a menu switch, draws the edge of the excavated walls on the ground and shows the reconstruction pale. The menu says what is excavated, what is reconstruction and what is still to come, and carries the plan's credit word for word.
+- **Walking** (D12), with collision; keys `7`, `8` and `9`; a fly-through in `dev.html` that tours the town.
+- **The terrace (E8) reshaped** into the sourced north–south ridge: 23.0 m at Xeste 3 (sourced 23.1). The terrain data rebuilt byte for byte before the change and twice after it.
+- **Records:** `docs/town/README.md`, the fork note in `README.md`, the E8 entry in `docs/terrain/README.md`.
+
+**Checks**
+
+| Check | Output |
+|---|---|
+| `checks/build.sh` | `PASS build: index.html matches a fresh build of source/, 166 kB of a 256 kB budget, nothing loaded at run time` |
+| `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60` (last run 05:54 UTC on 19 Nov) | `PASS views: nine viewpoints rendered on apple metal-3 at high detail, 1600x900, world built in 1 s, every view at least 55 fps and 60% resolution` |
+| Each view | 60 fps, 100% resolution, no late frame, GPU 5.6–12.7 ms |
+| The same check on Medium and on Low | PASS, every view at 60 fps and 100% (run to a scratch folder, not published) |
+| `node tools/town/trace.mjs` and `build.mjs`, run again | the same `town-data.js` byte for byte |
+| `node tools/terrain/build.mjs` | the old `terrain-data.js` before the E8 change; the same new file twice after it |
+| Size of `index.html` | 169,589 bytes (132,496 before), of which about 14 kB is town data |
+| Published | Thera Views, versions 8 to 11 |
+
+**Number of buildings**
+
+| | |
+|---|---|
+| Buildings | **452**: 19 excavated, 13 reconstructed inside the plan, 420 reconstructed by rule |
+| Masses | 463 (a building may be several), with 2 terraces and the stone pithos |
+| Storeys | 332 buildings of two, 120 of three; Delta 16 is one low storey |
+| Town | 9.95 ha inside its outline, 6.8 ha of it built on |
+
+**Liberties:** A-L1 to A-L15, each with its reason in `docs/town/README.md` §6, now also in `docs/HISTORICAL_STANDARD.md` §6. The reshaped terrace stays under terrain liberty T-L6. Shown at grade B: the horns over Delta East's entrance (T2#49), the West House's partial third storey (T2#38) and Xeste 2's three storeys.
+
+**How walking was tested:** by Claude, in `dev.html` in headless Chrome on this Mac's GPU, with `tools/town/shot.mjs` pressing the page's own keys and reading the camera's state after each step.
+
+| Step | Result |
+|---|---|
+| Lands (`X` from 8 m above Double Horns Square) | On foot, on the upper terrace |
+| Walks (`W` for 4 s) | 6.4 m, so 1.6 m a second, stepping down the terraces |
+| Is stopped by a wall | Halted at the foot of Xeste 2's north front, still on foot |
+| Takes off (`E`) | Flying, 17 m up |
+| Walks a street | 8.7 m down Telchines Street where it is about 1 m wide |
+| Roofs are solid | Landed on a roof, walked off its edge, fell to the street |
+| Walks into the sea and swims | Down the beach at 5.1 m a second with Shift, then swimming 3.6–4.1 m below the surface at the engine's swimming pace |
+
+**What was seen** by Claude in the views-check pictures:
+
+| View | Seen |
+|---|---|
+| 1 Akrotiri terrace from the sea | The town is a thin dark band on the low tan terrace, about 900 m off: a settlement, and no more than that |
+| 2 Bay and Pre-Kameni from the rim | As in work order 001 |
+| 3 High above, looking north | The whole ring; the town is a speck about eight pixels across on the south coast |
+| 4 Profitis Ilias summit | As in work order 001 |
+| 5 Sea level in the bay | As in work order 001 |
+| 6 Under water off the south shore | As in work order 001 |
+| 7 On foot in Telchines Street | A paved street in shade between two-storey walls, sunlight across it ahead, Complex Beta's rubble wall closing the view |
+| 8 On foot in Double Horns Square | Xeste 2's front of dressed tuff over flagstones, with a door, two rows of windows and a sharp shadow |
+| 9 Over the roofs from the north edge | A carpet of flat earth roofs inside their parapets, running south to the sea |
+
+Claude also looked at Xeste 3's front, the pithos, the horns, the light-well, the West House, the excavated part from the air with and without the edge shown, golden hour, night, the menu, view 8 on Medium and view 9 on Low.
+
+**Departures from the order, and open points**
+- **Outlines are convex hulls, not tracings.** The plan gives fragments. A first reading of coordinates off it by eye was wrong by 2–5 m in places, so each outline is now taken from the plan's own walls by rule (liberty A-L12).
+- **Two houses stand by rule on the west side of Telchines Street** (A-L11), inside the plan's limits of the excavation but where it draws no wall. Chad kept them (D24).
+- **The old shoreline.** The sketch that puts the sea a few tens of metres from the walls (T2b#61) disagrees with the terrain, whose coast is about 350 m south of them (T-L14). Recorded for the harbour order; the coast was not moved.
+- **Sourced and not shown:** the covered drain, the cobbles of the side street, the awning sockets and parapet gap at Delta 16, the pipe on the West House's wall, and the sheer slope at Xeste 4, which the terrain's 40 m grid cannot hold.
+- **Weaknesses that show:** the excavated part looks sparser than the reconstruction round it; the town is small from far off; walls repeat; street shade is flat.
+- **Not checked by anyone:** touch controls on a real device; popping in motion.
+- **Rights are as the order left them:** the gap in the map's chain of rights, and how far share-alike reaches, are questions for before any sale.
 
 ## Review
-(Filled in by Chad's session: what Chad saw, and the decision to merge or not.)
+Recorded on 2026-11-18 in the worker session. Chad's integrator session was closed by accident, and he asked this session to do the integration ("I'm going to let you do it").
+
+- **What Chad saw:** his words: "I went through each view and flew over and somewhat through Akrotiri", and "That's looking excellent for now." He had the stills in Thera Views, the page itself and the record to review from.
+- **What Chad decided:**
+  - **The menu's buttons to upstream's GitHub and Ko-fi go** ("Remove them"), and so does `.github/FUNDING.yml` ("I do want the Noniv's Ko-fi fully removed"). The credit line "Engine: Abyssal Garden by Noniv (MIT)" stays. This closes O4 (D23).
+  - **The two rule-built houses on Telchines Street stay** ("keep the two rule-built houses", D24).
+  - **Marking and labelling what has been found** (objects, wall paintings, statues) waits for "a later work order yet unplanned" (D25).
+- **What Chad did not report on:** the views one by one, each time of day, whether he came down and walked, popping in motion, and touch on a device. No problem was reported; none of these is recorded as checked by him.
+- **Decision:** merge. `task/002-town-of-akrotiri` was merged into `main` locally as `54755e1`, and again after the menu change (`23ad3c8`). The push is Chad's.

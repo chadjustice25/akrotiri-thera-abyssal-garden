@@ -1,55 +1,76 @@
 # Handoff
 
-As of 2026-11-18, after work order 001 was merged and work order 002 was drafted. Only Chad's session edits this file. (On 2026-11-18 Chad asked the session that built work order 001 to do its integration, so that session wrote this version.)
+As of 2026-11-18, after work order 002 (the town of Akrotiri) was merged. Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
 
 ## Where things stand
-- **The world is now Thera.** `main` holds the island of 1615 BCE (high chronology, D16): land, sea, sky and light, at real scale, in one `index.html` of 132 kB. There is no town, plant, animal or person yet, so the ground is bare. Upstream's underwater garden is gone.
+- **The world is Thera with its town.** `main` holds the island of 1615 BCE (high chronology, D16) and the town at Akrotiri from the outside, in one `index.html` of 166 kB. There is no plant, animal, person, interior, harbour or ship yet: the ground is bare and the town is empty.
+- **The town** (`docs/town/README.md`):
+  - Its centre follows the excavated plan, redrawn from Dörrbecker's map on Wikimedia Commons (D22). Everything beyond the edge of the excavated walls is reconstruction by rule, to 9.95 ha.
+  - It has 452 buildings: 19 excavated, 13 reconstructed inside the plan, 420 by rule.
+  - Key `L`, or the menu, draws the edge of the excavated walls on the ground and shows the reconstruction pale.
+  - The viewer can now walk (D12): coming down onto land puts them on foot, walls stop them, `E` or `Space` takes off, and walking out of their depth becomes swimming.
+  - The terrace under it (terrain edit E8) was reshaped into the sourced north–south ridge.
 - **Repository:** <https://github.com/chadjustice25/akrotiri-thera-abyssal-garden>, public, forked from `Noniv/abyssal-garden` (MIT). Remotes are `origin` (the fork) and `upstream` (Noniv).
-- **Not pushed.** Local `main` is ahead of `origin/main` (`abbdf21`) by work order 001 (merge `7651a39`) and the integration commits after it. The branch `task/001-terrain-and-sea` still exists locally.
-- **Work order 001** (`docs/tasks/001-terrain-and-sea.md`) has its Result and Review filled in. The terrain record is `docs/terrain/README.md`: datasets and licences, edits E0–E9 with their claims, liberties T-L1 to T-L17, and how to rebuild the data.
-- **Checks on `main`:** `checks/build.sh` PASSes at 130 kB of the 256 kB budget. `node checks/views.mjs --min-fps 55 --min-scale 60` PASSes with every view at 60 fps and full resolution. The latest pictures are in **Thera Views**, <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L> (version 6).
-- **Who looked:** Chad ran the page on the Mac on 2026-11-18 and said it "looks great and the controls are pretty intuitive". Claude looked at the six stills, the six times of day and the surface crossing. Nobody has tried touch on a device.
-- **Research:** X1, T1, T1b, T1c, T2, T2b and T3–T7 are in `docs/research/claude/`, each checked in `docs/research/verification/`. T1c (deposits, harbour, sea level, licences) is applied to the terrain.
-- **The terrain data is not MIT.** It stays under the Copernicus WorldDEM-30 licence and CC BY 4.0 (EMODnet). The notices are in the page's menu, `README.md`, `source/src/terrain-data.js` and the terrain record, and must travel with the page.
+- **Not pushed.** Local `main` is well ahead of `origin/main` (`abbdf21`): work orders 001 and 002 and the integration after each. `git log --oneline origin/main..main` lists what a push will publish.
+- **Work order 002** (`docs/tasks/002-town-of-akrotiri.md`) has its Result and Review filled in. Its liberties A-L1 to A-L15 are in `docs/HISTORICAL_STANDARD.md` §6.
+- **Checks on `main`:** `checks/build.sh` PASSes at 166 kB of the 256 kB budget. `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60` PASSes with every view at 60 fps and full resolution. **The views check now needs `--views 9`**; `cd source && npm run views` passes it. The latest pictures are in **Thera Views**, <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L> (version 11).
+- **Who looked:** Chad went through each of the nine views and flew over and partly through the town on 2026-11-18, and said: "That's looking excellent for now." He did not report on the views one by one. Claude looked at the nine stills, golden hour, night, the menu, and Medium and Low detail, and tested walking by script. Nobody has tried touch on a device.
+- **Decided on 2026-11-18:** upstream's funding links are gone from the menu and the repository, and the credit stays (D23, closes O4); the two rule-built houses on Telchines Street stay (D24); marking and labelling what has been found waits for its own order (D25).
+- **Research:** X1, T1, T1b, T1c, T2, T2b and T3–T7 are in `docs/research/claude/`, each checked in `docs/research/verification/`. T1c is applied to the terrain; T2 and T2b to the town.
+- **Two kinds of data in the page are not MIT.**
+  - The terrain stays under the Copernicus WorldDEM-30 licence and CC BY 4.0 (EMODnet).
+  - The town's outlines are under CC BY-SA 4.0.
+  - Their notices are in the page's menu, `README.md`, the two generated data files and the two records, and must travel with the page.
 
 ## Next
-1. **Chad: push** (command below). The fork is public, so the push publishes the island and the data notices.
-2. **Chad: decisions now due.**
-   - **O4, upstream's funding link.** The menu still shows Noniv's GitHub and Ko-fi buttons. It is due "before the page is shown to anyone", and the push shows it.
+1. **Chad: push** (command below). The fork is public, so the push publishes the island, the town and every notice. O4 no longer stands in its way.
+2. **Chad: decisions and actions due.**
    - **The reading of grade A for landscape claims** (T1 check, correction 15): still waiting to become a decision.
-   - **E4's volume: the measure is settled, the size is open.** The full paper was read (`docs/research/verification/T1.md`, addendum): the source measures its 9.1–17.1 km³ the way the build does, against today's surface with the sea floor included. The build's 13.16 km³ is inside the range but below the source's preferred 17.1 km³ and its rock-fragment estimate of 14.4 ± 0.8 km³. Raising it means a smaller bay or higher restored ground: Chad's call.
-   - **The two licence questions go to the licensor (D21).** Chad sends the drafted message through the Copernicus Data Space help centre (it needs a free account). Rebuilding the land from NASA's NASADEM is the fallback. Neither blocks the push.
-3. **Next build: work order 002, the town of Akrotiri** (`docs/tasks/002-town-of-akrotiri.md`; it passes harness lint). It builds the town from outside on the E8 terrace and adds walking (D12).
-   - **Chad's decisions are in (D18–D20, D22):** the excavated part follows the excavated plan; where the evidence ends is recorded and shown, and the rest is reconstruction; outsides only, thriving, no harbour yet; the six views stay and three are added.
-   - **Research lane T2b is back and checked** (`docs/research/verification/T2b.md`: 86 of 89 rows checked, none unsupported, no invented source). The order is finished from it.
-   - **Chad confirmed both open points (D22):** the plan is Maximilian Dörrbecker's Commons map, used with full credit for this free page (before any sale, ask the Akrotiri Excavations for their plan); and the whole town is drawn at about 10 ha, running north and north-east, with nothing built south or west of the excavated walls. **The order is ready to run.**
-   - The town's outlines will be under CC BY-SA 4.0, not MIT. Whether share-alike reaches the whole built page is not settled (T2b verification, §4).
-   - Then: run it in a fresh session on Fable 5.2 at effort high (D14), in its own worktree, with `--views 9` on the views check.
-   - Chad is looking for Palyvou's 2005 book on Akrotiri's architecture through his university library. It would settle most of the order's "to verify" numbers (T2 verification, §4).
-4. **Later orders, noted by 001:** plants (the bare ground is liberty T-L16), the real night sky (T-L12), sound above the water, a cliff form for the restored southern wall, and sharper shadows up close.
+   - **E4's volume: the measure is settled, the size is open.** The build's 13.16 km³ is inside the source's range but below its preferred 17.1 km³ (`docs/research/verification/T1.md`, addendum). Raising it means a smaller bay or higher restored ground.
+   - **Still open from the T1c check:**
+     - The two licence questions go to the licensor (D21): Chad sends the drafted message through the Copernicus Data Space help centre. Rebuilding the land from NASA's NASADEM is the fallback.
+     - Its gaps: no thickness map of the eruption deposits could be opened (liberty T-L1), and the Mavro Rachidi cores, the best local test of the sea level (T-L13), are not yet dated.
+   - **The excavation and the book (O8).** A draft letter to the Akrotiri Excavations, not sent, is in `docs/town/letter-to-the-excavation.md`, with what each answer would close. Palyvou 2005 is not in Chad's library and can be bought; the same file says where.
+3. **Next build order: not chosen (O9).** The candidates:
+   - **Plants.** The bare ground (liberty T-L16) is now the largest thing wrong with the picture, on the island and round the town. Research lane T3 is checked. This is the building session's recommendation.
+   - **The harbour.** It needs research first. The one published sketch of the old shore (T2b#61) disagrees with the terrain's coast (T-L14); `docs/town/README.md` §3 records it.
+   - **People** (lane T4), **interiors and wall paintings** (lane T6; image rights, D6), and **marking and labelling what has been found** (D25).
+   - **A second pass on the town**, when the book or the excavation's plan arrives. It would close liberties A-L3, A-L6, A-L7, A-L10 and A-L12, and should add the drain and the cobbles that are sourced and not yet shown (A-L14).
+   - **Noted by 001:** the real night sky (T-L12), sound above the water, and a cliff form for the restored southern wall.
+4. **The town's weaknesses, for whoever works on it next** (`docs/town/README.md` §9):
+   - The excavated part looks sparser than the reconstruction round it.
+   - The town is small from far off.
+   - Walls repeat.
+   - Street shade is flat.
+   - The ridge is gentle where the excavator describes a sheer fall at Xeste 4.
 
 ## How to try the page
 - Open `index.html` in Chrome or Edge on the Mac and press **Dive in**.
-- Mouse to look; `W` `A` `S` `D` to fly or swim; `E` or `Space` up, `Q` or `X` down; `Shift` faster; `1`–`6` viewpoints; `T` time of day; `Esc` menu; `M` mute; `H` stats.
+- Mouse to look; `W` `A` `S` `D` to fly, swim or walk; `E` or `Space` up, `Q` or `X` down; `Shift` faster; `1`–`9` viewpoints (`7`, `8` and `9` are the town); `T` time of day; `L` the edge of the excavated walls; `Esc` menu; `M` mute; `H` stats.
+- To walk, fly down onto the ground. To take off, go up.
 - For a hands-off tour: `cd source && npm run build:dev`, open `dev.html` and press `F`.
-- To refresh Thera Views: run the views check, then publish `.harness/views/latest/index.html` with its six JPEGs to the artifact's URL.
+- To refresh Thera Views: `cd source && npm run views`, then publish `.harness/views/latest/index.html` with its nine JPEGs to the artifact's URL.
+- To take a picture from any place, or to script moves: `node tools/town/shot.mjs` (its header says how).
 
 ## Working from the iPad
-- **Thera Views** (above) shows the six stills. The page itself is not reachable from the iPad until it is hosted somewhere.
+- **Thera Views** (above) shows the nine stills. The page itself is not reachable from the iPad until it is hosted somewhere.
 - **Thera Research Desk**, <https://claude.ai/artifact/9pEpfRsWWDtP7sKjV4NQoq>: copies each research prompt, tracks lane status and stores pasted reports. Each report is a Markdown asset whose id is recorded in the `reports` collection.
 - **Thera Project Board**, <https://claude.ai/artifact/SPwJ88U5JryHybwsjTn7js>: the `decisions` and `notes` collections. Answers there become D-numbers in `docs/DECISIONS.md`.
 
 ## Commands (Chad runs these)
 ```sh
 cd ~/Developer/akrotiri-thera-abyssal-garden
-git status                      # clean; akrotiri-frescoes-sources/ and tools/terrain/cache/ must NOT be listed
+git status                      # clean; akrotiri-frescoes-sources/ and the tools' cache folders must NOT be listed
 (cd source && npm run check)    # PASS build: ...
 git log --oneline origin/main..main   # what the push will publish
 git push origin main
-git branch -d task/001-terrain-and-sea   # optional: the branch is merged
+git branch -d task/001-terrain-and-sea task/002-town-of-akrotiri   # optional: both are merged
+git worktree remove ../akrotiri-thera-002                          # optional; add --force if it refuses over the downloaded caches
 ```
 
 ## Notes
 - Research runs as Claude agents in a session (D13), one named agent per lane and a separate `Verify:` agent for each. The Gemini Argon steps in `docs/research/README.md` still apply if Gemini recovers.
-- To rebuild the terrain data: `node tools/terrain/fetch.mjs` once (it downloads the two datasets into `tools/terrain/cache/`, ignored by git), then `node tools/terrain/build.mjs`, then `cd source && npm run build`.
+- To rebuild the terrain data: `node tools/terrain/fetch.mjs` once (it downloads the two datasets into `tools/terrain/cache/`, ignored by git), then `node tools/terrain/build.mjs`. **Then rebuild the town**, which reads the ground from the terrain: `node tools/town/build.mjs`. Then `cd source && npm run build`.
+- To rebuild the town: `node tools/town/fetch.mjs` once (the plan, into `tools/town/cache/`, ignored by git), `node tools/town/trace.mjs`, `node tools/town/build.mjs`, then `cd source && npm run build`. `tools/town/traced.json` is committed, so the last two steps work without the plan.
+- A work order for a worker session runs in its own worktree (`LESSONS.md`). Name the session, so that it can be found again.
 - `~/.config/harness/secrets.json` has three `TODO` fields (`gemini-api-key.notes`, `open-brain-key.rotate`, `open-brain-key.leak_noticed_by`). `harness config check` fails on them in every project. They were there before session 1, which did not touch them.

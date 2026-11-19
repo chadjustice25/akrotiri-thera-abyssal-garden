@@ -188,7 +188,7 @@ Each rule is in `town.json` (`rules`, `town`) with its numbers. "Page" means the
 
 ## 6. Liberties
 
-Departures from the evidence, or choices where there is none. They are numbered for `docs/HISTORICAL_STANDARD.md` §6, which only Chad's session edits: **they are not in the standard until they are entered there.**
+Departures from the evidence, or choices where there is none. They were entered in `docs/HISTORICAL_STANDARD.md` §6 on 2026-11-18 under the same numbers.
 
 | # | Liberty | Why | Where |
 |---|---|---|---|
@@ -222,7 +222,7 @@ Departures from the evidence, or choices where there is none. They are numbered 
 | Storeys | 332 buildings of two, 120 of three; Delta 16 is one low storey |
 | Lots | 485 cut, 420 kept; 7 dropped for their size, 58 thinned out, none on steep ground |
 | Data | 10,744 bytes, 14.0 kB as text in the page |
-| Page | `index.html` is 166.7 kB of the 256 kB budget (132 kB before this order) |
+| Page | `index.html` is 165.6 kB of the 256 kB budget (132 kB before this order) |
 
 ## 8. Walking, and how it was tested
 

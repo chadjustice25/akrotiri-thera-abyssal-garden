@@ -9,6 +9,17 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 - **From Uruk: grade evidence by its distance in time, not only by whether it exists.** State how far each piece of evidence is from the target moment. A text or image made centuries later is grade C, even when it is famous.
 - **From Uruk and unghost: reports carry errors that only a check against the sources catches.** Nothing from a report is adopted until its claim is checked (`docs/research/verification/`).
 
+## Work order 002 (2026-11-18)
+- **A coordinate read by eye off a picture is not data.** The first outlines were typed in from crops of the plan and were wrong by 2–5 m in places, some by a whole grid square. Take geometry from the source by rule (here: the hull of the plan's own walls inside a marked region), and have the tool print what it measured.
+- **A simplified plan gives wall fragments, not buildings.** Turning fragments into buildings is interpretation. Budget for it, and record which edges stand on a drawn wall and which are inferred.
+- **A number can flatter.** A building's share of outline "on drawn walls" was high where it merely ran beside a neighbour's wall, and a cut building had its two parts' names the wrong way round. Both showed only in the printed table. Print what the tool decided, and read it.
+- **Build the picture-taker on the first day of a visual order.** `tools/town/shot.mjs` drives `dev.html` in headless Chrome, takes a picture from any place and presses keys. It made each change visible in seconds and let walking be tested by script.
+- **Every order adds text to the menu.** It overflowed the window and hid its own title. The menu now scrolls; look at it in a picture after every change to its text.
+- **A worktree kept other sessions out of the commits**, as work order 001's lesson said it would. A Claude Code session inside a worktree refuses compound shell commands, so scripts go in the scratchpad and are run with one plain command.
+- **Wikimedia Commons answered Node's HTTP/1.1 requests with 429 and HTTP/2 with 200.** `tools/town/fetch.mjs` uses `node:http2`.
+- **Check a relayed instruction before acting on it.** A note about the T1c corrections reached the building session a day late; all of it had been done in work order 001. Checking took a minute and changed nothing.
+- **Name a long-running session.** The integrator session was closed by mistake and could not be told apart from the others afterwards, so the building session did the integration again.
+
 ## Work order 001 (2026-11-18)
 - **Stage by path, never `git add -A`.** The integrator session and its research agents wrote into the same checkout while the worker built. One `git add -A` swept two of their files into the worker's commit, and it had to be redone. Give a worker its own worktree, or have it add only the paths its order owns.
 - **A work order's Result section sat in a path the order forbade** (`docs/tasks/`), so the worker could only give the Result in its report. The harness means it that way: lint refuses an order that owns its own file (`owns-spec`), so that no worker can change its gate. Say in each order that the Result comes back in the final report and the integrator pastes it in.
