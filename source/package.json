@@ -8,7 +8,7 @@
     "build:readable": "node build.mjs --readable",
     "build:dev": "node build.mjs --dev",
     "check": "bash ../checks/build.sh",
-    "views": "node ../checks/views.mjs",
+    "views": "node ../checks/views.mjs --views 9",
     "terrain": "node ../tools/terrain/build.mjs",
     "town": "node ../tools/town/build.mjs"
   },
