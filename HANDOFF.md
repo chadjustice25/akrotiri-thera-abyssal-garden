@@ -1,6 +1,6 @@
 # Handoff
 
-As of 2026-11-18, after work order 002 (the town of Akrotiri) was merged. Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
+As of 2026-11-18, after work order 002 (the town of Akrotiri) was merged and pushed. Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
 
 ## Where things stand
 - **The world is Thera with its town.** `main` holds the island of 1615 BCE (high chronology, D16) and the town at Akrotiri from the outside, in one `index.html` of 166 kB. There is no plant, animal, person, interior, harbour or ship yet: the ground is bare and the town is empty.
@@ -11,7 +11,7 @@ As of 2026-11-18, after work order 002 (the town of Akrotiri) was merged. Only C
   - The viewer can now walk (D12): coming down onto land puts them on foot, walls stop them, `E` or `Space` takes off, and walking out of their depth becomes swimming.
   - The terrace under it (terrain edit E8) was reshaped into the sourced north–south ridge.
 - **Repository:** <https://github.com/chadjustice25/akrotiri-thera-abyssal-garden>, public, forked from `Noniv/abyssal-garden` (MIT). Remotes are `origin` (the fork) and `upstream` (Noniv).
-- **Not pushed.** Local `main` is well ahead of `origin/main` (`abbdf21`): work orders 001 and 002 and the integration after each. `git log --oneline origin/main..main` lists what a push will publish.
+- **Pushed.** Chad pushed `main` on 2026-11-18: the public fork now shows the island, the town and every notice (work orders 001 and 002 and the integration after each). `git log --oneline origin/main..main` lists anything committed since.
 - **Work order 002** (`docs/tasks/002-town-of-akrotiri.md`) has its Result and Review filled in. Its liberties A-L1 to A-L15 are in `docs/HISTORICAL_STANDARD.md` §6.
 - **Checks on `main`:** `checks/build.sh` PASSes at 166 kB of the 256 kB budget. `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60` PASSes with every view at 60 fps and full resolution. **The views check now needs `--views 9`**; `cd source && npm run views` passes it. The latest pictures are in **Thera Views**, <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L> (version 11).
 - **Who looked:** Chad went through each of the nine views and flew over and partly through the town on 2026-11-18, and said: "That's looking excellent for now." He did not report on the views one by one. Claude looked at the nine stills, golden hour, night, the menu, and Medium and Low detail, and tested walking by script. Nobody has tried touch on a device.
@@ -23,21 +23,20 @@ As of 2026-11-18, after work order 002 (the town of Akrotiri) was merged. Only C
   - Their notices are in the page's menu, `README.md`, the two generated data files and the two records, and must travel with the page.
 
 ## Next
-1. **Chad: push** (command below). The fork is public, so the push publishes the island, the town and every notice. O4 no longer stands in its way.
-2. **Chad: decisions and actions due.**
+1. **Chad: decisions and actions due.**
    - **The reading of grade A for landscape claims** (T1 check, correction 15): still waiting to become a decision.
    - **E4's volume: the measure is settled, the size is open.** The build's 13.16 km³ is inside the source's range but below its preferred 17.1 km³ (`docs/research/verification/T1.md`, addendum). Raising it means a smaller bay or higher restored ground.
    - **Still open from the T1c check:**
      - The two licence questions go to the licensor (D21): Chad sends the drafted message through the Copernicus Data Space help centre. Rebuilding the land from NASA's NASADEM is the fallback.
      - Its gaps: no thickness map of the eruption deposits could be opened (liberty T-L1), and the Mavro Rachidi cores, the best local test of the sea level (T-L13), are not yet dated.
    - **The excavation and the book (O8).** A draft letter to the Akrotiri Excavations, not sent, is in `docs/town/letter-to-the-excavation.md`, with what each answer would close. Palyvou 2005 is not in Chad's library and can be bought; the same file says where.
-3. **Next build order: not chosen (O9).** The candidates:
+2. **Next build order: not chosen (O9).** The candidates:
    - **Plants.** The bare ground (liberty T-L16) is now the largest thing wrong with the picture, on the island and round the town. Research lane T3 is checked. This is the building session's recommendation.
    - **The harbour.** It needs research first. The one published sketch of the old shore (T2b#61) disagrees with the terrain's coast (T-L14); `docs/town/README.md` §3 records it.
    - **People** (lane T4), **interiors and wall paintings** (lane T6; image rights, D6), and **marking and labelling what has been found** (D25).
    - **A second pass on the town**, when the book or the excavation's plan arrives. It would close liberties A-L3, A-L6, A-L7, A-L10 and A-L12, and should add the drain and the cobbles that are sourced and not yet shown (A-L14).
    - **Noted by 001:** the real night sky (T-L12), sound above the water, and a cliff form for the restored southern wall.
-4. **The town's weaknesses, for whoever works on it next** (`docs/town/README.md` §9):
+3. **The town's weaknesses, for whoever works on it next** (`docs/town/README.md` §9):
    - The excavated part looks sparser than the reconstruction round it.
    - The town is small from far off.
    - Walls repeat.
@@ -62,7 +61,7 @@ As of 2026-11-18, after work order 002 (the town of Akrotiri) was merged. Only C
 cd ~/Developer/akrotiri-thera-abyssal-garden
 git status                      # clean; akrotiri-frescoes-sources/ and the tools' cache folders must NOT be listed
 (cd source && npm run check)    # PASS build: ...
-git log --oneline origin/main..main   # what the push will publish
+git log --oneline origin/main..main   # what a push will publish (the fork is public: a push publishes)
 git push origin main
 git branch -d task/001-terrain-and-sea task/002-town-of-akrotiri   # optional: both are merged
 git worktree remove ../akrotiri-thera-002                          # optional; add --force if it refuses over the downloaded caches
