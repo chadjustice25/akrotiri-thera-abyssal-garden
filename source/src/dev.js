@@ -3,10 +3,10 @@
 // ============================================================================
 //   F    fly the camera along the scripted path (FLY in main.js), one minute through the whole world
 //   B    the same flight as a benchmark: the resolution stays fixed, every frame is timed, the result is shown at the end
-//   F, B or 1-6 during a flight stop it
+//   F, B or 1-9 during a flight stop it
 //   dev.look(x, y, z, tx, ty, tz), dev.hour(h), dev.F: for scripts that take pictures (y is an absolute height)
 {
-  window.dev = { look: lookAt, hour: (h) => { hourTo = F[HOUR] = h; }, F, hAt };
+  window.dev = { look: lookAt, hour: (h) => { hourTo = F[HOUR] = h; }, F, hAt, solid, state: () => ({ walk, show, x: F[CX], y: F[CY], z: F[CZ], feet: F[FEET], sea: F[HSEA], ground: hAt(F[CX], F[CZ]), top: tAt(F[CX], F[CZ]) }) };
   const LOGN = 1 << 16, logFrame = new Float32Array(LOGN), logGpu = new Float32Array(LOGN);
   let flying = false, bench = false, last = 0, nFrame = 0, nGpu = 0;
   const stop = () => { flying = bench = false; dynT = 0; };
@@ -36,6 +36,6 @@
         // a benchmark hides the stats line and holds the resolution: dynT at -Infinity keeps frame() from tuning it
         if (bench) { hud = false; info.textContent = ''; dynT = -Infinity; }
       }
-    } else if (/Digit[1-6]/.test(e.code)) stop();
+    } else if (/Digit[1-9]/.test(e.code)) stop();
   });
 }

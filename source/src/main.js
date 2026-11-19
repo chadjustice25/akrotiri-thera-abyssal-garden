@@ -48,10 +48,12 @@ const tShadow = tex(SHADOW, SHADOW, DEPTH, RT), tDummy = tex(1, 1, DEPTH, RT);
 const tWater = tex(WATER, WATER, HDR, RT, 5), tDetail = tex(1024, 1024, 'rgba8unorm', RT, 11);
 const tH = tex(TS, TS, 'r16float', RT | TU.COPY_SRC, TM), tNrm = tex(TS, TS, 'rgba8unorm', RT, TM), tGeo = tex(1024, 1024, 'rgba8unorm', RT, 11);
 const tSky = tex(SKYW, SKYH, HDR, RT);
+// the town: its own shadow map, and its plan (what is built on, how far the nearest wall is, where the evidence ends)
+const TMM = log2(TMAPN) + 1, tTownSh = tex(TSH, TSH, 'depth16unorm', RT), tTown = tex(TMAPN, TMAPN, 'rgba8unorm', RT | TU.COPY_DST, TMM);
 
-// the per-frame block (struct G in shaders.js): one for the scene, one for drawing the shadow map
-const UB = new Float32Array(64), UBS = new Float32Array(64);
-const ubo = device.createBuffer({ size: 256, usage: BU.UNIFORM | BU.COPY_DST }), uboS = device.createBuffer({ size: 256, usage: BU.UNIFORM | BU.COPY_DST });
+// the per-frame block (struct G in shaders.js): one for the scene, one each for drawing the island's and the town's shadow map
+const UB = new Float32Array(80), UBS = new Float32Array(80), UBT = new Float32Array(80);
+const ubo = device.createBuffer({ size: 320, usage: BU.UNIFORM | BU.COPY_DST }), uboS = device.createBuffer({ size: 320, usage: BU.UNIFORM | BU.COPY_DST }), uboT = device.createBuffer({ size: 320, usage: BU.UNIFORM | BU.COPY_DST });
 const WT = new Float32Array(4), uboW = device.createBuffer({ size: 16, usage: BU.UNIFORM | BU.COPY_DST });
 const uboWaves = buf(WAVES, BU.UNIFORM);
 
@@ -61,10 +63,11 @@ const bgl0 = device.createBindGroupLayout({ entries: [
   { binding: 1, visibility: VF, sampler: {} }, { binding: 2, visibility: VF, sampler: {} }, { binding: 3, visibility: VF, sampler: { type: 'comparison' } },
   { binding: 4, visibility: VF, texture: { sampleType: 'depth' } },
   ...[5, 6, 7, 8, 9, 10].map((binding) => ({ ...T2, binding })),
-  { binding: 11, visibility: VF, buffer: {} }, { binding: 12, visibility: VF, sampler: {} }] });
-const mkBG0 = (u, sh) => device.createBindGroup({ layout: bgl0, entries: [u, sRep, sClamp, sCmp, sh, tWater, tDetail, tH, tNrm, tGeo, tSky, uboWaves, sAniso]
+  { binding: 11, visibility: VF, buffer: {} }, { binding: 12, visibility: VF, sampler: {} },
+  { binding: 13, visibility: VF, texture: { sampleType: 'depth' } }, { ...T2, binding: 14 }] });
+const mkBG0 = (u, sh, ts) => device.createBindGroup({ layout: bgl0, entries: [u, sRep, sClamp, sCmp, sh, tWater, tDetail, tH, tNrm, tGeo, tSky, uboWaves, sAniso, ts, tTown]
   .map((r, binding) => ({ binding, resource: r.createView ? r.createView() : r.size ? { buffer: r } : r })) });
-const bg0 = mkBG0(ubo, tShadow), bg0s = mkBG0(uboS, tDummy);
+const bg0 = mkBG0(ubo, tShadow, tTownSh), bg0s = mkBG0(uboS, tDummy, tDummy), bg0t = mkBG0(uboT, tDummy, tDummy);
 const pl0 = device.createPipelineLayout({ bindGroupLayouts: [bgl0] });
 
 const bglBlit = device.createBindGroupLayout({ entries: [{ binding: 0, visibility: SS.FRAGMENT, texture: {} }, { binding: 1, visibility: SS.FRAGMENT, sampler: {} }] });
@@ -91,6 +94,7 @@ const BLEND = { color: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' }, a
 const ADD = { color: { srcFactor: 'one', dstFactor: 'one' }, alpha: { srcFactor: 'one', dstFactor: 'one' } };
 const A = (shaderLocation, offset, format) => ({ shaderLocation, offset, format });
 const vbGrid = { arrayStride: 4, attributes: [A(0, 0, 'sint16x2')] }, ibLevel = { arrayStride: 16, stepMode: 'instance', attributes: [A(1, 0, 'float32x4')] };
+const vbTownL = { arrayStride: 32, attributes: [A(0, 0, 'float32x3'), A(1, 12, 'float32x2'), A(2, 20, 'snorm8x4'), A(3, 24, 'uint8x4'), A(4, 28, 'float32')] };
 const ibSpeck = { arrayStride: 16, stepMode: 'instance', attributes: [A(0, 0, 'float32x4')] };
 const scenePipe = (m, vsE, fsE, buffers, o = {}) => device.createRenderPipeline({ layout: pl0,
   vertex: { module: m, entryPoint: vsE, buffers },
@@ -99,8 +103,11 @@ const scenePipe = (m, vsE, fsE, buffers, o = {}) => device.createRenderPipeline(
   depthStencil: { format: DEPTH, depthWriteEnabled: !o.blend || !!o.dw, depthCompare: 'greater' }, multisample: { count: AA } });
 
 await say('Compiling shaders…', 0.08, 300);
-const mTerr = mod(W_TERR), mSea = mod(W_SEA), mSky = mod(W_SKY);
+const mTerr = mod(W_TERR), mSea = mod(W_SEA), mSky = mod(W_SKY), mTown = mod(W_TOWN);
 const pTerrain = scenePipe(mTerr, 'vs', 'fs', [vbGrid, ibLevel], { cull: 'back' });
+const pTown = scenePipe(mTown, 'vs', 'fs', [vbTownL], { cull: 'back' });
+const pTownSh = device.createRenderPipeline({ layout: pl0, vertex: { module: mTown, entryPoint: 'vsS', buffers: [vbTownL] }, primitive: { cullMode: 'none' },
+  depthStencil: { format: 'depth16unorm', depthWriteEnabled: true, depthCompare: 'less', depthBias: 3, depthBiasSlopeScale: 2.5 } });
 const pSea = scenePipe(mSea, 'vs', 'fs', [vbGrid, ibLevel], { blend: BLEND, dw: 1 });
 const pSky = scenePipe(mSky, 'vs', 'fs', []);
 const pSpeck = scenePipe(mSky, 'vsP', 'fsP', [ibSpeck], { strip: true, blend: ADD });
@@ -111,6 +118,7 @@ const waterViews = [0, 1, 2, 3, 4].map((m) => mipView(tWater, m)), waterBG = wat
 const pSkyLut = fsPipe(W_SKYLUT, HDR), bgSkyLut = fsBG(pSkyLut, [ubo]), passSky = { colorAttachments: [colorAtt(tSky.createView(), true)] };
 const pRays = fsPipe(W_RAYS, HDR), pRB = fsPipe(W_RBLUR, HDR), pPost = fsPipe(W_POST, FMT);
 const passShadow = { colorAttachments: [], depthStencilAttachment: { view: tShadow.createView(), depthClearValue: 1, depthLoadOp: 'clear', depthStoreOp: 'store' } };
+const passTownSh = { colorAttachments: [], depthStencilAttachment: { view: tTownSh.createView(), depthClearValue: 1, depthLoadOp: 'clear', depthStoreOp: 'store' } };
 
 // ---------------------------------------------------------------- the island: read the data, bake it into textures
 await say('Reading the island…', 0.3, 700);
@@ -159,6 +167,22 @@ function hMax(x, z, r) {
   return m;
 }
 
+// ---------------------------------------------------------------- the town: its houses, its plan, and what stands where
+await say('Building the town…', 0.9, 500);
+const TB = buildTown(hAt), vbTown = buf(TB.v, BU.VERTEX), ibTown = buf(TB.ix, BU.INDEX), nTown = TB.ix.length, TGRID = TB.grid, TTOP = TB.top;
+{
+  Q.writeTexture({ texture: tTown }, TB.map, { bytesPerRow: TMAPN * 4 }, [TMAPN, TMAPN]);
+  const e = device.createCommandEncoder();
+  for (let i = 1; i < TMM; i++) { const r = e.beginRenderPass({ colorAttachments: [colorAtt(mipView(tTown, i), true)] }); r.setPipeline(pMip8); r.setBindGroup(0, blitBG(mipView(tTown, i - 1))); r.draw(3); r.end(); }
+  Q.submit([e.finish()]);
+}
+// the top of whatever is built at (x, z), or far below the ground where nothing is; then the height of the solid world there
+function tAt(x, z) { const i = floor((x - TGX) / TCELL), j = floor((z - TGZ) / TCELL); return i < 0 || j < 0 || i >= TGW || j >= TGH ? -1e9 : TTOP[TGRID[j * TGW + i]]; }
+function sAt(x, z) { const h = hAt(x, z), t = tAt(x, z); return t > h ? t : h; }
+// the same two, for a body 60 cm across
+function wallAt(x, z) { return max(tAt(x, z), tAt(x - 0.3, z), tAt(x + 0.3, z), tAt(x, z - 0.3), tAt(x, z + 0.3)); }
+function solid(x, z) { return max(sAt(x, z), sAt(x - 0.3, z), sAt(x + 0.3, z), sAt(x, z - 0.3), sAt(x, z + 0.3)); }
+
 // ---------------------------------------------------------------- meshes
 const GM = gridMesh(), vbMesh = buf(GM.v, BU.VERTEX), ibMesh = buf(GM.idx, BU.INDEX);
 const LT = new Float32Array(64), LS = new Float32Array(64), ibTerr = buf(LT, BU.VERTEX), ibSea = buf(LS, BU.VERTEX); // one [x, z, cell, level] per ring
@@ -173,41 +197,47 @@ const NSPECK = 6000 >> LV, ibSpecks = buf(Float32Array.from({ length: NSPECK * 4
 // ---------------------------------------------------------------- camera state, viewpoints, the scripted path
 // per-frame float state lives in one preallocated array, so the frame loop allocates no heap numbers
 const F = new Float64Array(40), P6 = new Float64Array(6), V3 = new Float64Array(3);
-const CX = 0, CY = 1, CZ = 2, YAW = 3, PIT = 4, FX = 5, FY = 6, FZ = 7, RX = 8, RZ = 9, UX = 10, UY = 11, UZ = 12, VX = 13, VY = 14, VZ = 15, TIME = 16, FLT = 17, LAST = 18, GPU = 19, HUDT = 20, SPL = 21, HOUR = 22, HSEA = 23;
+const CX = 0, CY = 1, CZ = 2, YAW = 3, PIT = 4, FX = 5, FY = 6, FZ = 7, RX = 8, RZ = 9, UX = 10, UY = 11, UZ = 12, VX = 13, VY = 14, VZ = 15, TIME = 16, FLT = 17, LAST = 18, GPU = 19, HUDT = 20, SPL = 21, HOUR = 22, HSEA = 23, FEET = 24;
 // a height given above the ground (or the sea), or a depth below the surface, as an absolute height
 const lift = (p) => { p[1] = p[1] < 0 ? p[1] : max(hAt(p[0], p[2]), 0) + p[1]; };
 for (const p of POSES) lift(p);
+// The viewer swims, flies or walks (D12). walk: on foot, with FEET the height of the ground underfoot. Eye height and pace
+// are liberties (A-L9): TOWNR.eye is the one figure a source gives, an architect's reading of one room's paintings (T2#35, grade B).
+let walk = 0, show = 0; // show: the edge of the excavated walls is drawn
 // aim the camera from P6 = position + look-at point
 function aim() {
   const dx = P6[3] - P6[0], dy = P6[4] - P6[1], dz = P6[5] - P6[2];
   F[CX] = P6[0]; F[CY] = P6[1]; F[CZ] = P6[2];
   F[YAW] = atan2(dx, -dz); F[PIT] = atan2(dy, sqrt(dx * dx + dz * dz));
 }
-const lookAt = (x, y, z, tx, ty, tz) => { P6[0] = x; P6[1] = y; P6[2] = z; P6[3] = tx; P6[4] = ty; P6[5] = tz; aim(); F[VX] = F[VY] = F[VZ] = 0; };
-// A two-minute camera path (position + look-at, Catmull-Rom) through the six viewpoints, for dev.js: from the sea below
-// Akrotiri over the restored land to the rim, down into the bay, up over the island, to Profitis Ilias and under the sea.
+const lookAt = (x, y, z, tx, ty, tz, onFoot) => { P6[0] = x; P6[1] = y; P6[2] = z; P6[3] = tx; P6[4] = ty; P6[5] = tz; aim(); F[VX] = F[VY] = F[VZ] = 0; walk = onFoot | 0; F[FEET] = y - TOWNR.eye; };
+// A two-minute camera path (position + look-at, Catmull-Rom) for dev.js: in from the sea to the town, over its roofs and
+// along its streets from above, round it, then up over the island, down into the bay, to Profitis Ilias and under the sea.
 const FLY = new Float32Array([
   -40, 2.6, 6900, -135, 30, 5937,
-  -60, 12, 6500, -135, 30, 5600,
-  -150, 90, 5700, -200, 150, 3500,
-  -220, 160, 4200, -250, 250, 1600,
+  -70, 8, 6420, -135, 28, 5937,
+  -105, 22, 6090, -138, 24, 5930,
+  -128, 20, 6000, -140, 24, 5900,
+  -146, 15, 5962, -146, 22, 5890,
+  -148, 13, 5930, -135, 22, 5870,
+  -128, 16, 5905, -110, 20, 5840,
+  -112, 18, 5872, -60, 22, 5760,
+  -70, 22, 5800, 40, 26, 5640,
+  10, 28, 5690, 60, 24, 5560,
+  60, 34, 5580, -60, 22, 5700,
+  20, 45, 5490, -120, 14, 5940,
+  -150, 60, 5560, -110, 14, 5930,
+  -330, 120, 5760, -130, 20, 5900,
   -250, 30, 2400, -900, 200, -1500,
   -250, 6, 1345, -1250, 40, -2500,
-  100, 120, 900, -900, 120, -2400,
   900, 20, 300, -700, 160, -2600,
   1250, 1.5, -450, -900, 150, -2700,
-  1500, 60, -2200, -300, 150, -3200,
   900, 500, -5000, -1200, 0, -2000,
-  -2500, 2500, -7500, -800, 0, -1000,
   -6000, 6000, -3000, 0, 0, 0,
-  -3000, 9000, 9000, -300, 0, -200,
   300, 9200, 13800, -300, 0, -200,
   4000, 3000, 9000, 4500, 400, 4500,
-  5600, 300, 5200, 4800, 480, 4200,
   5270, 3, 4050, -900, 100, -1600,
-  4200, 250, 4800, 1500, 100, 5500,
   1800, 60, 6100, 400, 0, 6300,
-  700, 6, 6520, 100, 0, 6400,
   250, -7, 6560, -135, -1, 6200,
 ]);
 for (let i = 0; i < FLY.length; i += 6) FLY[i + 1] = FLY[i + 1] < 0 ? FLY[i + 1] : max(hAt(FLY[i], FLY[i + 2]), 0) + FLY[i + 1];
@@ -232,7 +262,7 @@ function flyAt() {
   let s = F[FLT] / FLYT; s = s < 0 ? 0 : s > 1 ? 1 : s; s = s * s * (3 - 2 * s) * 0.25 + s * 0.75;
   s *= LUTN; let k = floor(s) | 0; if (k > LUTN - 1) k = LUTN - 1;
   F[SPL] = flyLUT[k] + (flyLUT[k + 1] - flyLUT[k]) * (s - k); flyRaw();
-  F[CY] = max(F[CY], hAt(F[CX], F[CZ]) + 1);
+  F[CY] = max(F[CY], solid(F[CX], F[CZ]) + 1);
 }
 
 // ---------------------------------------------------------------- the sun, the time of day
@@ -256,6 +286,18 @@ function setSun() {
   m[2] = -lx / (2 * D); m[6] = -ly / (2 * D); m[10] = -lz / (2 * D); m[14] = 0.5;
   m[3] = 0; m[7] = 0; m[11] = 0; m[15] = 1;
   for (let i = 0; i < 16; i++) UB[16 + i] = m[i];
+  // the town's own map looks the same way, at a box just large enough to hold the town from that side
+  let r0 = 1e9, r1 = -1e9, u0 = 1e9, u1 = -1e9, d0 = 1e9, d1 = -1e9; const t = UBT, hs = TNS / 2 - 45;
+  for (let i = 0; i < 8; i++) {
+    const x = TNX + (i & 1 ? hs : -hs), y = i & 2 ? 70 : 8, z = TNZ + (i & 4 ? hs : -hs), a = rx * x + ry * y, b = ux * x + uy * y + uz * z, c = -(lx * x + ly * y + lz * z);
+    r0 = min(r0, a); r1 = max(r1, a); u0 = min(u0, b); u1 = max(u1, b); d0 = min(d0, c); d1 = max(d1, c);
+  }
+  const sr = 2 / (r1 - r0), su = 2 / (u1 - u0), sd = 1 / (d1 - d0);
+  t[0] = rx * sr; t[4] = ry * sr; t[8] = 0; t[12] = -(r0 + r1) / (r1 - r0);
+  t[1] = ux * su; t[5] = uy * su; t[9] = uz * su; t[13] = -(u0 + u1) / (u1 - u0);
+  t[2] = -lx * sd; t[6] = -ly * sd; t[10] = -lz * sd; t[14] = -d0 * sd;
+  t[3] = 0; t[7] = 0; t[11] = 0; t[15] = 1;
+  for (let i = 0; i < 16; i++) UB[64 + i] = t[i];
 }
 setSun();
 
@@ -345,9 +387,9 @@ function render() {
   m[36] = rx; m[37] = 0; m[38] = rz; m[39] = TANH * asp;
   m[40] = ux; m[41] = uy; m[42] = uz; m[43] = TANH;
   m[44] = fx; m[45] = fy; m[46] = fz; m[47] = NEAR;
-  m[57] = RAYS; m[59] = F[HSEA];
+  m[57] = RAYS; m[58] = show; m[59] = F[HSEA];
   const moved = shadowAt !== F[HOUR];
-  if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); shadowAt = F[HOUR]; }
+  if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); Q.writeBuffer(uboT, 0, UBT); shadowAt = F[HOUR]; }
   m[56] = expo * (1 + 0.6 * wet);
   Q.writeBuffer(ubo, 0, UB);
   WT[0] = F[TIME]; Q.writeBuffer(uboW, 0, WT);
@@ -364,13 +406,17 @@ function render() {
   for (let i = 1; i < 5; i++) { r = e.beginRenderPass(waterPass[i]); r.setPipeline(pMip16); r.setBindGroup(0, waterBG[i - 1]); r.draw(3); r.end(); }
   // the sky, and the shadow map when the sun has moved
   r = e.beginRenderPass(passSky); r.setPipeline(pSkyLut); r.setBindGroup(0, bgSkyLut); r.draw(3); r.end();
-  if (moved) { r = e.beginRenderPass(passShadow); r.setPipeline(pShadow); r.setBindGroup(0, bg0s); r.setIndexBuffer(ibShadowGrid, 'uint32'); r.drawIndexed(SG * SG * 6); r.end(); }
+  if (moved) {
+    r = e.beginRenderPass(passShadow); r.setPipeline(pShadow); r.setBindGroup(0, bg0s); r.setIndexBuffer(ibShadowGrid, 'uint32'); r.drawIndexed(SG * SG * 6); r.end();
+    r = e.beginRenderPass(passTownSh); r.setPipeline(pTownSh); r.setBindGroup(0, bg0t); r.setVertexBuffer(0, vbTown); r.setIndexBuffer(ibTown, 'uint32'); r.drawIndexed(nTown); r.end();
+  }
   // scene: land, sea, sky, and specks in the water when the camera is in it
   r = e.beginRenderPass(passScene);
   r.setBindGroup(0, bg0); r.setVertexBuffer(0, vbMesh); r.setIndexBuffer(ibMesh, 'uint16');
   r.setPipeline(pTerrain); r.setVertexBuffer(1, ibTerr);
   r.drawIndexed(GM.nFull, 1, 0, 0, 0); if (nT > 1) r.drawIndexed(GM.nRing, nT - 1, GM.nFull, 0, 1);
-  r.setPipeline(pSea); r.setVertexBuffer(1, ibSea);
+  r.setPipeline(pTown); r.setVertexBuffer(0, vbTown); r.setIndexBuffer(ibTown, 'uint32'); r.drawIndexed(nTown);
+  r.setPipeline(pSea); r.setVertexBuffer(0, vbMesh); r.setIndexBuffer(ibMesh, 'uint16'); r.setVertexBuffer(1, ibSea);
   r.drawIndexed(GM.nFull, 1, 0, 0, 0); if (nS > 1) r.drawIndexed(GM.nRing, nS - 1, GM.nFull, 0, 1);
   r.setPipeline(pSky); r.draw(3);
   if (cy < F[HSEA]) { r.setPipeline(pSpeck); r.setVertexBuffer(0, ibSpecks); r.draw(4, NSPECK); }
@@ -425,17 +471,42 @@ function frame(now) {
     const ax = lkx * kq, ay = lky * kq; lkx -= ax; lky -= ay; l2x += ax; l2y += ay;
     const dyw = l2x * kq, dpt = l2y * kq; l2x -= dyw; l2y -= dpt;
     const yaw = F[YAW] + dyw; let pitch = F[PIT] - dpt; pitch = pitch < -1.55 ? -1.55 : pitch > 1.55 ? 1.55 : pitch;
-    // Swimming under the surface, flying above it: one free camera. In the water it moves at upstream's swimming pace;
-    // in the air the pace grows with the height above the ground, so the whole island is a short flight from anywhere.
-    const g0 = hAt(F[CX], F[CZ]), agl = F[CY] - (g0 > 0 ? g0 : 0);
-    const sp = (F[CY] < F[HSEA] ? 7 : 7 + min(max(agl, 0) * 0.45, 500)) * (ks || tN > 1 ? 3.7 : 1);
-    const k = 1 - exp(-dt * 4.5), mf = tId >= 0 ? 0.7 : kf - kb, mr = kr - kl, mu = ku - kd, cp = cos(pitch), sy = sin(yaw), cw = cos(yaw);
-    let vx = F[VX] + ((sy * cp * mf + cw * mr) * sp - F[VX]) * k, vy = F[VY] + ((sin(pitch) * mf + mu) * sp - F[VY]) * k, vz = F[VZ] + ((-cw * cp * mf + sy * mr) * sp - F[VZ]) * k;
-    let x = F[CX] + vx * dt, y = F[CY] + vy * dt, z = F[CZ] + vz * dt;
-    x = x < -6e4 ? -6e4 : x > 6e4 ? 6e4 : x; z = z < -6e4 ? -6e4 : z > 6e4 ? 6e4 : z;
-    // the ground is solid: the camera rides over it, and loses the speed that carried it down
-    const lo = hAt(x, z) + 0.7; if (y < lo) { y = lo; if (vy < 0) vy = 0; }
-    if (y > 14e3) y = 14e3;
+    // Three ways to move (D12). Swimming under the surface and flying above it are one free camera: in the water it moves
+    // at upstream's swimming pace, in the air the pace grows with the height above the ground, so the whole island is a
+    // short flight from anywhere. Coming down onto land puts the viewer on foot; E or Space takes off again; walking out of
+    // one's depth becomes swimming.
+    const k = 1 - exp(-dt * 4.5), mf = tId >= 0 ? 0.7 : kf - kb, mr = kr - kl, mu = ku - kd, cp = cos(pitch), sy = sin(yaw), cw = cos(yaw), fast = ks || tN > 1;
+    let x = F[CX], y = F[CY], z = F[CZ], vx = F[VX], vy = F[VY], vz = F[VZ];
+    if (walk) {
+      // on foot: along the ground at a walking pace. A wall, or anything higher than a step, stops the walker.
+      const sp = TOWNR.pace * (fast ? TOWNR.hurry : 1), kw = 1 - exp(-dt * 9); let ft = F[FEET];
+      vx += ((sy * mf + cw * mr) * sp - vx) * kw; vz += ((-cw * mf + sy * mr) * sp - vz) * kw;
+      const nx = x + vx * dt, nz = z + vz * dt;
+      if (solid(nx, z) - ft <= TOWNR.step) x = nx; else vx = 0;
+      if (solid(x, nz) - ft <= TOWNR.step) z = nz; else vz = 0;
+      const gr = solid(x, z);
+      if (ft > gr + 0.02) { vy -= 9.8 * dt; ft += vy * dt; if (ft <= gr) { ft = gr; vy = 0; } } // down a step, or off a roof
+      else { vy = 0; ft += (gr - ft) * (1 - exp(-dt * 14)); }                                    // up a step
+      F[FEET] = ft; y += (ft + TOWNR.eye - y) * (1 - exp(-dt * 12));
+      // up and away (on a touch screen: look well up and keep going); or out of one's depth, and swimming
+      if (ku || (tId >= 0 && pitch > 0.6)) { walk = 0; vy = 5; } else if (hAt(x, z) < 0.3 - TOWNR.eye) { walk = 0; vy = -2.5; }
+    } else {
+      const g0 = hAt(x, z), agl = y - (g0 > 0 ? g0 : 0), sp = (y < F[HSEA] ? 7 : 7 + min(max(agl, 0) * 0.45, 500)) * (fast ? 3.7 : 1);
+      vx += ((sy * cp * mf + cw * mr) * sp - vx) * k; vy += ((sin(pitch) * mf + mu) * sp - vy) * k; vz += ((-cw * cp * mf + sy * mr) * sp - vz) * k;
+      // the houses are solid from every side: a wall stops the camera, a roof carries it
+      const nx = x + vx * dt, nz = z + vz * dt, was = solid(x, z) + 0.6; let t = wallAt(nx, z);
+      if (t > y - 0.5 && t > was) vx = 0; else x = nx;
+      t = wallAt(x, nz); if (t > y - 0.5 && t > was) vz = 0; else z = nz;
+      x = x < -6e4 ? -6e4 : x > 6e4 ? 6e4 : x; z = z < -6e4 ? -6e4 : z > 6e4 ? 6e4 : z; y += vy * dt;
+      // the ground is solid too: the camera rides over it and loses the speed that carried it down. Touching down on
+      // land on purpose, or wading out of the sea, puts the viewer on foot.
+      const gr = solid(x, z), lo = gr + 0.7;
+      if (y < lo) {
+        if (hAt(x, z) > 0.3 - TOWNR.eye && !ku && (kd || vy < -0.4 || y < F[HSEA] + 0.6)) { walk = 1; F[FEET] = gr; vx *= 0.3; vz *= 0.3; }
+        y = lo; if (vy < 0) vy = 0;
+      }
+      if (y > 14e3) y = 14e3;
+    }
     F[YAW] = yaw; F[PIT] = pitch; F[VX] = vx; F[VY] = vy; F[VZ] = vz; F[CX] = x; F[CY] = y; F[CZ] = z;
   }
   render();
@@ -454,6 +525,11 @@ const bTime = $('t').querySelectorAll('button');
 const setTime = (i) => { hourTo = TIMES[i][1]; bTime.forEach((b, j) => { b.className = i === j ? 'on' : ''; }); };
 bTime.forEach((b, i) => { b.onclick = () => setTime(i); });
 setTime(2);
+// the edge of the excavated walls, drawn on the ground on request (key L, or the menu): beyond it the town is reconstruction
+const bShow = $('v').querySelectorAll('button');
+const setShow = (on) => { show = on ? 1 : 0; bShow.forEach((b, j) => { b.className = show === j ? 'on' : ''; }); };
+bShow.forEach((b, i) => { b.onclick = () => setShow(i); });
+setShow(0);
 const key = (e, v) => {
   switch (e.code) {
     case 'KeyW': kf = v; break; case 'KeyS': kb = v; break; case 'KeyA': kl = v; break; case 'KeyD': kr = v; break;
@@ -464,7 +540,8 @@ const key = (e, v) => {
       else if (e.code === 'KeyM') mute();
       else if (e.code === 'KeyT') setTime((TIMES.findIndex((t) => t[1] === hourTo) + 1) % TIMES.length);
       else if (e.code === 'Escape') ui(true);
-      else if (e.code >= 'Digit1' && e.code <= 'Digit6') lookAt(...POSES[e.code.charCodeAt(5) - 49]);
+      else if (e.code === 'KeyL') setShow(!show);
+      else if (e.code >= 'Digit1' && e.code <= 'Digit9') lookAt(...POSES[e.code.charCodeAt(5) - 49]);
     }
   }
 };

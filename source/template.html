@@ -43,7 +43,7 @@ h1 {
 p { margin: 0; }
 #a { display: grid; width: 30em; max-width: 100%; }
 #a > * { grid-area: 1/1; transition: opacity .8s, visibility .8s; }
-#s, #w, #q, #t, #k, #h, #x { font-size: .8em; letter-spacing: .12em; text-transform: uppercase; }
+#s, #w, #q, #t, #v, #k, #h, #x { font-size: .8em; letter-spacing: .12em; text-transform: uppercase; }
 #w { margin-top: 1.2em; color: #7ff3ff; text-wrap: balance; }
 
 /* loading bar */
@@ -80,16 +80,16 @@ a + a { background: #ff5e5b; color: #fff; }
 svg { width: 1.5em; height: 1.5em; fill: currentColor; }
 
 /* dark plates under the dive button: detail level, list of controls, touch hint */
-#q, #t, #k, #h { padding: 1em 1.6em; border-radius: .7em; background: #03131cb3; }
+#q, #t, #v, #k, #h { padding: 1em 1.6em; border-radius: .7em; background: #03131cb3; }
 
 /* detail level and time of day: buttons in a row, the current one lit */
-#q, #t { display: flex; align-items: center; gap: .4em; padding: .4em; }
-#q span, #t span { flex: 1; color: #7ff3ff; }
-#q button, #t button { flex: 1.2; padding: .7em 0; background: none; box-shadow: none; color: #e8fbff; }
-#t button { flex: none; padding: .7em .55em; font-size: .86em; letter-spacing: .03em; }
+#q, #t, #v { display: flex; align-items: center; gap: .4em; padding: .4em; }
+#q span, #t span, #v span { flex: 1; color: #7ff3ff; }
+#q button, #t button, #v button { flex: 1.2; padding: .7em 0; background: none; box-shadow: none; color: #e8fbff; }
+#t button, #v button { flex: none; padding: .7em .55em; font-size: .86em; letter-spacing: .03em; }
 #t span { flex: 1; }
-#q button:hover, #t button:hover { background: #7ff3ff33; }
-#q .on, #t .on { background: linear-gradient(#9ff6ff, #19c3d6); box-shadow: inset 0 -.2em #0003; color: #03222d; pointer-events: none; }
+#q button:hover, #t button:hover, #v button:hover { background: #7ff3ff33; }
+#q .on, #t .on, #v .on { background: linear-gradient(#9ff6ff, #19c3d6); box-shadow: inset 0 -.2em #0003; color: #03222d; pointer-events: none; }
 /* what this is, and whose data it is built from */
 #u { margin: -.6em 0 0; font-size: .8em; letter-spacing: .12em; text-transform: uppercase; color: #7ff3ff; text-wrap: balance; }
 #x { max-width: 66em; font-weight: 400; font-size: .55em; line-height: 1.35; letter-spacing: .02em; text-transform: none; color: #e8fbffb3; text-wrap: balance; }
@@ -135,21 +135,23 @@ svg { width: 1.5em; height: 1.5em; fill: currentColor; }
       <button id=d>Dive in</button>
       <p id=q><span>Detail</span><button>Low</button><button>Medium</button><button>High</button></p>
       <p id=t><span>Time</span><button>Dawn</button><button>Noon</button><button>Afternoon</button><button>Golden</button><button>Dusk</button><button>Night</button></p>
+      <p id=v><span>Edge of the excavated walls</span><button>Hidden</button><button>Shown</button></p>
       <div id=k>
         <p>
-          <i><b>W</b><b>A</b><b>S</b><b>D</b></i>Fly / swim
-          <i><b>Q</b><b>E</b></i>Down / up
+          <i><b>W</b><b>A</b><b>S</b><b>D</b></i>Fly / swim / walk
+          <i><b>Q</b><b>E</b></i>Down to land / up to take off
           <i><b>Shift</b></i>Faster
-          <i><b>1</b>–<b>6</b></i>Viewpoints
+          <i><b>1</b>–<b>9</b></i>Viewpoints
         </p>
         <p>
           <i><b>Esc</b></i>Menu
           <i><b>T</b></i>Time of day
+          <i><b>L</b></i>Edge of the excavated walls
           <i><b>M</b></i>Mute
           <i><b>H</b></i>Stats
         </p>
       </div>
-      <p id=h>Hold to move forward · slide to steer · second finger to go faster</p>
+      <p id=h>Hold to move forward · slide to steer · second finger to go faster · fly down onto the ground to walk · look well up to take off</p>
     </div>
   </div>
   <p id=x>Thera (Santorini) is the island's later name; its Bronze Age name is not known. The land and sea floor are a model of the past, not a survey: present-day data, changed to undo the eruption. Land: produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved. The organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30. Sea floor: EMODnet Digital Bathymetry (DTM 2024). This data product was created by EMODnet ( https://emodnet.ec.europa.eu/en/ ), and is owned by the EU and licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license. Licence: https://creativecommons.org/licenses/by/4.0/ · changed here · not for navigation. This data is not under the engine's MIT licence. Engine: Abyssal Garden by Noniv (MIT).</p>

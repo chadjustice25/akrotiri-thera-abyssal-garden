@@ -15,3 +15,5 @@ const SHADOW = LV ? 2048 : 4096, AA = LV > 1 ? 1 : 4, WATER = LV > 1 ? 256 : 512
 // TS: the baked terrain textures (height, normal) are TS x TS texels over the world square; GN: cells along one side of
 // each ring of the terrain and sea meshes; SG: cells along one side of the mesh the shadow map is drawn from
 const TS = LV ? 2048 : 4096, GN = LV > 1 ? 128 : 192, SG = LV ? 256 : 512;
+// TSH: the map of the town's own shadows, which must hold at the scale of a street a metre wide
+const TSH = LV ? 2048 : 4096;
