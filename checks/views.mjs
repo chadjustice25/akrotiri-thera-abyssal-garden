@@ -1,17 +1,19 @@
 #!/usr/bin/env node
 // ============================================================================
-// check `views`: render the page in headless Chrome on this Mac's GPU and photograph the six viewpoints
+// check `views`: render the page in headless Chrome on this Mac's GPU and photograph the preset viewpoints
 // ============================================================================
 //   node checks/views.mjs [--page index.html] [--level high|medium|low] [--size 1600x900] [--out DIR] [--settle 2.5]
 //                         [--min-fps N] [--min-scale P]   smoothness limits: FAIL if any view's stats line shows fewer than
 //                         N fps, or a render resolution below P% (the page's own scaler lowers it when the GPU cannot keep up)
+//                         [--views N]   how many viewpoints the page has: keys 1 to N, from 1 to 9 (default 6)
 //   (also: cd source && npm run views)
 // It serves the page from 127.0.0.1, opens it in headless Chrome (WebGPU on the real Metal adapter), waits for the
-// world to finish building, presses Dive in, then keys 1-6 and saves a JPEG of each view, with the stats line (key H)
-// read after each one. It writes DIR/view-1.jpg ... view-6.jpg, DIR/report.json and DIR/index.html (a gallery that
+// world to finish building, presses Dive in, then keys 1-N and saves a JPEG of each view, with the stats line (key H)
+// read after each one. It writes DIR/view-1.jpg ... view-N.jpg, DIR/report.json and DIR/index.html (a gallery that
 // Claude publishes as the "Thera Views" artifact so the views can be looked at from the iPad). DIR defaults to
 // .harness/views/<time>/ (ignored by git), and the run is also copied to .harness/views/latest/, the folder Claude publishes.
-// PASS: the page started on a hardware adapter, no error was logged, and all six views have picture content.
+// PASS: the page started on a hardware adapter, no error was logged, every view has picture content, the menu lists as many viewpoints as
+// the run was asked for, and every key after the first changed the picture (a key with no viewpoint behind it does not).
 // The check proves the page renders and shows what it rendered. It does not judge whether the picture is right:
 // that is still a person looking at the views (AGENTS.md section 6).
 // Exit 0 PASS, 1 FAIL, 3 ERROR; the last line is the result.
@@ -35,6 +37,9 @@ const [W, H] = arg('size', '1600x900').split('x').map(Number);
 if (!(W > 0 && H > 0)) error('--size must look like 1600x900');
 const MINFPS = arg('min-fps') ? Number(arg('min-fps')) : null, MINSCALE = arg('min-scale') ? Number(arg('min-scale')) : null;
 if ((MINFPS !== null && !(MINFPS > 0)) || (MINSCALE !== null && !(MINSCALE > 0 && MINSCALE <= 100))) error('--min-fps must be > 0 and --min-scale 1-100');
+const NV = Number(arg('views', '6'));
+if (!(Number.isInteger(NV) && NV >= 1 && NV <= 9)) error('--views must be a whole number from 1 to 9');
+const COUNT = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'][NV];
 const SETTLE = Number(arg('settle', '2.5')) * 1000; // after each jump: let shadows, exposure and plants settle
 const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 const OUT = path.resolve(ROOT, arg('out', path.join('.harness', 'views', stamp)));
@@ -97,7 +102,7 @@ const run = async (expression) => {
 };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const key = async (code, k) => {
-  const vk = { Digit1: 49, Digit2: 50, Digit3: 51, Digit4: 52, Digit5: 53, Digit6: 54, KeyH: 72 }[code];
+  const vk = code === 'KeyH' ? 72 : 48 + Number(code.slice(5)); // Digit1 to Digit9, or H
   await send('Input.dispatchKeyEvent', { type: 'keyDown', code, key: k, windowsVirtualKeyCode: vk });
   await send('Input.dispatchKeyEvent', { type: 'keyUp', code, key: k, windowsVirtualKeyCode: vk });
 };
@@ -122,6 +127,10 @@ try {
   report.adapter = await run(`(async()=>{const a=navigator.gpu&&await navigator.gpu.requestAdapter({powerPreference:'high-performance'});if(!a)return null;const i=a.info||{};return{vendor:i.vendor,architecture:i.architecture,fallback:!!i.isFallbackAdapter}})()`);
   if (!state.startsWith('m|')) throw Object.assign(new Error(`the page did not reach its menu: "${state.split('|')[1] || state}"`), { fail: true });
 
+  // the page's menu says how many viewpoints it has ("1–6 Viewpoints"); it must be the number this run was asked for
+  report.menuViews = await run(`(()=>{const m=document.body.textContent.match(/1\\s*[–-]\\s*(\\d)\\s*Viewpoints/i);return m?+m[1]:null})()`);
+  if (report.menuViews !== null && report.menuViews !== NV) throw Object.assign(new Error(`the page's menu lists viewpoints 1–${report.menuViews}, and this run was asked for ${NV} (--views)`), { fail: true });
+
   // dive in (pointer lock is refused headless, which leaves the menu closed), and hide the two overlay controls
   await run(`document.getElementById('d').click()`);
   await sleep(500);
@@ -129,23 +138,33 @@ try {
   await key('KeyH', 'h'); // the stats line: read after each view, hidden from the picture
 
   // warm-up: the first seconds after diving in compile pipelines and let the resolution scaler settle; not measured
-  for (let v = 1; v <= 6; v++) { await key('Digit' + v, String(v)); await sleep(800); }
+  for (let v = 1; v <= NV; v++) { await key('Digit' + v, String(v)); await sleep(800); }
   await key('Digit1', '1'); await sleep(SETTLE);
   mkdirSync(OUT, { recursive: true });
-  for (let v = 1; v <= 6; v++) {
-    await key('Digit' + v, String(v));
-    await sleep(SETTLE);
-    const shot = await send('Page.captureScreenshot', { format: 'jpeg', quality: 88 });
-    const file = `view-${v}.jpg`;
-    writeFileSync(path.join(OUT, file), Buffer.from(shot.data, 'base64'));
-    // picture content: decode the screenshot in the page and measure its brightness and spread
-    const px = await run(`(async()=>{const b=await (await fetch('data:image/jpeg;base64,${shot.data}')).blob();const im=await createImageBitmap(b);
+  // picture content: decode a screenshot in the page and measure its brightness, its spread and a 16 x 9 copy of it
+  const measure = (data) => run(`(async()=>{const b=await (await fetch('data:image/jpeg;base64,${data}')).blob();const im=await createImageBitmap(b);
       const c=new OffscreenCanvas(160,90),g=c.getContext('2d');g.drawImage(im,0,0,160,90);const d=g.getImageData(0,0,160,90).data;
       let s=0,q=0,n=d.length/4;for(let i=0;i<d.length;i+=4){const l=(0.2126*d[i]+0.7152*d[i+1]+0.0722*d[i+2]);s+=l;q+=l*l}
-      const m=s/n;return{mean:+m.toFixed(1),spread:+Math.sqrt(Math.max(0,q/n-m*m)).toFixed(1)}})()`);
+      const m=s/n,t=[];for(let j=0;j<9;j++)for(let i=0;i<16;i++){let a=0;for(let y=0;y<10;y++)for(let x=0;x<10;x++){const k=((j*10+y)*160+i*10+x)*4;a+=0.2126*d[k]+0.7152*d[k+1]+0.0722*d[k+2]}t.push(a/100)}
+      return{mean:+m.toFixed(1),spread:+Math.sqrt(Math.max(0,q/n-m*m)).toFixed(1),thumb:t}})()`);
+  const grab = async () => (await send('Page.captureScreenshot', { format: 'jpeg', quality: 88 })).data;
+  for (let v = 1; v <= NV; v++) {
+    // did the key move the camera? Compare the picture just before the key with the one just after it. A jump changes
+    // it at once (30 levels or more between the views so far); a key with no viewpoint behind it leaves only what the sea
+    // and the light do in that moment (up to 7 levels under water, the liveliest view). Under 10 counts as not moved.
+    const was = v > 1 ? (await measure(await grab())).thumb : null;
+    await key('Digit' + v, String(v));
+    await sleep(350);
+    const now = was ? (await measure(await grab())).thumb : null;
+    const moved = was ? +(now.reduce((s, l, i) => s + Math.abs(l - was[i]), 0) / now.length).toFixed(1) : null; // mean change, in brightness levels
+    await sleep(SETTLE);
+    const data = await grab();
+    const file = `view-${v}.jpg`;
+    writeFileSync(path.join(OUT, file), Buffer.from(data, 'base64'));
+    const px = await measure(data); delete px.thumb;
     const stats = (await run(`document.getElementById('i').textContent`)) || '';
     const fps = +(stats.match(/^(\d+) fps/) || [])[1] || null, scale = +(stats.match(/\((\d+)%\)/) || [])[1] || null;
-    report.views.push({ view: v, file, ...px, stats, fps, scale, ok: px.spread >= 4 && px.mean >= 3 });
+    report.views.push({ view: v, file, ...px, moved, stats, fps, scale, ok: px.spread >= 4 && px.mean >= 3, same: moved !== null && moved < 10 });
   }
 } catch (e) {
   report.fatal = e.message;
@@ -160,10 +179,11 @@ report.when = new Date().toISOString();
 const hw = report.adapter && !report.adapter.fallback;
 for (const u of missing) problems.push('the page requested ' + u + ' (nothing may load at run time)');
 const blank = report.views.filter((v) => !v.ok).map((v) => v.view);
+const same = report.views.filter((v) => v.same).map((v) => v.view);
 const slow = report.views.filter((v) => (MINFPS !== null && !(v.fps >= MINFPS)) || (MINSCALE !== null && !(v.scale >= MINSCALE)))
   .map((v) => `view ${v.view} (${v.fps ?? '?'} fps at ${v.scale ?? '?'}%)`);
 report.limits = { minFps: MINFPS, minScale: MINSCALE, slow };
-const pass = hw && !report.fatal && report.views.length === 6 && !blank.length && !problems.length && !slow.length;
+const pass = hw && !report.fatal && report.views.length === NV && !blank.length && !same.length && !problems.length && !slow.length;
 report.result = pass ? 'PASS' : 'FAIL';
 writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(report, null, 2) + '\n');
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -180,11 +200,11 @@ figure{margin:0;background:var(--card);border:1px solid var(--line);border-radiu
 figure a{display:block}img{display:block;width:100%;height:auto}figcaption{padding:8px 12px;font-size:.85rem;color:var(--mut)}figcaption b{color:var(--fg)}
 </style></head><body><main>
 <h1>Thera Views</h1>
-<p class=mut>The six preset viewpoints (keys 1–6), rendered in headless Chrome on the Mac's GPU. Tap a view to open it full size.</p>
+<p class=mut>The ${COUNT} preset viewpoints (keys 1–${NV}), rendered in headless Chrome on the Mac's GPU. Tap a view to open it full size.</p>
 <p><span class=r>${report.result}</span> · ${esc(report.page)} · detail ${esc(LEVEL)} · ${esc(report.size)} · built in ${report.loadSeconds} s · ${esc(report.when.slice(0, 16).replace('T', ' '))} UTC<br>
 <span class=mut>${esc(report.chrome)} · adapter ${esc(report.adapter ? `${report.adapter.vendor} ${report.adapter.architecture}${report.adapter.fallback ? ' (software fallback)' : ''}` : 'none')}</span></p>
 ${report.fatal ? `<p class=r>${esc(report.fatal)}</p>` : ''}${problems.length ? `<ul>${problems.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
-<p class=mut>A pass means the page rendered all six views. Whether they look right is for a person to judge.</p>
+<p class=mut>A pass means the page rendered all ${COUNT} views. Whether they look right is for a person to judge.</p>
 <div class=grid>${report.views.map((v) => `<figure><a href="${v.file}" target=_blank><img src="${v.file}" alt="Viewpoint ${v.view}" loading=lazy width=${W} height=${H}></a>
 <figcaption><b>View ${v.view}</b>${v.ok ? '' : ' · <span class=r>no picture content</span>'} · ${esc(v.stats || 'no stats line')}</figcaption></figure>`).join('\n')}</div>
 </main></body></html>
@@ -196,7 +216,8 @@ if (!report.adapter) done(1, `FAIL views: no WebGPU adapter in headless Chrome; 
 if (!hw) done(1, `FAIL views: only a software fallback adapter; see ${rel}/report.json`);
 if (report.fatal) done(1, `FAIL views: ${report.fatal}; see ${rel}/report.json`);
 if (blank.length) done(1, `FAIL views: view ${blank.join(', ')} has no picture content; see ${rel}/`);
+if (same.length) done(1, `FAIL views: view ${same.join(', ')} shows the same picture as the view before it (does that key have a viewpoint?); see ${rel}/`);
 if (slow.length) done(1, `FAIL views: below the smoothness limit (${MINFPS ?? '-'} fps, ${MINSCALE ?? '-'}% resolution): ${slow.join(', ')}; see ${rel}/`);
 if (problems.length) done(1, `FAIL views: ${problems.length} error(s) logged, first: ${problems[0].slice(0, 160)}; see ${rel}/report.json`);
 const lim = MINFPS !== null || MINSCALE !== null ? `, every view at least ${MINFPS ?? '-'} fps and ${MINSCALE ?? '-'}% resolution` : '';
-done(0, `PASS views: six viewpoints rendered on ${report.adapter.vendor} ${report.adapter.architecture} at ${LEVEL} detail, ${report.size}, world built in ${report.loadSeconds} s${lim}; pictures in ${rel}/`);
+done(0, `PASS views: ${COUNT} viewpoints rendered on ${report.adapter.vendor} ${report.adapter.architecture} at ${LEVEL} detail, ${report.size}, world built in ${report.loadSeconds} s${lim}; pictures in ${rel}/`);
