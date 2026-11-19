@@ -1,0 +1,543 @@
+{
+  "about": "The town at Akrotiri in 1615 BCE (work order 002): every rule and number the town is built from, each with its claim references (lane#row, used only as corrected in docs/research/verification/) and grade, or a liberty number (A-L…, listed in docs/town/README.md). A later research result changes a number here, not the code. Positions marked Px are pixels on the plan (2,075 x 3,345); all others are [x, z] in metres from 36.405 N, 25.405 E (x east, z south), the terrain's frame.",
+  "credit": {
+    "plan": "Excavated walls of Akrotiri digitised, rescaled, georeferenced and reinterpreted from \"Akrotiri in the Bronze Age, about 1600 B.C.\" (File:Map Akrotiri 1600 BC-en.png) by Maximilian Dörrbecker, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Map_Akrotiri_1600_BC-en.png, licensed CC BY-SA 2.5 (https://creativecommons.org/licenses/by-sa/2.5/). Dörrbecker drew it from a Thera Foundation web map (2005) and other sources. This derived data is licensed CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).",
+    "position": "The plan is placed on the centre of the modern shelter over the site, measured from OpenStreetMap (way 299988161), © OpenStreetMap contributors, Open Database License (https://www.openstreetmap.org/copyright)."
+  },
+  "plan": {
+    "claims": ["T2b#1", "T2b#2", "T2b#3", "T2b#4", "T2b#5", "T2b#26", "T2b#30", "T2b#31", "T2b#32", "T2b#33"],
+    "corrections": "T2b verification, corrections 1, 3 and 4",
+    "grade": "each wall: A that it exists, C in its exact line (right to about 1 m within a building, about 5 m across the site)",
+    "wallBoxPx": [134, 48, 1925, 3202],
+    "pxPerMetreEastWest": 20.4,
+    "pxPerMetreNorthSouth": 22,
+    "pxPerMetreRange": { "eastWest": [20, 20.9], "northSouth": [21.6, 22.4] },
+    "northIsUpWithinDegrees": 3,
+    "centreLatLon": [36.3517, 25.40345],
+    "centreWithinMetres": 10,
+    "centreWorld": [-139, 5914],
+    "note": "The plan has no scale bar and no north arrow: both scales and the north are the T2b check's own measurements. The centre of the box round the drawn walls is put on the area centroid of the shelter roof in OpenStreetMap."
+  },
+  "trace": {
+    "wallColour": [245, 211, 103],
+    "legendBelowRight": [1010, 690],
+    "outlinePx": 2,
+    "thinWallPx": 8.4,
+    "simplifyPx": 1.2,
+    "minWallAreaPx": 60,
+    "edgeClosingMetres": 7,
+    "edgeSimplifyMetres": 0.6,
+    "supportToleranceMetres": 0.8,
+    "excavatedIfShareAtLeast": 0.5,
+    "note": "A building counts as excavated (drawn from the plan) when at least this share of its outline lies within the tolerance of a wall the plan draws; otherwise it is reconstructed (a gap filled in by rule). The share of every building is in traced.json and in the record.",
+    "hullSimplifyPx": 5
+  },
+  "buildings": [
+    { "id": "alpha", "regionPx": [[1470, 170], [1770, 170], [1770, 482], [1470, 482]] },
+    { "id": "eta", "regionPx": [[1444, 484], [1775, 484], [1775, 745], [1444, 745]], "addPx": [[1767, 742]] },
+    { "id": "nhol", "regionPx": [[1118, 505], [1440, 505], [1440, 705], [1340, 748], [1118, 714]], "addPx": [[1150, 512], [1120, 712], [1338, 744]] },
+    { "id": "ladies", "regionPx": [[1035, 705], [1410, 760], [1383, 990], [1362, 1050], [1210, 1100], [1035, 1040]] },
+    { "id": "de1", "regionPx": [[1440, 748], [1700, 748], [1700, 903], [1420, 903]], "addPx": [[1695, 752], [1695, 899]] },
+    { "id": "de2", "regionPx": [[1402, 906], [1700, 906], [1700, 1042], [1402, 1042]], "addPx": [[1695, 910], [1695, 1038]] },
+    {
+      "id": "de3",
+      "regionPx": [[1402, 1046], [1700, 1046], [1700, 1225], [1402, 1225]],
+      "addPx": [[1406, 1050], [1695, 1050], [1695, 1221], [1406, 1221]]
+    },
+    { "id": "w1", "regionPx": [[820, 1000], [1075, 1068], [1095, 1185], [1055, 1262], [928, 1200], [820, 1135]] },
+    { "id": "w2", "regionPx": [[1132, 1140], [1235, 1102], [1362, 1056], [1298, 1225], [1132, 1162]] },
+    { "id": "west", "regionPx": [[705, 1380], [957, 1216], [1112, 1428], [810, 1603]] },
+    { "id": "anchor", "regionPx": [[598, 1605], [838, 1605], [897, 1740], [897, 1794], [598, 1794]], "addPx": [[602, 1608], [602, 1790]] },
+    { "id": "tw1", "regionPx": [[628, 1808], [882, 1808], [882, 1988], [628, 1988]], "addPx": [[632, 1812], [878, 1812], [878, 1984], [632, 1984]] },
+    { "id": "tw2", "regionPx": [[628, 1996], [876, 1996], [864, 2162], [628, 2162]], "addPx": [[632, 2000], [872, 2000], [861, 2158], [632, 2158]] },
+    { "id": "porch", "outlinePx": [[926, 1706], [972, 1706], [964, 1788], [918, 1788]] },
+    {
+      "id": "delta_w",
+      "regionPx": [[975, 1495], [1128, 1495], [1198, 1560], [1232, 1668], [1150, 1896], [975, 1826]],
+      "addPx": [[990, 1828], [1148, 1891]]
+    },
+    { "id": "delta_n1", "regionPx": [[1124, 1360], [1345, 1388], [1345, 1515], [1198, 1515], [1128, 1495]] },
+    { "id": "delta_n2", "regionPx": [[1198, 1516], [1336, 1516], [1336, 1668], [1232, 1668], [1198, 1560]] },
+    { "id": "delta_c", "regionPx": [[1234, 1670], [1294, 1670], [1290, 1905], [1262, 1946], [1152, 1898]], "addPx": [[1238, 1674], [1291, 1674]] },
+    { "id": "delta_e_n", "regionPx": [[1388, 1535], [1495, 1535], [1495, 1705], [1388, 1705]], "addPx": [[1392, 1545], [1392, 1700]] },
+    { "id": "delta_e", "regionPx": [[1296, 1707], [1495, 1707], [1495, 1875], [1296, 1875]] },
+    {
+      "id": "delta_s",
+      "regionPx": [[930, 1808], [975, 1826], [1150, 1896], [1262, 1946], [1217, 2110], [930, 2110]],
+      "split": { "linePx": [[1062, 1800], [1040, 2130]], "ids": ["delta_s16", "delta_s"] }
+    },
+    { "id": "xeste5", "regionPx": [[1492, 1340], [1795, 1340], [1805, 1642], [1492, 1632]], "addPx": [[1790, 1345], [1800, 1638]] },
+    { "id": "dhe", "regionPx": [[1685, 1690], [1905, 1690], [1905, 1927], [1685, 1927]], "addPx": [[1900, 1695], [1900, 1905]] },
+    { "id": "xeste2", "regionPx": [[1322, 1962], [1440, 1912], [1935, 1946], [1935, 2205], [1322, 2205]], "addPx": [[1930, 2200], [1440, 2200]] },
+    { "id": "x2s", "regionPx": [[1418, 2207], [1685, 2207], [1685, 2398], [1418, 2398]], "addPx": [[1680, 2210], [1680, 2395]] },
+    { "id": "gamma_n", "regionPx": [[625, 2165], [775, 2165], [775, 2447], [625, 2447]] },
+    { "id": "gamma_s", "regionPx": [[639, 2450], [700, 2450], [795, 2525], [795, 2765], [639, 2765]] },
+    { "id": "beta_n", "regionPx": [[985, 2114], [1057, 2114], [1057, 2261], [985, 2240]] },
+    { "id": "beta_w", "regionPx": [[780, 2240], [983, 2240], [1057, 2262], [1057, 2478], [925, 2512], [780, 2508]] },
+    { "id": "beta_m", "regionPx": [[1059, 2114], [1160, 2114], [1160, 2470], [1059, 2478]] },
+    { "id": "beta_e", "regionPx": [[1162, 2198], [1265, 2198], [1265, 2465], [1162, 2465]], "addPx": [[1165, 2202], [1262, 2202], [1262, 2462]] },
+    { "id": "bs", "regionPx": [[805, 2512], [1063, 2512], [1063, 2684], [805, 2684]], "addPx": [[1060, 2518], [1060, 2680]] },
+    { "id": "xeste3_w", "regionPx": [[120, 2695], [396, 2695], [396, 3000], [120, 3000]] },
+    { "id": "xeste3_e", "regionPx": [[397, 2655], [637, 2655], [637, 3010], [397, 3010]] },
+    {
+      "id": "se_b",
+      "regionPx": [[1266, 2420], [1420, 2425], [1600, 2540], [1600, 2772], [1300, 2668]],
+      "split": { "linePx": [[1492, 2400], [1492, 2800]], "ids": ["se_b1", "se_b2"] }
+    },
+    { "id": "se_a", "regionPx": [[1105, 2585], [1286, 2585], [1298, 2668], [1212, 2864], [1105, 2852]] },
+    {
+      "id": "xeste4",
+      "regionPx": [[1300, 2668], [1812, 2846], [1824, 3010], [1812, 3215], [1680, 3215], [1207, 2882]],
+      "split": { "linePx": [[1575, 2700], [1470, 3150]], "ids": ["xeste4_w", "xeste4_e"] }
+    },
+    { "id": "south", "regionPx": [[1258, 3030], [1300, 3030], [1575, 3150], [1575, 3205], [1258, 3205]], "addPx": [[1265, 3198]] },
+    {
+      "id": "swx",
+      "regionPx": [[925, 2790], [1100, 2856], [1262, 2924], [1262, 3055], [925, 3055]],
+      "split": { "linePx": [[1075, 2780], [1075, 3060]], "ids": ["swx_w", "swx_e"] }
+    }
+  ],
+  "rules": {
+    "about": "What a house is built from. The page reads these numbers from the generated data file, so a change here changes the town without a change to the code.",
+    "year": {
+      "value": -1615,
+      "claims": ["D15", "D16"],
+      "note": "The living town, whole: no damage, rubble or repairs (D19; T2#93-T2#96 belong to the last weeks and are left out)."
+    },
+    "footprint": {
+      "typicalSquareMetres": [96, 187],
+      "largeSquareMetres": [300, 370],
+      "claims": ["T2#6"],
+      "grade": "A, to verify against Palyvou 2005",
+      "note": "Ground covered, after Palyvou as cited by Michailidou. The plots Doumas gives for named buildings (Xeste 3: 283, Xeste 4: about 367, House of the Ladies: 184) are a different measure and are recorded beside the outlines, not mixed into this rule (T2 correction 9). Houses made by rule keep to the typical band; no large building is invented."
+    },
+    "storeys": { "values": [2, 3], "shareOfThree": 0.3, "claims": ["T2#86"], "grade": "A for two or three; which house has which is liberty A-L4" },
+    "storeyHeightMetres": { "value": 2.8, "reportInference": [2.5, 3], "grade": "C (the report's own inference; none is published)", "liberty": "A-L3" },
+    "groundFloorBelowStreetMetres": {
+      "range": [0.3, 0.7],
+      "atDelta16": 1,
+      "claims": ["T2#11", "T2#14", "T2#56"],
+      "correction": "T2 correction 2",
+      "grade": "A at Delta 16 (about 1 m); \"a few steps\" elsewhere, so the range is liberty A-L5"
+    },
+    "wallThicknessMetres": {
+      "range": [0.6, 0.8],
+      "revealDepth": 0.3,
+      "claims": ["T2#39", "T2#40", "T2#41", "T2#42"],
+      "correction": "T2 correction 1",
+      "grade": "A, axes to verify; how deep an opening sits in the wall is liberty A-L6"
+    },
+    "door": {
+      "widthMetres": 1.05,
+      "heightMetres": 1.95,
+      "thresholdMetres": [1.2, 0.6, 0.3],
+      "thresholdShowsMetres": 0.13,
+      "claims": ["T2#39", "T2#40"],
+      "grade": "A, axes to verify (one door, the West House)"
+    },
+    "windowByDoor": {
+      "widthMetres": 0.66,
+      "heightMetres": 0.8,
+      "sillAboveStreetMetres": 1.05,
+      "claims": ["T2#41", "T2#14", "T2#111"],
+      "grade": "A for the size, to verify; its sill height is liberty A-L6"
+    },
+    "groundWindow": {
+      "widthMetres": 0.5,
+      "heightMetres": 0.45,
+      "sillAboveStreetMetres": 0.55,
+      "claims": ["T2#61"],
+      "grade": "A that they are small and low; sizes are liberty A-L6"
+    },
+    "upperWindow": {
+      "widthMetres": 0.95,
+      "heightMetres": 1.15,
+      "sillAboveFloorMetres": 0.85,
+      "spacingMetres": 2.9,
+      "claims": ["T2#34", "T2#42"],
+      "grade": "liberty A-L6 (no upper window is published apart from the West House's)"
+    },
+    "pierAndWindow": { "lengthsMetres": [3.9, 4], "openings": 4, "claims": ["T2#34", "T2#42"], "grade": "A (West House Room 5)" },
+    "largeLowWindow": {
+      "widthMetres": 1.9,
+      "heightMetres": 1.1,
+      "sillAboveStreetMetres": 0.6,
+      "sillAtDelta16Metres": 0.1,
+      "claims": ["T2#56", "T2#58"],
+      "grade": "A that the sill is under 1 m (10 cm at Delta 16); the width is liberty A-L6"
+    },
+    "roof": {
+      "earthMetres": [0.1, 0.15],
+      "alternativeEarthMetres": 0.2,
+      "parapetHeightMetres": 0.55,
+      "parapetThicknessMetres": 0.4,
+      "spoutLengthMetres": 0.45,
+      "slopeToSpout": 0.25,
+      "claims": ["T2#70", "T2#71", "T2#72", "T2#73"],
+      "correction": "T2 correction 6",
+      "grade": "A for flat earth roofs, parapets and U-shaped terracotta spouts; parapet height, spout count and spacing are liberty A-L7. The 25% slope is one preserved roof and is not applied to every roof."
+    },
+    "dressedStone": {
+      "claims": ["T2#68", "T2#69", "T2#43"],
+      "grade": "A: off-white tuff frames round doors and windows, tuff string courses, hard-stone corner blocks, timbers in the wall at three levels at one reinforced corner. Which houses have string courses is liberty A-L8."
+    },
+    "colours": { "liberty": "A-L2", "note": "No colour of any wall, roof or paving is sourced. Whether the rubble was plastered outside is not known." },
+    "walking": {
+      "eyeHeightMetres": 1.5,
+      "paceMetresPerSecond": 1.6,
+      "hurryFactor": 3.2,
+      "stepMetres": 0.5,
+      "claims": ["T2#35"],
+      "correction": "T2 correction 4",
+      "grade": "B at best for the eye height (an architect's reading of one room's paintings); both are liberty A-L9"
+    }
+  },
+  "masses": {
+    "about": "What is known of each building mass on the plan. Every label is a modern excavation label or the plan's own; no ancient name is known for any building, street or square, or for the town (T2, \"Names\"). \"status\" is given only where the work order fixes it; otherwise the share of the outline on drawn walls decides (trace.excavatedIfShareAtLeast).",
+    "alpha": {
+      "label": "Sector Alpha (Pithoi Storeroom)",
+      "storeys": 2,
+      "claims": ["T2#58", "T2#59", "T2#60", "T2b#49"],
+      "features": [{ "type": "lowWindow", "nearPx": [1765, 300] }, { "type": "door", "nearPx": [1560, 478] }],
+      "note": "Long from north to south, entered from a cobbled side street to its south; a large window under 1 m above the street; an upper floor (loom weights fell from it)."
+    },
+    "eta": {
+      "label": "\"Porter's Lodge\" (the plan's label; Building Eta on the excavators' plan)",
+      "storeys": 2,
+      "status": "reconstructed",
+      "claims": ["T2b#50"],
+      "grade": "C",
+      "note": "Probably of the last town, not excavated: built as an ordinary house (work order)."
+    },
+    "nhol": {
+      "label": "unnamed, north of the House of the Ladies",
+      "storeys": 2,
+      "status": "reconstructed",
+      "claims": ["T2b#52"],
+      "note": "The House of the Ladies is the only excavated building of a complex of at least two. Only this building's east wall on Dactyls Street is drawn."
+    },
+    "ladies": {
+      "label": "House of the Ladies",
+      "storeys": 3,
+      "publishedPlotSquareMetres": 184,
+      "claims": ["T2#44", "T2#45"],
+      "features": [{ "type": "lightWell", "nearPx": [1215, 880] }, { "type": "door", "nearPx": [1392, 800] }],
+      "note": "Three storeys, west side of Dactyls Street. The town's one known light-well, drawn as an opening in its roof."
+    },
+    "de1": {
+      "label": "unnamed, east side of Dactyls Street",
+      "storeys": 2,
+      "status": "reconstructed",
+      "claims": ["T2b#52", "T2b#53"],
+      "note": "Unexcavated buildings face the House of the Ladies; the torrent damaged both sides of the street. Filled in by rule from the wall stubs the plan draws."
+    },
+    "de2": { "label": "unnamed, east side of Dactyls Street", "storeys": 2, "status": "reconstructed", "claims": ["T2b#52", "T2b#53"] },
+    "de3": {
+      "label": "unnamed, east side of Dactyls Street",
+      "storeys": 2,
+      "status": "reconstructed",
+      "claims": ["T2b#53"],
+      "note": "No wall is drawn here: a gap left by the torrent, filled in by rule."
+    },
+    "w1": { "label": "unnamed, between the House of the Ladies and the West House", "storeys": 2 },
+    "w2": { "label": "unnamed, south of the House of the Ladies", "storeys": 2 },
+    "west": {
+      "label": "West House",
+      "storeys": 2,
+      "partialThirdStorey": true,
+      "claims": ["T2#30", "T2#32", "T2#34", "T2#38", "T2#42", "T2#43", "T2#74", "T2#111"],
+      "correction": "T2 correction 3",
+      "features": [
+        { "type": "door", "nearPx": [1085, 1440] },
+        { "type": "bigUpperWindow", "nearPx": [950, 1518] },
+        { "type": "pierWindows", "nearPx": [750, 1440] },
+        { "type": "pierWindows", "nearPx": [770, 1348] },
+        { "type": "penthouse", "nearPx": [1040, 1380] }
+      ],
+      "note": "Free-standing on the north side of Triangle Square. Two storeys are certain; a partial third (a room at the north-east corner and a shelter at the stair head) is inferred, grade B. A very large first-floor window to the square; pier-and-window walls on the west and north of its corner room."
+    },
+    "anchor": {
+      "label": "House of the Anchor",
+      "storeys": 2,
+      "status": "reconstructed",
+      "claims": ["T2b#44", "T2#58"],
+      "features": [{ "type": "lowWindow", "nearPx": [818, 1690] }, { "type": "door", "nearPx": [806, 1625] }],
+      "note": "Only its front on Triangle Square is excavated, with tuff frames of a door and windows; the body behind it is reconstruction."
+    },
+    "tw1": { "label": "unnamed, west side of Telchines Street", "storeys": 2, "status": "reconstructed", "claims": ["T2b#35"], "liberty": "A-L11", "note": "The plan draws no wall here: the street's west side is unexcavated, though it lies inside the plan's limits of the excavation site, between the House of the Anchor and Building Gamma. Two houses are put there by rule so that the street has its two sides. They stand no further west than the buildings to their north and south." },
+    "tw2": { "label": "unnamed, west side of Telchines Street", "storeys": 2, "status": "reconstructed", "claims": ["T2b#35"], "liberty": "A-L11" },
+    "porch": {
+      "label": "\"Pylon\" (the plan's label): the porch at Delta West's entrance",
+      "storeys": 2,
+      "kind": "porch",
+      "claims": ["T2b#45", "T2#54"],
+      "handCorrection": "The plan draws it as a free-standing box in the square. It is a porch added to protect Delta West's entrance, with a room above it, so it is placed against the row of blocks at that entrance."
+    },
+    "delta_w": {
+      "label": "Complex Delta, West house",
+      "group": "Complex Delta",
+      "storeys": 2,
+      "claims": ["T2#48", "T2#54", "T2b#37", "T2b#51"],
+      "features": [{ "type": "door", "nearPx": [985, 1750] }]
+    },
+    "delta_n1": {
+      "label": "Complex Delta, North house",
+      "group": "Complex Delta",
+      "storeys": 2,
+      "claims": ["T2#48", "T2#52", "T2b#37"],
+      "features": [{ "type": "door", "nearPx": [1340, 1450] }]
+    },
+    "delta_n2": { "label": "Complex Delta, North house", "group": "Complex Delta", "storeys": 2, "partOf": "delta_n1" },
+    "delta_c": {
+      "label": "Complex Delta, North house",
+      "group": "Complex Delta",
+      "storeys": 2,
+      "partOf": "delta_n1",
+      "note": "Which of the four houses these middle rooms belong to is read from the plan, not published."
+    },
+    "delta_e_n": {
+      "label": "Complex Delta, East house (north part)",
+      "group": "Complex Delta",
+      "storeys": 2,
+      "status": "reconstructed",
+      "partOf": "delta_e",
+      "claims": ["T2b#53"],
+      "note": "Delta East was cut in two by the torrent; only its east wall is drawn here."
+    },
+    "delta_e": {
+      "label": "Complex Delta, East house",
+      "group": "Complex Delta",
+      "storeys": 2,
+      "claims": ["T2#48", "T2#49", "T2b#47"],
+      "features": [{ "type": "door", "nearPx": [1490, 1800] }, { "type": "horns", "nearPx": [1490, 1800], "grade": "B" }],
+      "note": "A small two-storey building; its entrance on the first terrace of Double Horns Square. Carved tuff horns found outside \"seem to have crowned\" the entrance: grade B, shown."
+    },
+    "delta_s": {
+      "label": "Complex Delta, South house",
+      "group": "Complex Delta",
+      "storeys": 2,
+      "claims": ["T2#48", "T2#55"],
+      "features": [{ "type": "door", "nearPx": [1150, 2112] }],
+      "note": "Delta 15 has the usual door-and-window front on Millhouse Square."
+    },
+    "delta_s16": {
+      "label": "Complex Delta, South house (Delta 16)",
+      "group": "Complex Delta",
+      "storeys": 1,
+      "lowStorey": true,
+      "partOf": "delta_s",
+      "claims": ["T2#56", "T2#57", "T2#58"],
+      "features": [{ "type": "lowWindow", "nearPx": [962, 1960], "sill": 0.1 }],
+      "note": "One low storey on Telchines Street, its floor about 1 m below the street and its large window's sill 10 cm above the paving."
+    },
+    "xeste5": {
+      "label": "\"Xeste 5\" (a label only)",
+      "storeys": 2,
+      "status": "reconstructed",
+      "claims": ["T2b#50"],
+      "grade": "C",
+      "note": "Nothing describes it: built as an ordinary house (work order)."
+    },
+    "dhe": { "label": "unnamed, east of Double Horns Square", "storeys": 2, "status": "reconstructed" },
+    "xeste2": {
+      "label": "Xeste 2",
+      "storeys": 3,
+      "stone": "tuff",
+      "stringCourses": true,
+      "claims": ["T2b#41", "T2b#42", "T2b#43", "T2#110"],
+      "grade": "B for three storeys (official summary)",
+      "features": [{ "type": "door", "nearPx": [1470, 1915] }],
+      "note": "No plan or size is published. Its north front and a west block are drawn; its depth is inferred (liberty A-L10). The north front has rows of dressed tuff at each floor."
+    },
+    "x2s": { "label": "unnamed, south of Xeste 2", "storeys": 2, "status": "reconstructed" },
+    "gamma_n": {
+      "label": "Building Gamma (Sector Gamma)",
+      "group": "Sector Gamma",
+      "storeys": 2,
+      "claims": ["T2#63"],
+      "features": [{ "type": "door", "nearPx": [768, 2330] }]
+    },
+    "gamma_s": {
+      "label": "Building Gamma (Sector Gamma)",
+      "partOf": "gamma_n",
+      "group": "Sector Gamma",
+      "storeys": 2,
+      "claims": ["T2#63"],
+      "note": "Oblong, entered from Telchines Street."
+    },
+    "beta_n": { "label": "Complex Beta (Sector Beta)", "partOf": "beta_w", "group": "Sector Beta", "storeys": 2, "claims": ["T2#61"] },
+    "beta_w": {
+      "label": "Complex Beta (Sector Beta)",
+      "group": "Sector Beta",
+      "storeys": 2,
+      "claims": ["T2#61", "T2#62"],
+      "note": "Ground-floor rooms became semi-basements when Telchines Street was raised; their small windows were blocked."
+    },
+    "beta_m": { "label": "Complex Beta (Sector Beta)", "partOf": "beta_w", "group": "Sector Beta", "storeys": 2, "claims": ["T2#61"] },
+    "beta_e": {
+      "label": "Complex Beta, east wing",
+      "partOf": "beta_w",
+      "group": "Sector Beta",
+      "storeys": 2,
+      "status": "reconstructed",
+      "claims": ["T2b#53"],
+      "note": "The torrent destroyed the whole east wing; filled in by rule."
+    },
+    "bs": { "label": "unnamed, south of Complex Beta", "storeys": 2, "status": "reconstructed" },
+    "xeste3_w": {
+      "label": "Xeste 3, west part",
+      "partOf": "xeste3_e",
+      "group": "Xeste 3",
+      "storeys": 3,
+      "publishedPlotSquareMetres": 283,
+      "claims": ["T2#19", "T2#20"],
+      "note": "Ordinary rubble walls and auxiliary rooms."
+    },
+    "xeste3_e": {
+      "label": "Xeste 3, east part",
+      "group": "Xeste 3",
+      "storeys": 3,
+      "stone": "ignimbrite",
+      "bigWindows": true,
+      "claims": ["T2#19", "T2#20", "T2#22"],
+      "features": [{ "type": "door", "nearPx": [632, 2760] }, { "type": "benches", "nearPx": [640, 2800] }],
+      "note": "A front of large dressed ignimbrite blocks with large windows; the entrance in the east wing, with stone benches outside it. Where the dressed front ends and the rubble begins is read from the plan (liberty A-L10)."
+    },
+    "se_b1": { "label": "unnamed, north of Xeste 4", "storeys": 2 },
+    "se_b2": { "label": "unnamed, north of Xeste 4", "storeys": 2 },
+    "se_a": { "label": "unnamed, north-west of Xeste 4", "storeys": 2 },
+    "xeste4_w": {
+      "label": "Xeste 4",
+      "group": "Xeste 4",
+      "storeys": 3,
+      "stone": "tuff",
+      "publishedPlotSquareMetres": 367,
+      "claims": ["T2#24", "T2#25", "T2#110", "T2b#38", "T2b#51"],
+      "features": [{ "type": "door", "nearPx": [1330, 2985] }],
+      "note": "Over 30 m long from north-west to south-east, in courses of whitish dressed tuff, entered from Curetes Street. Three storeys are built; \"probably more\" in the east wing is grade B and is not shown."
+    },
+    "xeste4_e": { "label": "Xeste 4", "group": "Xeste 4", "storeys": 3, "stone": "tuff", "partOf": "xeste4_w" },
+    "south": {
+      "label": "\"South Building\" (the plan's label)",
+      "storeys": 2,
+      "status": "reconstructed",
+      "claims": ["T2b#50", "T2b#38"],
+      "grade": "C",
+      "note": "Probably of the last town, not excavated: built as an ordinary house (work order)."
+    },
+    "swx_w": { "label": "unnamed, south of Curetes Street", "storeys": 2, "claims": ["T2b#38"] },
+    "swx_e": {
+      "label": "unnamed, south of Curetes Street",
+      "storeys": 2,
+      "claims": ["T2b#38"],
+      "note": "Two unexcavated buildings on the street's south side form terraces in front of Xeste 4."
+    }
+  },
+  "open": {
+    "about": "Streets and squares of the excavated part (modern labels: T2#7) and the things that stand in them. Positions are read from the plan; no width or gradient is published (T2b#35, grade C).",
+    "squares": [
+      { "label": "Triangle Square", "atPx": [900, 1640], "acrossMetres": [8, 12], "claims": ["T2#7", "T2b#35"] },
+      {
+        "label": "Cenotaph Square",
+        "atPx": [1410, 1440],
+        "claims": ["T2#7", "T2b#46"],
+        "note": "The cairn the square is named after holds objects a thousand years older; the open space is kept and no monument is built. The strip the plan calls \"Terrace 3\" is unexplained and is left open ground."
+      },
+      {
+        "label": "Double Horns Square",
+        "atPx": [1590, 1780],
+        "claims": ["T2#7", "T2b#41", "T2b#47"],
+        "note": "Terraced; the plan's \"Terrace 1\" and \"Terrace 2\". The large public square before Xeste 2's stepped north front."
+      },
+      {
+        "label": "Millhouse Square",
+        "atPx": [1150, 2118],
+        "claims": ["T2#7", "T2#55"],
+        "note": "In front of Delta 15. Its place is read from the plan's open ground south of Complex Delta (liberty A-L10)."
+      }
+    ],
+    "streets": [
+      {
+        "label": "Telchines Street",
+        "alongPx": [[900, 1800], [880, 2000], [800, 2200], [776, 2400], [800, 2600]],
+        "widthMetres": [1.2, 2.2],
+        "claims": ["T2#7", "T2b#25", "T2b#35"]
+      },
+      {
+        "label": "Dactyls Street",
+        "alongPx": [[1440, 520], [1420, 780], [1395, 1040], [1330, 1300]],
+        "claims": ["T2#7", "T2#13", "T2b#53"],
+        "note": "A sewer runs under it."
+      },
+      {
+        "label": "Curetes Street",
+        "alongPx": [[1230, 2900], [1420, 3040], [1640, 3190]],
+        "claims": ["T2#7", "T2#25", "T2b#38"],
+        "note": "Steep, and a cul-de-sac before Xeste 4."
+      },
+      {
+        "label": "cobbled side street",
+        "alongPx": [[1450, 478], [1760, 484]],
+        "claims": ["T2#60"],
+        "note": "The Pithoi Storeroom is entered from it."
+      }
+    ],
+    "terraces": [
+      {
+        "label": "Double Horns Square, upper terrace (the plan's \"Terrace 2\")",
+        "outlinePx": [[1500, 1648], [1684, 1648], [1684, 1790], [1500, 1790]],
+        "claims": ["T2b#47"]
+      },
+      {
+        "label": "Double Horns Square, lower terrace (the plan's \"Terrace 1\")",
+        "outlinePx": [[1500, 1794], [1684, 1794], [1684, 1908], [1500, 1908]],
+        "claims": ["T2b#47"]
+      }
+    ],
+    "pithos": {
+      "atPx": [1392, 1470],
+      "heightMetres": 1.3,
+      "claims": ["T2#53"],
+      "note": "A monolithic andesite pithos stood in Cenotaph Square before the Delta North front; where exactly is not published (liberty A-L10)."
+    },
+    "notBuilt": "The visitor path, both border lines and the \"Tunnels\" are modern (T2b#54). No town wall: none is reported (T2b#70). No harbour, quay or ship (D19; T1c#16, T1c#17, T1c#34). No palace: none has been found (T2#18, T2#64)."
+  },
+  "town": {
+    "about": "The whole town. Beyond the edge of the excavated walls nothing is measured in any direction (T2b verification, section 6, answer 4): everything here is liberty A-L1.",
+    "areaHectares": { "value": 10, "alternative": 20, "claims": ["T2#2", "T2#3", "T2b#66", "T2b#73"], "grade": "C (both)", "decision": "D22" },
+    "limits": {
+      "south": "nothing beyond the walls (T2b#61: an indicative shore 35-55 m away, grade C)",
+      "west": "nothing beyond the walls (T2b#61: an indicative bay 10-40 m away, grade C)",
+      "east": "little, and only where the ground allows (T2b#38)",
+      "north": "the town runs on, thinning (T2b#66, T2b#67, grade C)"
+    },
+    "core": [[-184, 5962], [-160, 5936], [-162, 5912], [-156, 5900], [-150, 5885], [-140, 5871], [-136, 5862], [-119, 5846], [-101, 5846], [-101, 5875], [-104, 5897], [-100, 5900], [-94, 5917], [-93, 5942], [-104, 5942], [-108, 5966], [-99, 5969], [-99, 5987], [-135, 5987], [-142, 5978], [-146, 5965], [-160, 5978], [-184, 5978]],
+    "maxSlope": 0.16,
+    "streetMetres": {
+      "main": [2.4, 3.2],
+      "street": [1.6, 2.2],
+      "alley": [1.1, 1.5],
+      "alleyClaim": "T2#10",
+      "note": "Widths beyond the excavation are liberty A-L1; the alley's lower bound is the one measured alley."
+    },
+    "blockSquareMetres": { "main": 5200, "street": 1500, "alley": 430 },
+    "lotSquareMetresBeforeStreets": [142, 284],
+    "setbackMetres": [0.3, 1.1],
+    "bendMetres": 2.6,
+    "bendEveryMetres": 115,
+    "clearOfExcavatedMetres": 1.5,
+    "fringeMetres": 55,
+    "districts": [
+      { "id": "north", "seed": 1615, "angleDegrees": -6, "keep": 1, "outline": [[-162, 5700], [128, 5708], [-6, 5845], [-142, 5845]], "outer": [] },
+      {
+        "id": "far-north",
+        "seed": 1650,
+        "angleDegrees": 7,
+        "keep": 1,
+        "outline": [[-168, 5596], [-146, 5522], [-62, 5500], [48, 5505], [132, 5545], [158, 5628], [128, 5706], [-162, 5698]],
+        "outer": [0, 1, 2, 3, 4, 5]
+      },
+      { "id": "east", "seed": 1700, "angleDegrees": 9, "keep": 0.6, "outline": [[-99, 5848], [-12, 5848], [-68, 5917], [-92, 5917]], "outer": [1] }
+    ]
+  }
+}

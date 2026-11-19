@@ -125,10 +125,11 @@ const WK = array<vec3f, 10>(vec3f(1., 2., 1.), vec3f(-2., 1., .9), vec3f(3., 1.,
 `;
 
 // ---------------------------------------------------------------- shared scene code
-// G is the per-frame block: sun.w = how fresh the breeze is (0-1); mis = exposure, light-shaft strength, unused, the height
-// of the sea surface at the camera; sunc = sunlight at sea level (w: 1 at night); cam.w = time in seconds.
+// G is the per-frame block: sm = the island's shadow map, tm = the town's; sun.w = how fresh the breeze is (0-1); mis =
+// exposure, light-shaft strength, 1 while the edge of the excavated walls is shown, the height of the sea surface at the
+// camera; sunc = sunlight at sea level (w: 1 at night); cam.w = time in seconds.
 const S_G = /*wgsl*/`
-struct G { vp: mat4x4f, sm: mat4x4f, cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, sun: vec4f, res: vec4f, mis: vec4f, sunc: vec4f };
+struct G { vp: mat4x4f, sm: mat4x4f, cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, sun: vec4f, res: vec4f, mis: vec4f, sunc: vec4f, tm: mat4x4f };
 const TAU = 6.2831853;
 const LOW = ${LV > 1};
 const DOM = ${DOM}.;
@@ -153,6 +154,21 @@ fn h21(p: vec2f) -> f32 { var q = fract(p.xyx * vec3f(.1031, .1030, .0973)); q +
 fn n2(p: vec2f) -> f32 { let i = floor(p); let f = fract(p); let u = f * f * (3. - 2. * f); return mix(mix(h21(i), h21(i + vec2f(1., 0.)), u.x), mix(h21(i + vec2f(0., 1.)), h21(i + vec2f(1., 1.)), u.x), u.y); }
 // soft noise over the ground, 0 to 1, with features about 1/f metres across
 fn gn(p: vec2f, f: f32) -> f32 { return n2(p * f) * .6 + n2(p * f * 2.7 + 11.3) * .28 + n2(p * f * 7.1 + 5.7) * .12; }
+fn h22(p: vec2f) -> vec2f { var q = fract(p.xyx * vec3f(.1031, .1030, .0973)); q += dot(q, q.yzx + 33.33); return fract((q.xx + q.yz) * q.zy); }
+// stones fitted together (rubble in a wall, flags in a street): x = how far to the nearest joint, in cells; yz = the stone's own two numbers
+fn vor(p: vec2f) -> vec3f {
+  let i = floor(p); let f = fract(p); var a = vec2f(0.); var b = vec2f(0.); var da = 9.; var db = 9.; var id = vec2f(0.);
+  for (var y = -1; y <= 1; y++) { for (var x = -1; x <= 1; x++) {
+    let o = vec2f(f32(x), f32(y)); let hh = h22(i + o); let r = o + hh - f; let d = dot(r, r);
+    if (d < da) { db = da; b = a; da = d; a = r; id = hh; } else if (d < db) { db = d; b = r; }
+  } }
+  return vec3f(dot((a + b) * .5, normalize(b - a)), id);
+}
+// paving of large flagstones (T2#11); its colour is a liberty (A-L2). px = the width of a pixel there, in metres
+fn flags(p: vec2f, px: f32) -> vec3f {
+  let v = vor(p * 1.6); let fine = ss(.3, .06, px);
+  return mix(vec3f(.25, .235, .21) * (.76 + .5 * v.y * fine + .12 * (1. - fine)), vec3f(.1, .09, .08), ss(.035, .008, v.x) * ss(.05, .012, px));
+}
 `;
 
 // ---------------------------------------------------------------- the sky, looked up by direction
@@ -217,6 +233,8 @@ const S_B = S_G + /*wgsl*/`
 struct WV { w: array<vec4f, ${NWAVE * 2}> };
 @group(0) @binding(11) var<uniform> wv: WV;
 @group(0) @binding(12) var sA: sampler;
+@group(0) @binding(13) var tTs: texture_depth_2d;
+@group(0) @binding(14) var tT: texture_2d<f32>;
 const MIP0 = ${log2(DOM / TS)};
 const LK = ${LK};
 fn tuv(p: vec2f) -> vec2f { return p / DOM + .5; }
@@ -230,6 +248,17 @@ fn shadow(p: vec3f) -> f32 {
   for (var x = -1; x <= 1; x++) { for (var y = -1; y <= 1; y++) { a += textureSampleCompareLevel(tSh, sS, uv + vec2f(f32(x), f32(y)) * e, z); } }
   return a / 9.;
 }
+// the town's own shadow: a second, far finer map over the town alone, so that it holds in a street a metre wide
+fn tsh(p: vec3f) -> f32 {
+  let s = g.tm * vec4f(p, 1.); let uv = vec2f(s.x * .5 + .5, .5 - s.y * .5); let z = s.z - .0005;
+  if (any(abs(uv - .5) > vec2f(.498)) || z > 1.) { return 1.; }
+  if (LOW) { return textureSampleCompareLevel(tTs, sS, uv, z); }
+  let e = 1.1 / ${TSH}.; var a = 0.;
+  for (var x = -1; x <= 1; x++) { for (var y = -1; y <= 1; y++) { a += textureSampleCompareLevel(tTs, sS, uv + vec2f(f32(x), f32(y)) * e, z); } }
+  return a / 9.;
+}
+// where a point of the ground is on the town's plan (0-1 inside the square the plan covers)
+fn tnuv(p: vec2f) -> vec2f { return (p - vec2f(${TNX}., ${TNZ}.)) / ${TNS}. + .5; }
 // ---- air
 fn skyUV(d: vec3f) -> vec2f {
   let el = asin(clamp(d.y, -1., 1.));
@@ -465,11 +494,24 @@ fn tri(p: vec3f, n: vec3f, s: f32) -> TP {
   let N = normalize(n0 + (A.n * .22 + B.n * .5 + C.n * .6 * fk + vec3f(Fd.n.x * .6 - Fd.n.z * .8, Fd.n.y, Fd.n.x * .8 + Fd.n.z * .6) * .5 * ff) * (1.25 - .6 * ss(.1, -1.5, y)));
   let L = g.sun.xyz; let V = normalize(g.cam.xyz - i.wp);
   var E = g.sunc.rgb * shadow(i.wp + n0 * 2.);
-  let ao = nt.b;
+  var ao = nt.b;
   var am = i.zen * (.3 + .7 * (N.y * .5 + .5)) + skyL(normalize(vec3f(N.x, .1, N.z))) * (.5 - .25 * N.y);
   // sunlight thrown back by the ground around
   am += g.sunc.rgb * max(L.y, 0.) * vec3f(.30, .25, .19) * (.45 - .35 * N.y) * .5;
   let ca = caus(i.wp, dist);
+  // the town: paved streets between its houses (T2#11), the houses' shadows, and on request the edge of the excavated walls
+  let tu = tnuv(i.wp.xz); var mark = 0.;
+  if (all(abs(tu - .5) < vec2f(.5)) && y > .5) {
+    let tw = textureSampleLevel(tT, sC, tu, 0.); let den = textureSampleLevel(tT, sC, tu, 4.).r;
+    let pv = ss(.07, .24, den);
+    alb = mix(alb, flags(i.wp.xz, dist * g.right.w * 2. * g.res.z) * (.8 + .4 * B.h), pv);
+    // little sky reaches the foot of a wall, or the floor of a narrow street
+    ao *= mix(1., (.5 + .5 * ss(0., .2, tw.g)) * (1. - .4 * ss(.3, .9, den)), ss(.03, .15, den));
+    // (and the walls throw sunlight back into the street)
+    am += g.sunc.rgb * max(L.y, 0.) * vec3f(.3, .25, .19) * .22 * ss(.1, .5, den);
+    E *= tsh(i.wp + vec3f(0., .06, 0.));
+    mark = ss(.085, .05, tw.b) * g.mis.z;
+  }
   if (y < 0.) {
     // light under the sea: absorbed on the way down, gathered into caustics
     E *= exp(KD * (y / max(L.y, .25))) * (.3 + ca * .18); am = am * exp(KD * y * 1.3) * .8 + WCOL * wlit() * exp(KD * y) * .12;
@@ -479,6 +521,111 @@ fn tri(p: vec3f, n: vec3f, s: f32) -> TP {
   // sheen on glassy lava and on wet shingle
   let gl = gw.b * .12 + wet * .5 * step(0., y);
   c += E * pow(sat(dot(N, normalize(V + L))), 24.) * gl * ndl;
+  // the edge of the excavated walls, drawn on the ground: beyond it nothing is measured
+  c = mix(c, vec3f(1., .3, .08) * (dot(E + am, vec3f(.4)) + .01), mark);
+  return fin(medium(c, i.wp));
+}
+`;
+
+// ---------------------------------------------------------------- the town's houses
+// One mesh for the whole town (buildTown in world.js). A corner carries where it is on its wall (uv: metres along the wall,
+// metres above the street), what it is made of (m.x), the house's own number (m.y), flags (m.z: bits 0-1 the stone of its
+// walls, bit 2 drawn from the excavated plan, bit 3 string courses), the free ground before the wall (m.w, in steps of 5 cm),
+// the wall's length and its height above the street. The stones, joints and timbers are drawn here.
+// EVERY COLOUR HERE IS A LIBERTY (A-L2): no colour of any wall, roof or paving at Akrotiri is sourced, and it is not known
+// whether the rubble was plastered outside. The materials are sourced: fieldstone and earth in a timber frame (T2#65, T2#67),
+// off-white tuff round the openings and in string courses, hard-stone corner blocks (T2#68, T2#69), earth roofs (T2#70).
+const W_TOWN = S_B + /*wgsl*/`
+struct TI { @location(0) p: vec3f, @location(1) uv: vec2f, @location(2) n: vec4f, @location(3) m: vec4u, @location(4) l: f32 };
+struct TO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) uv: vec2f, @location(2) n: vec3f, @location(3) @interpolate(flat) m: vec4u, @location(4) @interpolate(flat) lh: vec2f, @location(5) zen: vec3f };
+@vertex fn vs(i: TI) -> TO {
+  var o: TO; let dq = i.p.xz - g.cam.xz;
+  o.wp = i.p; o.uv = i.uv; o.n = i.n.xyz; o.m = i.m; o.lh = vec2f(i.l, i.n.w * 31.75); o.zen = skyL(vec3f(0., 1., 0.));
+  o.cp = g.vp * vec4f(i.p.x, i.p.y - dot(dq, dq) / (2. * RE), i.p.z, 1.);
+  return o;
+}
+@vertex fn vsS(i: TI) -> @builtin(position) vec4f { return g.vp * vec4f(i.p, 1.); }
+// dressed blocks in courses: xyz = colour factor and joint, for courses ch metres high of blocks about bl metres long
+fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
+  let r = floor(uv.y / ch); let x = uv.x / bl + hs(r) * 3.7; let c = floor(x);
+  let e = min(min(fract(x), 1. - fract(x)) * bl, min(fract(uv.y / ch), 1. - fract(uv.y / ch)) * ch);
+  return vec2f(mix(1., .82 + .36 * hs(c * 1.31 + r * 7.7), fine), ss(.016, .004, e) * fine);
+}
+@fragment fn fs(i: TO) -> @location(0) vec4f {
+  let mat = i.m.x; let seed = f32(i.m.y) / 255.; let stone = i.m.z & 3u; let gap = f32(i.m.w) * .05;
+  let u = i.uv.x; let v = i.uv.y; let len = i.lh.x; let N0 = normalize(i.n);
+  let dist = length(i.wp - g.cam.xyz); let px = dist * g.right.w * 2. * g.res.z;
+  let fine = ss(.09, .012, px); let mid = ss(.5, .08, px);
+  // (every texture is read before the materials part ways)
+  let lev = abs(N0.y) > .7;
+  let tx = select(vec2f(u, v), i.wp.xz, lev);
+  let d1 = textureSample(tD, sR, tx * 1.37 + seed * 3.1); let d2 = textureSample(tD, sR, tx * .083 + seed * 7.3);
+  let T = select(normalize(vec3f(N0.z, 0., -N0.x) + vec3f(1e-4, 0., 0.)), vec3f(1., 0., 0.), lev); let Bt = select(vec3f(0., 1., 0.), vec3f(0., 0., 1.), lev);
+  var alb = vec3f(.3); var bump = 1.; var sky = 1.; var gloss = 0.;
+  // each house's earth is a little its own: lighter or darker, greyer or redder
+  let tuff = vec3f(.36, .335, .285); let hard = vec3f(.17, .16, .155);
+  let earth = mix(vec3f(.2, .17, .135), vec3f(.235, .185, .13), hs(seed * 13.7)) * (.8 + .4 * hs(seed * 5.3 + 2.));
+  if (mat == 0u || mat == 2u || mat == 6u) {
+    if (stone == 0u || mat == 6u) {
+      // fieldstone bound with earth, with what is left of an earth render over it
+      let st = vor(vec2f(u, v) * vec2f(4.6, 6.2) + seed * 31.);
+      var rock = mix(vec3f(.2, .175, .15), vec3f(.26, .235, .2), st.y);
+      rock = mix(rock, vec3f(.125, .12, .125), step(.86, st.z));         // dark lava
+      rock = mix(rock, vec3f(.225, .15, .12), step(st.z, .08));          // red scoria
+      alb = mix(mix(vec3f(.21, .185, .155), rock, mid), earth * .8, ss(.09, .03, st.x) * fine);
+      let render = ss(.42, .6, d2.a + .25 * d2.b + (seed - .5) * .5) * (1. - .7 * ss(1.1, .2, v));
+      // (the render: weathered in broad patches, streaked below the parapet, rubbed thin where it meets the street)
+      alb = mix(alb, earth * (.78 + .5 * d2.b) * (1. - .12 * ss(.3, .7, d1.a) * fine), render * .88);
+      bump = 1. - .6 * render;
+      // corner blocks of hard stone (T2#69), and the timbers that run in the wall at sill and lintel height (T2#43)
+      let qd = min(u, len - u); let qr = floor(v / .32);
+      if (mat == 0u && len > 2.4 && qd < select(.32, .55, fract(qr * .5) < .25)) { alb = hard * (.85 + .4 * hs(qr + seed * 9.)) * (1. - .5 * ss(.02, .0, min(fract(v / .32), 1. - fract(v / .32)) * .32) * fine); bump = .5; }
+      else if (mat == 0u) { alb = mix(alb, vec3f(.1, .072, .05) * (.7 + .6 * d1.b), (ss(.07, .05, abs(v - 1.)) + ss(.08, .06, abs(v - 2.17))) * (1. - render * .6) * mid); }
+      if (mat == 6u) { alb = earth * (1. + .25 * d1.b); }
+    } else {
+      // dressed stone in courses: whitish tuff (Xeste 4, T2#24) or ignimbrite (Xeste 3's east front, T2#20)
+      let a = ashlar(vec2f(u, v), select(.47, .37, stone == 1u), select(1.35, 1.02, stone == 1u), fine);
+      alb = select(vec3f(.235, .195, .17), tuff * .95, stone == 1u) * a.x * (.85 + .3 * d2.b); alb *= 1. - .55 * a.y; bump = .45;
+    }
+    // damp and dirt at the foot of the wall
+    alb *= 1. - .22 * ss(.7, 0., v) * select(1., 0., lev);
+    if (mat == 2u) { sky = .5; }
+  } else if (mat == 1u) {
+    let a = ashlar(vec2f(u, v), .31, .46, fine); alb = tuff * a.x * (1. - .5 * a.y); bump = .35;
+  } else if (mat == 3u) {
+    alb = vec3f(.018, .016, .014); sky = .12; bump = 0.;
+  } else if (mat == 4u) {
+    let pl = fract(u / .21); alb = vec3f(.15, .1, .062) * (.75 + .5 * hs(floor(u / .21) + seed * 5.)) * (1. - .5 * ss(.06, .0, min(pl, 1. - pl)) * fine) * (.8 + .4 * d1.b); sky = .45; bump = .4;
+  } else if (mat == 5u) {
+    // a roof of rammed earth with sea pebbles in it (T2#70)
+    // (no two roofs quite alike: newer or older earth, greyer where it holds the damp)
+    alb = earth * (.8 + .45 * hs(seed * 9.1 + 4.)) * (.9 + .3 * d2.b) * mix(vec3f(1.), vec3f(.84, .9, 1.), ss(.45, .75, d2.a) * (.4 + .6 * hs(seed * 3.3))); alb = mix(alb, vec3f(.33, .32, .3), ss(.7, .8, d1.a) * fine * .8);
+  } else if (mat == 9u) {
+    alb = vec3f(.115, .08, .052) * (.7 + .6 * d1.b); sky = .5; bump = .3;
+  } else if (mat == 7u) {
+    alb = vec3f(.42, .2, .11) * (.8 + .4 * d1.b);
+  } else if (mat == 8u) {
+    alb = vec3f(.115, .115, .125) * (.75 + .5 * d1.b); gloss = .25; bump = .6;
+  } else {
+    alb = flags(i.wp.xz, px) * (.85 + .3 * d1.b);
+  }
+  // with the edge of the evidence shown, what is reconstruction is drawn plain and pale
+  let recon = g.mis.z * select(1., 0., (i.m.z & 4u) != 0u);
+  alb = mix(alb, vec3f(.4, .41, .45), recon * .85);
+  let dn = (d1.rg - .5) * bump * fine * (1. - recon);
+  let N = normalize(N0 + (T * dn.x + Bt * dn.y) * .7);
+  let L = g.sun.xyz;
+  let E = g.sunc.rgb * shadow(i.wp + vec3f(0., 2., 0.)) * tsh(i.wp + N0 * .07);
+  // how much sky a wall sees over the house across the street, and how much less at its foot
+  if (!lev) { let up = max(i.lh.y - v, 0.); let far = gap * (1. + 7. * ss(7., 12.7, gap)); sky *= 1. - .85 * up / sqrt(up * up + far * far + .01); }
+  // (a street is never quite dark: its walls light each other)
+  if (!lev) { sky = max(sky, .3) * (.6 + .4 * ss(0., 1.3, v)); }
+  var am = (i.zen * (.3 + .7 * (N.y * .5 + .5)) + skyL(normalize(vec3f(N.x, .1, N.z))) * (.5 - .25 * N.y)) * sky;
+  // sunlight thrown back by the ground and the walls around
+  am += g.sunc.rgb * max(L.y, 0.) * vec3f(.34, .27, .19) * (.85 - .6 * N.y) * (.5 + .5 * sky);
+  let ndl = sat(dot(N, L));
+  var c = alb * (E * ndl + am + vec3f(.0016, .0022, .004) * g.sunc.w * (.4 + .6 * N.y) * sky);
+  c += E * pow(sat(dot(N, normalize(normalize(g.cam.xyz - i.wp) + L))), 30.) * gloss * ndl;
   return fin(medium(c, i.wp));
 }
 `;

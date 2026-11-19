@@ -1,0 +1,470 @@
+{
+ "inputs": {
+  "townJson": "958c8856343f22ab7c94e4bfb28f617d93ef71a6778ebf81fd40b4c42bb1b84a",
+  "tracedJson": "942840db89e6a048d9aaaff2e27481cf59ddda68f17b861b89c4f6b000eac896",
+  "plan": {
+   "file": "Map_Akrotiri_1600_BC-en.png",
+   "sha1": "cd0dbc4a0107e624b511b7351d8d50497dc55eff",
+   "page": "https://commons.wikimedia.org/wiki/File:Map_Akrotiri_1600_BC-en.png"
+  }
+ },
+ "town": {
+  "hectares": 9.95,
+  "hectaresAimedAt": 10,
+  "builtSquareMetres": 67747,
+  "shareBuilt": 0.68
+ },
+ "masses": 463,
+ "buildings": {
+  "all": 452,
+  "excavated": 19,
+  "reconstructedInsideThePlan": 13,
+  "reconstructedByRule": 420
+ },
+ "storeys": {
+  "one": 0,
+  "two": 332,
+  "three": 120
+ },
+ "byRule": {
+  "lotsCut": 485,
+  "kept": 420,
+  "dropped": {
+   "nearThePlan": 0,
+   "size": 7,
+   "steep": 0,
+   "thinned": 58,
+   "outsideTheTown": 0
+  },
+  "footprintSquareMetres": {
+   "smallest": 97,
+   "median": 150,
+   "largest": 187,
+   "allowed": [
+    96,
+    187
+   ]
+  },
+  "byDistrict": {
+   "north": 157,
+   "far-north": 255,
+   "east": 8
+  }
+ },
+ "excavatedPart": {
+  "wallExtentMetres": {
+   "eastWest": 87.79,
+   "northSouth": 143.36
+  },
+  "edgePoints": 97,
+  "edgeAreaSquareMetres": 4638,
+  "masses": [
+   {
+    "id": "alpha",
+    "label": "Sector Alpha (Pithoi Storeroom)",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.87,
+    "squareMetres": 146,
+    "storeys": 2,
+    "groundMetres": 27.1
+   },
+   {
+    "id": "eta",
+    "label": "\"Porter's Lodge\" (the plan's label; Building Eta on the excavators' plan)",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.54,
+    "squareMetres": 174,
+    "storeys": 2,
+    "groundMetres": 26.5
+   },
+   {
+    "id": "nhol",
+    "label": "unnamed, north of the House of the Ladies",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.5,
+    "squareMetres": 136,
+    "storeys": 2,
+    "groundMetres": 26.8
+   },
+   {
+    "id": "ladies",
+    "label": "House of the Ladies",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.86,
+    "squareMetres": 226,
+    "storeys": 3,
+    "groundMetres": 26.4
+   },
+   {
+    "id": "de1",
+    "label": "unnamed, east side of Dactyls Street",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.23,
+    "squareMetres": 72,
+    "storeys": 2,
+    "groundMetres": 26.2
+   },
+   {
+    "id": "de2",
+    "label": "unnamed, east side of Dactyls Street",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.25,
+    "squareMetres": 77,
+    "storeys": 2,
+    "groundMetres": 25.9
+   },
+   {
+    "id": "de3",
+    "label": "unnamed, east side of Dactyls Street",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.02,
+    "squareMetres": 110,
+    "storeys": 2,
+    "groundMetres": 25.7
+   },
+   {
+    "id": "w1",
+    "label": "unnamed, between the House of the Ladies and the West House",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.86,
+    "squareMetres": 82,
+    "storeys": 2,
+    "groundMetres": 26.2
+   },
+   {
+    "id": "w2",
+    "label": "unnamed, south of the House of the Ladies",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.72,
+    "squareMetres": 31,
+    "storeys": 2,
+    "groundMetres": 26
+   },
+   {
+    "id": "west",
+    "label": "West House",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.87,
+    "squareMetres": 143,
+    "storeys": 2,
+    "groundMetres": 25.7
+   },
+   {
+    "id": "anchor",
+    "label": "House of the Anchor",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.34,
+    "squareMetres": 89,
+    "storeys": 2,
+    "groundMetres": 25.2
+   },
+   {
+    "id": "tw1",
+    "label": "unnamed, west side of Telchines Street",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0,
+    "squareMetres": 94,
+    "storeys": 2,
+    "groundMetres": 24.9
+   },
+   {
+    "id": "tw2",
+    "label": "unnamed, west side of Telchines Street",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.12,
+    "squareMetres": 83,
+    "storeys": 2,
+    "groundMetres": 24.7
+   },
+   {
+    "id": "porch",
+    "label": "\"Pylon\" (the plan's label): the porch at Delta West's entrance",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.04,
+    "squareMetres": 8,
+    "storeys": 2,
+    "groundMetres": 25.3
+   },
+   {
+    "id": "delta_w",
+    "label": "Complex Delta, West house",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.76,
+    "squareMetres": 166,
+    "storeys": 2,
+    "groundMetres": 25.4
+   },
+   {
+    "id": "delta_n1",
+    "label": "Complex Delta, North house",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.9,
+    "squareMetres": 39,
+    "storeys": 2,
+    "groundMetres": 25.5
+   },
+   {
+    "id": "delta_n2",
+    "label": "Complex Delta, North house",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.84,
+    "squareMetres": 38,
+    "storeys": 2,
+    "groundMetres": 25.3
+   },
+   {
+    "id": "delta_c",
+    "label": "Complex Delta, North house",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.65,
+    "squareMetres": 46,
+    "storeys": 2,
+    "groundMetres": 25
+   },
+   {
+    "id": "delta_e_n",
+    "label": "Complex Delta, East house (north part)",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.66,
+    "squareMetres": 34,
+    "storeys": 2,
+    "groundMetres": 25
+   },
+   {
+    "id": "delta_e",
+    "label": "Complex Delta, East house",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.95,
+    "squareMetres": 56,
+    "storeys": 2,
+    "groundMetres": 24.9
+   },
+   {
+    "id": "delta_s16",
+    "label": "Complex Delta, South house (Delta 16)",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.97,
+    "squareMetres": 72,
+    "storeys": 1,
+    "groundMetres": 25.1
+   },
+   {
+    "id": "delta_s",
+    "label": "Complex Delta, South house",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.93,
+    "squareMetres": 89,
+    "storeys": 2,
+    "groundMetres": 24.9
+   },
+   {
+    "id": "xeste5",
+    "label": "\"Xeste 5\" (a label only)",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.29,
+    "squareMetres": 178,
+    "storeys": 2,
+    "groundMetres": 25
+   },
+   {
+    "id": "dhe",
+    "label": "unnamed, east of Double Horns Square",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.41,
+    "squareMetres": 97,
+    "storeys": 2,
+    "groundMetres": 24.3
+   },
+   {
+    "id": "xeste2",
+    "label": "Xeste 2",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.5,
+    "squareMetres": 342,
+    "storeys": 3,
+    "groundMetres": 24.2
+   },
+   {
+    "id": "x2s",
+    "label": "unnamed, south of Xeste 2",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.21,
+    "squareMetres": 87,
+    "storeys": 2,
+    "groundMetres": 23.9
+   },
+   {
+    "id": "gamma_n",
+    "label": "Building Gamma (Sector Gamma)",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.61,
+    "squareMetres": 61,
+    "storeys": 2,
+    "groundMetres": 24.3
+   },
+   {
+    "id": "gamma_s",
+    "label": "Building Gamma (Sector Gamma)",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.96,
+    "squareMetres": 95,
+    "storeys": 2,
+    "groundMetres": 23.8
+   },
+   {
+    "id": "beta_n",
+    "label": "Complex Beta (Sector Beta)",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 1,
+    "squareMetres": 21,
+    "storeys": 2,
+    "groundMetres": 24.7
+   },
+   {
+    "id": "beta_w",
+    "label": "Complex Beta (Sector Beta)",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.92,
+    "squareMetres": 148,
+    "storeys": 2,
+    "groundMetres": 24.4
+   },
+   {
+    "id": "beta_m",
+    "label": "Complex Beta (Sector Beta)",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.76,
+    "squareMetres": 53,
+    "storeys": 2,
+    "groundMetres": 24.5
+   },
+   {
+    "id": "beta_e",
+    "label": "Complex Beta, east wing",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.81,
+    "squareMetres": 58,
+    "storeys": 2,
+    "groundMetres": 24.3
+   },
+   {
+    "id": "bs",
+    "label": "unnamed, south of Complex Beta",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.45,
+    "squareMetres": 91,
+    "storeys": 2,
+    "groundMetres": 24
+   },
+   {
+    "id": "xeste3_w",
+    "label": "Xeste 3, west part",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.97,
+    "squareMetres": 142,
+    "storeys": 3,
+    "groundMetres": 23
+   },
+   {
+    "id": "xeste3_e",
+    "label": "Xeste 3, east part",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.92,
+    "squareMetres": 150,
+    "storeys": 3,
+    "groundMetres": 23.2
+   },
+   {
+    "id": "se_b1",
+    "label": "unnamed, north of Xeste 4",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.92,
+    "squareMetres": 108,
+    "storeys": 2,
+    "groundMetres": 23.7
+   },
+   {
+    "id": "se_b2",
+    "label": "unnamed, north of Xeste 4",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.87,
+    "squareMetres": 42,
+    "storeys": 2,
+    "groundMetres": 23.4
+   },
+   {
+    "id": "se_a",
+    "label": "unnamed, north-west of Xeste 4",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.94,
+    "squareMetres": 72,
+    "storeys": 2,
+    "groundMetres": 23.6
+   },
+   {
+    "id": "xeste4_w",
+    "label": "Xeste 4",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.7,
+    "squareMetres": 182,
+    "storeys": 3,
+    "groundMetres": 23.2
+   },
+   {
+    "id": "xeste4_e",
+    "label": "Xeste 4",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.54,
+    "squareMetres": 217,
+    "storeys": 3,
+    "groundMetres": 22.6
+   },
+   {
+    "id": "south",
+    "label": "\"South Building\" (the plan's label)",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.65,
+    "squareMetres": 66,
+    "storeys": 2,
+    "groundMetres": 22.7
+   },
+   {
+    "id": "swx_w",
+    "label": "unnamed, south of Curetes Street",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.71,
+    "squareMetres": 56,
+    "storeys": 2,
+    "groundMetres": 23.5
+   },
+   {
+    "id": "swx_e",
+    "label": "unnamed, south of Curetes Street",
+    "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.78,
+    "squareMetres": 57,
+    "storeys": 2,
+    "groundMetres": 23.3
+   }
+  ]
+ },
+ "ground": {
+  "atXeste3Metres": 23.2,
+  "sourcedAtXeste3Metres": 23.1,
+  "atTheEastEdgeByXeste2Metres": 23.6,
+  "sourcedBasementFloorThereMetres": [
+   21.7,
+   21.8
+  ],
+  "claims": [
+   "T2#19",
+   "T2#80",
+   "T2b#36"
+  ]
+ },
+ "data": {
+  "bytes": 10744,
+  "sha256": "14871263ba6e6584023c56d79a7bf57692d0ad4294a32d351c920769ed0cd33d",
+  "textKilobytes": 14
+ }
+}
