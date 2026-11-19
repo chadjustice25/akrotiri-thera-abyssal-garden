@@ -64,7 +64,7 @@
     {
       "id": "delta_s",
       "regionPx": [[930, 1808], [975, 1826], [1150, 1896], [1262, 1946], [1217, 2110], [930, 2110]],
-      "split": { "linePx": [[1062, 1800], [1040, 2130]], "ids": ["delta_s", "delta_s16"] }
+      "split": { "linePx": [[1062, 1800], [1040, 2130]], "ids": ["delta_s16", "delta_s"] }
     },
     { "id": "xeste5", "regionPx": [[1492, 1340], [1795, 1340], [1805, 1642], [1492, 1632]], "addPx": [[1790, 1345], [1800, 1638]] },
     { "id": "dhe", "regionPx": [[1685, 1690], [1905, 1690], [1905, 1927], [1685, 1927]], "addPx": [[1900, 1695], [1900, 1905]] },
@@ -212,6 +212,7 @@
     "nhol": {
       "label": "unnamed, north of the House of the Ladies",
       "storeys": 2,
+      "status": "reconstructed",
       "claims": ["T2b#52"],
       "note": "The House of the Ladies is the only excavated building of a complex of at least two. Only this building's east wall on Dactyls Street is drawn."
     },

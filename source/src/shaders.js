@@ -598,7 +598,8 @@ fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
     let pl = fract(u / .21); alb = vec3f(.15, .1, .062) * (.75 + .5 * hs(floor(u / .21) + seed * 5.)) * (1. - .5 * ss(.06, .0, min(pl, 1. - pl)) * fine) * (.8 + .4 * d1.b); sky = .45; bump = .4;
   } else if (mat == 5u) {
     // a roof of rammed earth with sea pebbles in it (T2#70)
-    alb = earth * (.95 + .3 * d2.b) * mix(vec3f(1.), vec3f(.88, .92, 1.), ss(.5, .75, d2.a)); alb = mix(alb, vec3f(.33, .32, .3), ss(.7, .8, d1.a) * fine * .8);
+    // (no two roofs quite alike: newer or older earth, greyer where it holds the damp)
+    alb = earth * (.8 + .45 * hs(seed * 9.1 + 4.)) * (.9 + .3 * d2.b) * mix(vec3f(1.), vec3f(.84, .9, 1.), ss(.45, .75, d2.a) * (.4 + .6 * hs(seed * 3.3))); alb = mix(alb, vec3f(.33, .32, .3), ss(.7, .8, d1.a) * fine * .8);
   } else if (mat == 9u) {
     alb = vec3f(.115, .08, .052) * (.7 + .6 * d1.b); sky = .5; bump = .3;
   } else if (mat == 7u) {

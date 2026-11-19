@@ -105,7 +105,8 @@ for (const b of T.buildings) {
   if (b.regionPx && !convex(b.regionPx)) { console.error(`building ${b.id}: its region is not convex`); process.exit(1); }
   for (const p of (b.regionPx && b.addPx) || []) if (!inPoly(b.regionPx, p[0], p[1])) { console.error(`building ${b.id}: the added point ${p} is outside its region`); process.exit(1); }
 }
-// a building may be cut in two along a line (split.linePx): the parts get split.ids, the first on the line's left
+// a building may be cut in two along a line (split.linePx): the parts get split.ids. For a line drawn down the plan,
+// the first id is the part on the plan's left (the west)
 const parts = T.buildings.flatMap((b) => {
   const o = outlinePx(b); if (!b.split) return [{ id: b.id, of: b.id, opx: o }];
   const [p, q] = b.split.linePx;

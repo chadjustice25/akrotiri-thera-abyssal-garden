@@ -413,7 +413,7 @@ const POSES = [
   [5270, 2.5, 4050, -900, 100, -1600],     // 4 Profitis Ilias summit, looking across the island
   [1250, 1.3, -450, -900, 150, -2700],     // 5 sea level inside the bay
   [250, -7, 6560, -135, -1, 6200],         // 6 under water off the south shore
-  [-144.9, 1.5, 5919.5, -146.4, 26.4, 5945, 1],  // 7 on foot in Telchines Street (a modern label), looking down it past Complex Delta towards Sector Beta
+  [-144.5, 1.5, 5924.6, -146.6, 26.3, 5948, 1],  // 7 on foot in Telchines Street (a modern label), looking down it past Complex Delta towards Sector Beta
   [-111.5, 1.5, 5916.4, -109, 28, 5929, 1],      // 8 on foot in Double Horns Square, facing Xeste 2's north front
   [-30, 34, 5490, -118, 6, 5900],                // 9 over the roofs from the town's north edge, looking across it to the sea
 ];

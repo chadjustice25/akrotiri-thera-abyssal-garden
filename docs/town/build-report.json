@@ -1,7 +1,7 @@
 {
  "inputs": {
-  "townJson": "5e8ea7516e41ba06c2247091619e987eb9fd1abf5ecff142199bb0b58eeefa60",
-  "tracedJson": "21d030394bfbf88eb820925942d465cc2b1fd760eafc9de975d1f45231e81e0f",
+  "townJson": "027233a17d3442af4c3fb6134121a2d7739be37ddab3fb0bd1724d6ddf596370",
+  "tracedJson": "942840db89e6a048d9aaaff2e27481cf59ddda68f17b861b89c4f6b000eac896",
   "plan": {
    "file": "Map_Akrotiri_1600_BC-en.png",
    "sha1": "cd0dbc4a0107e624b511b7351d8d50497dc55eff",
@@ -17,8 +17,8 @@
  "masses": 463,
  "buildings": {
   "all": 457,
-  "excavated": 24,
-  "reconstructedInsideThePlan": 13,
+  "excavated": 23,
+  "reconstructedInsideThePlan": 14,
   "reconstructedByRule": 420
  },
  "storeys": {
@@ -80,7 +80,7 @@
    {
     "id": "nhol",
     "label": "unnamed, north of the House of the Ladies",
-    "status": "excavated",
+    "status": "reconstructed",
     "shareOfOutlineOnDrawnWalls": 0.5,
     "squareMetres": 136,
     "storeys": 2,
@@ -240,21 +240,21 @@
     "groundMetres": 24.9
    },
    {
-    "id": "delta_s",
-    "label": "Complex Delta, South house",
-    "status": "excavated",
-    "shareOfOutlineOnDrawnWalls": 0.97,
-    "squareMetres": 72,
-    "storeys": 2,
-    "groundMetres": 25.1
-   },
-   {
     "id": "delta_s16",
     "label": "Complex Delta, South house (Delta 16)",
     "status": "excavated",
+    "shareOfOutlineOnDrawnWalls": 0.97,
+    "squareMetres": 72,
+    "storeys": 1,
+    "groundMetres": 25.1
+   },
+   {
+    "id": "delta_s",
+    "label": "Complex Delta, South house",
+    "status": "excavated",
     "shareOfOutlineOnDrawnWalls": 0.93,
     "squareMetres": 89,
-    "storeys": 1,
+    "storeys": 2,
     "groundMetres": 24.9
    },
    {
@@ -464,7 +464,7 @@
  },
  "data": {
   "bytes": 10744,
-  "sha256": "52cbe1bde322afdc60d222952f0640d5fa50c858c37f4550f51d0470d61141b8",
+  "sha256": "e053d90b1b325ee6afc09aca1bf6de15363eca5dba2a09d688cf07a58e952fac",
   "textKilobytes": 14
  }
 }

@@ -1,7 +1,7 @@
 {
   "name": "abyssal-garden",
   "private": true,
-  "description": "The island of Thera in 1615 BCE, rendered with WebGPU and bundled into one HTML file (a fork of Abyssal Garden)",
+  "description": "The island of Thera and its town at Akrotiri in 1615 BCE, rendered with WebGPU and bundled into one HTML file (a fork of Abyssal Garden)",
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
@@ -9,7 +9,8 @@
     "build:dev": "node build.mjs --dev",
     "check": "bash ../checks/build.sh",
     "views": "node ../checks/views.mjs",
-    "terrain": "node ../tools/terrain/build.mjs"
+    "terrain": "node ../tools/terrain/build.mjs",
+    "town": "node ../tools/town/build.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.2"
