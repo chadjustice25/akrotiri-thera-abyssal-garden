@@ -25,7 +25,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const arg = (name, dflt) => { const i = process.argv.indexOf('--' + name); return i > 0 ? process.argv[i + 1] : dflt; };
-const PAGE = path.resolve(ROOT, arg('page', 'dev.html')), OUT = path.resolve(arg('out', path.join(ROOT, '.harness', 'shots')));
+const PAGE = path.resolve(ROOT, arg('page', 'dev.html')), OUT = path.resolve(arg('out', path.join(ROOT, '.harness', 'views', 'dev'))); // (.harness/views/ is ignored by git)
 const [W, H] = arg('size', '1600x900').split('x').map(Number), LEVEL = { high: 0, medium: 1, low: 2 }[arg('level', 'high')];
 const STEPS = JSON.parse(arg('steps', '[]'));
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
