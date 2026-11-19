@@ -1,7 +1,7 @@
 # 002-town-of-akrotiri: the town at Akrotiri in 1615 BCE, from outside, and walking
 **Status:** open · **Branch:** `task/002-town-of-akrotiri`
 
-**Not to be run yet.** Research lane T2b is back and checked, and this order is finished from it. It runs once Chad accepts the two points marked "to confirm" under "Decisions this order rests on".
+**Ready to run.** Research lane T2b is back and checked, this order is finished from it, and Chad confirmed its decisions on 2026-11-18 (D18–D20, D22).
 
 ```harness-spec
 {
@@ -87,12 +87,12 @@ Stage files by path, never with `git add -A`. Commit as you go. Do not push or m
 **The Result comes back in your final report**, under the headings the Result section names. The work-order folder is closed to you, this order included, so that no worker can change its own gate; Chad's session pastes the Result in.
 
 ## Decisions this order rests on
-Chad's, of 2026-11-18 (D18–D20 in `docs/DECISIONS.md`).
+Chad's, of 2026-11-18 (D18–D20 and D22 in `docs/DECISIONS.md`).
 
 1. **The excavated part of the town follows the excavated plan.** The streets, squares and buildings that have been dug are archaeological evidence, and the world puts them where they were found. The plan it is drawn from must be one whose licence allows that, and its credit and licence terms travel with the page (standard §5).
-   - **To confirm: the plan is Maximilian Dörrbecker's map on Wikimedia Commons**, the file Chad supplied, under CC BY-SA 2.5. T2b's check clears it for building shapes, with one stated doubt: it is a tracing of a 2005 Thera Foundation web map that carries no terms, which itself looks drawn from the excavators' copyright plan. The check's cautious course is to use it for this public, free page with full credit, and to ask the Akrotiri Excavations for permission before any sale. Their own plan would also be a better one.
+   - **The plan is Maximilian Dörrbecker's map on Wikimedia Commons** (D22), the file Chad supplied, under CC BY-SA 2.5. T2b's check clears it for building shapes, with one stated doubt: it is a tracing of a 2005 Thera Foundation web map that carries no terms, which itself looks drawn from the excavators' copyright plan. The check's cautious course is to use it for this public, free page with full credit, and to ask the Akrotiri Excavations for permission before any sale. Their own plan would also be a better one.
 2. **Where the evidence ends is recorded and shown.** About 1.2 ha has been excavated, of a town several times that size. Everything outside the excavated walls is reconstruction: built by the same rules as the excavated houses, recorded as a liberty, and marked so that nobody takes it for the excavated town.
-   - **To confirm: the whole town is drawn at about 10 ha, running on to the north and north-east.** The research found no measured edge in any direction. Both published sizes, about 10 ha and about 20 ha, are grade C. The 10 ha figure sits better with the one published sketch of the old shoreline, which puts the sea close on the south, west and east. The 20 ha figure is recorded beside it.
+   - **The whole town is drawn at about 10 ha, running on to the north and north-east** (D22). The research found no measured edge in any direction. Both published sizes, about 10 ha and about 20 ha, are grade C. The 10 ha figure sits better with the one published sketch of the old shoreline, which puts the sea close on the south, west and east. The 20 ha figure is recorded beside it.
 3. **Outsides only, and nobody in them**, in this order. No interiors, wall paintings, furniture, people, animals, plants or ships. The empty town is a liberty and the page says so.
 4. **The town is whole and thriving**: 1615 BCE, before the final earthquake (D15, D16). No damage, no rubble, no repairs.
 5. **The harbour waits.** None is built in this order.
