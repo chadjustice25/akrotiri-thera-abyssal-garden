@@ -1,6 +1,6 @@
 # Research: how to run it
 
-Eleven files are in `prompts/`. Ten are lanes for Gemini 4 Argon Deep Research, written 2026-11-15 (X1, the length test, later the same day); the eleventh, `TEMPLATE-site.md`, is the starting point for later places. Each lane is one self-contained prompt, run in its own new chat. Prompts are kept to about 7 KB or less, because Argon has stalled on longer ones (`LESSONS.md`); X1 (9.7 KB) tests whether that limit is gone. Every lane shares the same context, source rules, A/B/C grades and report format. That shared shape is what lets Egypt, Byblos and later places line up with Thera.
+Fourteen files are in `prompts/`. Ten are lanes for Gemini 4 Argon Deep Research, written 2026-11-15 (X1, the length test, later the same day); `TEMPLATE-site.md` is the starting point for later places; and three plant lanes for work order 003 were added on 2026-11-18 (see "The plant lanes" below). Each lane is one self-contained prompt, run in its own new chat. Prompts are kept to about 7 KB or less, because Argon has stalled on longer ones (`LESSONS.md`); X1 (9.7 KB) tests whether that limit is gone. Every lane shares the same context, source rules, A/B/C grades and report format. That shared shape is what lets Egypt, Byblos and later places line up with Thera.
 
 ## Lanes and run order
 
@@ -18,6 +18,18 @@ Eleven files are in `prompts/`. Ten are lanes for Gemini 4 Argon Deep Research, 
 | 4 | **T7** The end: earthquake, abandonment and eruption | `prompts/T7-the-end.md` | `argon/T7_Argon.md` | The ending |
 
 Lanes with the same order number can run at the same time, in separate chats. Order 1 matters most: W1 and W2 fix the year, and T1 fixes the ground.
+
+## The plant lanes (work order 003, D26)
+
+Added 2026-11-18. **The step-by-step runbook is `RUNBOOK-003-plants.md`**, and the Research Desk lists these three first. All three run at the same time, each in its own chat.
+
+| Lane | Prompt | Save the report as | What it settles |
+|---|---|---|---|
+| **T3b** What grew where on Thera, and how thickly | `prompts/T3b-vegetation-cover.md` | `argon/T3b_Argon.md` | Where fields, groves, scrub and bare ground go, and how dense each is |
+| **T3c** How each plant looked: size, form, colour and season | `prompts/T3c-plant-forms-and-seasons.md` | `argon/T3c_Argon.md` | The shape and colour of every plant to be built, as it stands in late May, and which modern plants must not appear |
+| **T3d** Plants in Aegean art, on Thera and elsewhere | `prompts/T3d-plants-in-aegean-art.md` | `argon/T3d_Argon.md` | What the painters and potters show, and what that can and cannot prove |
+
+They follow lane T3 and its check, share its source rules and report format word for word, and add one line to the grades: a plant shown only in the art of another Aegean place is grade C for Thera. Each is under 7 KB.
 
 ## Steps (Chad), for each lane
 
