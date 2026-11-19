@@ -359,12 +359,13 @@
     },
     "gamma_s": {
       "label": "Building Gamma (Sector Gamma)",
+      "partOf": "gamma_n",
       "group": "Sector Gamma",
       "storeys": 2,
       "claims": ["T2#63"],
       "note": "Oblong, entered from Telchines Street."
     },
-    "beta_n": { "label": "Complex Beta (Sector Beta)", "group": "Sector Beta", "storeys": 2, "claims": ["T2#61"] },
+    "beta_n": { "label": "Complex Beta (Sector Beta)", "partOf": "beta_w", "group": "Sector Beta", "storeys": 2, "claims": ["T2#61"] },
     "beta_w": {
       "label": "Complex Beta (Sector Beta)",
       "group": "Sector Beta",
@@ -372,9 +373,10 @@
       "claims": ["T2#61", "T2#62"],
       "note": "Ground-floor rooms became semi-basements when Telchines Street was raised; their small windows were blocked."
     },
-    "beta_m": { "label": "Complex Beta (Sector Beta)", "group": "Sector Beta", "storeys": 2, "claims": ["T2#61"] },
+    "beta_m": { "label": "Complex Beta (Sector Beta)", "partOf": "beta_w", "group": "Sector Beta", "storeys": 2, "claims": ["T2#61"] },
     "beta_e": {
       "label": "Complex Beta, east wing",
+      "partOf": "beta_w",
       "group": "Sector Beta",
       "storeys": 2,
       "status": "reconstructed",
@@ -384,6 +386,7 @@
     "bs": { "label": "unnamed, south of Complex Beta", "storeys": 2, "status": "reconstructed" },
     "xeste3_w": {
       "label": "Xeste 3, west part",
+      "partOf": "xeste3_e",
       "group": "Xeste 3",
       "storeys": 3,
       "publishedPlotSquareMetres": 283,

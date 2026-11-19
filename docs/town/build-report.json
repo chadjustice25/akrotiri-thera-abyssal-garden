@@ -1,6 +1,6 @@
 {
  "inputs": {
-  "townJson": "027233a17d3442af4c3fb6134121a2d7739be37ddab3fb0bd1724d6ddf596370",
+  "townJson": "958c8856343f22ab7c94e4bfb28f617d93ef71a6778ebf81fd40b4c42bb1b84a",
   "tracedJson": "942840db89e6a048d9aaaff2e27481cf59ddda68f17b861b89c4f6b000eac896",
   "plan": {
    "file": "Map_Akrotiri_1600_BC-en.png",
@@ -16,15 +16,15 @@
  },
  "masses": 463,
  "buildings": {
-  "all": 457,
-  "excavated": 23,
-  "reconstructedInsideThePlan": 14,
+  "all": 452,
+  "excavated": 19,
+  "reconstructedInsideThePlan": 13,
   "reconstructedByRule": 420
  },
  "storeys": {
   "one": 0,
-  "two": 336,
-  "three": 121
+  "two": 332,
+  "three": 120
  },
  "byRule": {
   "lotsCut": 485,
@@ -464,7 +464,7 @@
  },
  "data": {
   "bytes": 10744,
-  "sha256": "e053d90b1b325ee6afc09aca1bf6de15363eca5dba2a09d688cf07a58e952fac",
+  "sha256": "14871263ba6e6584023c56d79a7bf57692d0ad4294a32d351c920769ed0cd33d",
   "textKilobytes": 14
  }
 }
