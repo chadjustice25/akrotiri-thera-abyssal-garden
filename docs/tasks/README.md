@@ -17,5 +17,5 @@ One file per task: `docs/tasks/NNN-slug.md`, numbered from 001. A work order is 
 
 | # | Order | Status |
 |---|---|---|
-| 002 | `002-town-of-akrotiri.md`: the town at Akrotiri from outside, and walking (Fable 5.2, D14) | open, but not to be run yet: it is finished from the check of research lane T2b (D18) |
+| 002 | `002-town-of-akrotiri.md`: the town at Akrotiri from outside, and walking (Fable 5.2, D14) | open, finished from the T2b check; runs once Chad confirms the plan and the 10 ha extent |
 | 001 | `001-terrain-and-sea.md`: Thera's land, sea and sky in 1615 BCE (Fable 5.2, D14) | merged into `main` 2026-11-18 (`7651a39`) |
