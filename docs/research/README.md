@@ -2,6 +2,8 @@
 
 Fourteen files are in `prompts/`. Ten are lanes for Gemini 4 Argon Deep Research, written 2026-11-15 (X1, the length test, later the same day); `TEMPLATE-site.md` is the starting point for later places; and three plant lanes for work order 003 were added on 2026-11-18 (see "The plant lanes" below). Each lane is one self-contained prompt, run in its own new chat. Prompts are kept to about 7 KB or less, because Argon has stalled on longer ones (`LESSONS.md`); X1 (9.7 KB) tests whether that limit is gone. Every lane shares the same context, source rules, A/B/C grades and report format. That shared shape is what lets Egypt, Byblos and later places line up with Thera.
 
+**Neon replaced Argon on 2026-11-19 (D30).** Gemini removed Argon from Chad's list of models. New lanes run on Neon, and their reports go to `neon/<lane>_Neon.md`. Where this file names Argon for the first ten lanes, it is the plan as it was written. Those lanes were in the end researched by Claude agents (D13), and their reports are in `claude/`. What was learned about Argon (stalls on long prompts, a picture embedded in each report) is assumed to hold for Neon until a run shows otherwise.
+
 ## Lanes and run order
 
 | Order | Lane | Prompt | Save the report as | What it settles |
@@ -25,34 +27,34 @@ Added 2026-11-18. **The step-by-step runbook is `RUNBOOK-003-plants.md`**, and t
 
 | Lane | Prompt | Save the report as | What it settles |
 |---|---|---|---|
-| **T3b** What grew where on Thera, and how thickly | `prompts/T3b-vegetation-cover.md` | `argon/T3b_Argon.md` | Where fields, groves, scrub and bare ground go, and how dense each is |
-| **T3c** How each plant looked: size, form, colour and season | `prompts/T3c-plant-forms-and-seasons.md` | `argon/T3c_Argon.md` | The shape and colour of every plant to be built, as it stands in late May, and which modern plants must not appear |
-| **T3d** Plants in Aegean art, on Thera and elsewhere | `prompts/T3d-plants-in-aegean-art.md` | `argon/T3d_Argon.md` | What the painters and potters show, and what that can and cannot prove |
+| **T3b** What grew where on Thera, and how thickly | `prompts/T3b-vegetation-cover.md` | `neon/T3b_Neon.md` | Where fields, groves, scrub and bare ground go, and how dense each is |
+| **T3c** How each plant looked: size, form, colour and season | `prompts/T3c-plant-forms-and-seasons.md` | `neon/T3c_Neon.md` | The shape and colour of every plant to be built, as it stands in late May, and which modern plants must not appear |
+| **T3d** Plants in Aegean art, on Thera and elsewhere | `prompts/T3d-plants-in-aegean-art.md` | `neon/T3d_Neon.md` | What the painters and potters show, and what that can and cannot prove |
 
 They follow lane T3 and its check, share its source rules and report format word for word, and add one line to the grades: a plant shown only in the art of another Aegean place is grade C for Thera. Each is under 7 KB.
 
 ## Steps (Chad), for each lane
 
 1. Open the lane's prompt file in any editor and copy everything **below the `---` line**.
-2. In Gemini (gemini.google.com), start a **new chat**, choose **Argon** with thinking **high**, and turn on **Deep Research**.
+2. In Gemini (gemini.google.com), start a **new chat**, choose **Neon** with its highest thinking setting, and turn on **Deep Research**.
 3. Paste the prompt, add nothing, and send.
 4. Gemini shows a research plan. Click **Start research** without editing it.
 5. Wait for the report. You can leave the tab.
-6. Save it as the file named in the table, in `docs/research/argon/`:
+6. Save it as the file named in the table, in `docs/research/neon/`:
    - **Preferred:** export the report to Google Docs, then in Docs choose **File → Download → Markdown (.md)**. Move the file here and rename it. This keeps the tables intact.
    - **Quicker:** use the report's copy option, then in Terminal:
-     `pbpaste > ~/Developer/akrotiri-thera-abyssal-garden/docs/research/argon/T1_Argon.md` (with the lane's own name).
+     `pbpaste > ~/Developer/akrotiri-thera-abyssal-garden/docs/research/neon/T3b_Neon.md` (with the lane's own name).
 7. Check that it is not empty and has links:
-   `grep -c http ~/Developer/akrotiri-thera-abyssal-garden/docs/research/argon/T1_Argon.md` should print a number well above 0.
+   `grep -c http ~/Developer/akrotiri-thera-abyssal-garden/docs/research/neon/T3b_Neon.md` should print a number well above 0.
 8. Tell the next session which lanes are in.
 
 ## If a lane stalls
 
-Run its topics in two halves instead, each in its own new chat. Copy the context paragraph, the source rules and the report format unchanged, keep topics A–C in one and D–E (or D–F) in the other, and save the reports as `<lane>a_Argon.md` and `<lane>b_Argon.md`. The check treats the two halves as one lane.
+Run its topics in two halves instead, each in its own new chat. Copy the context paragraph, the source rules and the report format unchanged, keep topics A–C in one and D–E (or D–F) in the other, and save the reports as `<lane>a_Neon.md` and `<lane>b_Neon.md`. The check treats the two halves as one lane.
 
 ## For the session that reads a report
 
-- **Reading cost:** Argon reports have embedded one base64 PNG of 150–215 KB on a single line. Read without it (`grep -v 'data:image' argon/T1_Argon.md`), or about 50k tokens of image get read as text.
+- **Reading cost:** Argon reports embedded one base64 PNG of 150–215 KB on a single line, and Neon's may do the same. Read without it (`grep -v 'data:image' neon/T3b_Neon.md`), or about 50k tokens of image get read as text.
 - Check every claim marked `contradicted` in "Assumptions checked", every grade-A claim the world will be built from, and every number in "Numbers for the builder" against its primary source. Write `verification/<lane>.md`: claim by claim, `checked`, `wrong` (with the right reading and source) or `could not check`.
 - Adopted claims keep their reference (`T2#14`) wherever they are used. Nothing changes the standard or a decision without Chad.
 - W1 and W2 are checked first and turned into `docs/WORLD_CLOCK.md`. Chad then decides O1.

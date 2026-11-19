@@ -1,6 +1,6 @@
 # Handoff
 
-As of 2026-11-18, after work order 002 (the town of Akrotiri) was merged and pushed, and the research for work order 003 (plants and ground cover) was prepared. Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
+As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pushed, and the research for work order 003 (plants and ground cover) was prepared. Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
 
 ## Where things stand
 - **The world is Thera with its town.** `main` holds the island of 1615 BCE (high chronology, D16) and the town at Akrotiri from the outside, in one `index.html` of 166 kB. There is no plant, animal, person, interior, harbour or ship yet: the ground is bare and the town is empty.
@@ -19,8 +19,13 @@ As of 2026-11-18, after work order 002 (the town of Akrotiri) was merged and pus
   - Upstream's funding links are gone from the menu and the repository, and the credit stays (D23, closes O4).
   - The two rule-built houses on Telchines Street stay (D24).
   - Marking and labelling what has been found waits for its own order (D25).
-  - The next build order is 003, plants and ground cover, with its research on Gemini 4 Argon (D26, closes O9).
+  - The next build order is 003, plants and ground cover (D26, closes O9).
   - The project is free and not for sale (D27).
+- **Decided on 2026-11-19:**
+  - The grades are read for claims about the land as lane T1 read them; the standard's §3 now says so (D28, closes O10).
+  - Edit E4 is to put back more land, as the first step of work order 003 (D29, closes O11).
+  - Gemini Neon replaces Argon for Deep Research; reports go to `docs/research/neon/` (D30).
+  - Chad confirmed how art is graded: Theran art B, art from elsewhere C (D26).
 - **Research:** X1, T1, T1b, T1c, T2, T2b and T3–T7 are in `docs/research/claude/`, each checked in `docs/research/verification/`. T1c is applied to the terrain; T2 and T2b to the town.
 - **Two kinds of data in the page are not MIT.**
   - The terrain stays under the Copernicus WorldDEM-30 licence and CC BY 4.0 (EMODnet).
@@ -28,20 +33,20 @@ As of 2026-11-18, after work order 002 (the town of Akrotiri) was merged and pus
   - Their notices are in the page's menu, `README.md`, the two generated data files and the two records, and must travel with the page.
 
 ## Next
-1. **Chad: start the plant research** (D26). Three lanes go to Gemini 4 Argon and can run at the same time: T3b (what grew where, and how thickly), T3c (how each plant looked, and its state in late May) and T3d (plants in Aegean art, on Thera and elsewhere).
+1. **Chad: start the plant research** (D26). Three lanes go to Gemini Neon (D30) and can run at the same time: T3b (what grew where, and how thickly), T3c (how each plant looked, and its state in late May) and T3d (plants in Aegean art, on Thera and elsewhere).
    - The steps are in `docs/research/RUNBOOK-003-plants.md`. The Research Desk (below) lists the three lanes first, with a Copy button each.
-   - When the reports are in, Claude checks each against its sources (`docs/research/verification/T3b.md`, `T3c.md`, `T3d.md`) and then drafts `docs/tasks/003-…`. Nothing is built from a report that has not been checked.
+   - When the reports are in, Claude checks each against its sources (`docs/research/verification/T3b.md`, `T3c.md`, `T3d.md`) and then drafts `docs/tasks/003-…`. Nothing is built from a report that has not been checked. The order's first step is to raise the land that edit E4 puts back (D29).
+   - Nobody has run a lane on Neon yet. The runbook says what to do if its settings differ from Argon's.
    - Art never places a plant on the island by itself: Theran art is grade B for Thera, and art from elsewhere is grade C (D26).
 2. **Chad: the touch test.** Nobody has tried the page with fingers. Chad and his husband are to try it on an iPad.
    - The runbook is the **Thera Test Flight** artifact, <https://claude.ai/artifact/PQa2MRqzD4dtzQiUb2DvdE>: twelve missions, three answers each, and a report to copy and paste back. It is private until Chad shares it from its Share menu.
    - **The page must be on the web first.** GitHub Pages is off for the fork. Turning it on is Chad's action (the command is below); the page is then at <https://chadjustice25.github.io/akrotiri-thera-abyssal-garden/>, which is the address the runbook's button opens. `.nojekyll` is in the repository so that Pages serves the files as they are.
    - Read from the code, and not yet tried by anyone: walking on touch is 0.7 of the keyboard's pace; looking up by more than about 34° while on foot takes off; an iPad held upright gets the page turned on its side; and there is no sound above the water yet. The runbook asks about each.
 3. **Chad: decisions and actions due.**
-   - **O10, the reading of the grades for landscape claims.** Leaning: adopt lane T1's reading into the standard. It changes no number and no picture.
-   - **O11, how much land edit E4 puts back.** The build's 13.16 km³ is inside the source's range but below both figures the source prefers (17.1 km³, and 14.4 ± 0.8 km³ from rock fragments). Leaning: raise it as the first step of work order 003.
-   - **D21, the Copernicus licence questions.** A fresh draft of the message, not sent, is in `docs/terrain/message-to-copernicus.md`, with where to send it. Rebuilding the land from NASA's NASADEM stays the fallback.
+   - **O12, the three layers.** Chad's idea of 2026-11-19: show the world as what is known, then with careful inference added, then in full. A proposal is in `docs/DECISIONS.md`, with three points for Chad to settle. It has to be decided before work order 003 is written, because each plant needs its layer from the start.
+   - **D21, the Copernicus licence questions.** A fresh draft of the message, not sent, is in `docs/terrain/message-to-copernicus.md`, with where to send it. Chad is looking into it (2026-11-19). Rebuilding the land from NASA's NASADEM stays the fallback.
    - **O8, the excavation and the book.** A draft letter to the Akrotiri Excavations, not sent, is in `docs/town/letter-to-the-excavation.md`. Palyvou 2005 is not in Chad's library and can be bought; the same file says where. Chad decides on the letter this weekend.
-   - **O5, the layout for several places.** Leave it open until a second place is chosen.
+   - **O5, the layout for several places.** Left open by Chad until a second place is chosen.
    - **Still open from the T1c check:** no thickness map of the eruption deposits could be opened (liberty T-L1), and the Mavro Rachidi cores, the best local test of the sea level (T-L13), are not yet dated.
 4. **Later orders, in the order suggested on 2026-11-18** (none is planned yet):
    - **The harbour, the old shore and ships.** It needs research first. The one published sketch of the old shore (T2b#61) disagrees with the terrain's coast (T-L14); `docs/town/README.md` §3 records it.
@@ -88,7 +93,7 @@ gh api -X POST repos/chadjustice25/akrotiri-thera-abyssal-garden/pages -f 'sourc
 ```
 
 ## Notes
-- The plant lanes for work order 003 run on Gemini 4 Argon again (D26). Other research runs as Claude agents in a session (D13), one named agent per lane and a separate `Verify:` agent for each. If Argon drops to another model, the lane goes back to a Claude agent.
+- The plant lanes for work order 003 run on Gemini Neon (D26, D30). Other research runs as Claude agents in a session (D13), one named agent per lane and a separate `Verify:` agent for each. If a Neon chat drops to another model, the lane goes back to a Claude agent.
 - To rebuild the terrain data: `node tools/terrain/fetch.mjs` once (it downloads the two datasets into `tools/terrain/cache/`, ignored by git), then `node tools/terrain/build.mjs`. **Then rebuild the town**, which reads the ground from the terrain: `node tools/town/build.mjs`. Then `cd source && npm run build`.
 - To rebuild the town: `node tools/town/fetch.mjs` once (the plan, into `tools/town/cache/`, ignored by git), `node tools/town/trace.mjs`, `node tools/town/build.mjs`, then `cd source && npm run build`. `tools/town/traced.json` is committed, so the last two steps work without the plan.
 - A work order for a worker session runs in its own worktree (`LESSONS.md`). Name the session, so that it can be found again.

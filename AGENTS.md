@@ -39,8 +39,8 @@ A fork of Noniv's [Abyssal Garden](https://github.com/Noniv/abyssal-garden) (MIT
 - A views PASS proves the page rendered. It does not prove the picture is right. Say who looked at the pictures: an agent's look is not Chad's, and never report a visual pass nobody saw.
 
 ## 7. Research
-- Deep Research runs on **Gemini 4 Argon** (Chad's Google plan) from prompts in `docs/research/prompts/`. Reports land in `docs/research/argon/`. `docs/research/README.md` has the steps.
-- Argon reports embed a large base64 image on one line: read them with `grep -v 'data:image'`.
+- Deep Research runs on **Gemini Neon** (Chad's Google plan; it replaced Gemini 4 Argon on 2026-11-19, D30) from prompts in `docs/research/prompts/`. Reports land in `docs/research/neon/`; a lane run by a Claude agent (D13) lands in `docs/research/claude/`. `docs/research/README.md` has the steps.
+- Argon reports embedded a large base64 image on one line, and Neon's may: read Gemini reports with `grep -v 'data:image'`.
 - Claude checks the key claims against their sources and writes `docs/research/verification/<lane>.md` before anything is adopted. Adopted claims enter the data with their lane and claim number (e.g. `T2#14`).
 - New research lanes for other places start from `docs/research/prompts/TEMPLATE-site.md`, so every site is graded and reported the same way.
 
@@ -57,7 +57,7 @@ This project uses the unghost harness (`~/Developer/agent-lab/unghost/harness/bi
 | `tools/town/`, `docs/town/` | How the town is traced and laid out, and its record. |
 | `docs/HISTORICAL_STANDARD.md` | Evidence rules for every site. |
 | `docs/DECISIONS.md` | Numbered decisions and open questions. |
-| `docs/research/` | Argon prompts, reports and verifications. |
+| `docs/research/` | Research prompts, reports and verifications. |
 | `docs/tasks/` | Work orders. |
 | `.harness/` | Harness config and evidence logs. |
 | `akrotiri-frescoes-sources/` | Local reference images, ignored by git. |

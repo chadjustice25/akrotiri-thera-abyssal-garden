@@ -20,13 +20,23 @@ Every claim that reaches the world gets one grade. For a new place, read "Thera"
 | **B** | Shown in the place's art of the time; found at a contemporary site elsewhere in the region and reasonably carried over; or found at the place but its interpretation is debated. |
 | **C** | Later evidence, analogy (later periods, other regions, ethnography), a modern reconstruction, or a hypothesis. |
 
+**For claims about the land** (D28; the table above was written for objects, and a mountain is not found in a dated layer):
+
+| Grade | Meaning for landscape |
+|---|---|
+| **A** | A physical observation at the place of something from before the moment shown, or a laboratory analysis of such material: on Thera, the eruption's deposits themselves, charcoal from Late Cycladic I floors, the olive tree buried in the tephra, an excavated site. |
+| **B** | A present-day measurement of a landform that already existed, carried back unchanged; a physical finding at the place whose interpretation is debated; a record of the time from elsewhere in the region, carried over; or something shown in the place's art. |
+| **C** | A modern reconstruction or model (the restored caldera, a modelled sea level), an analogy from another period or place, later evidence, or a hypothesis. |
+
+**For art** (D26): a plant, animal or thing shown only in the art of another place in the region is grade C for this place.
+
 ## 4. Rules
 1. **Evidence first.** A thing a viewer will see or read needs a source, a grade and a claim reference (lane and number, e.g. `T2#14`), once data files exist to hold them.
 2. **Shown is not present.** A plant, animal, object or landscape known only from art is grade B at most for the place, and the world says so where it matters (the monkeys of the Akrotiri paintings are the test case, T3-1).
 3. **Numbers keep their source.** A measurement keeps its unit, its range and its claim reference. A number chosen for the experience, not taken from evidence, is a liberty (§6).
 4. **Names and words.** Modern names (Akrotiri, Thera, Santorini) are used and are marked as modern where a viewer could mistake them. An ancient name or word is used only if attested, with its grade. Linear A is undeciphered: no invented Minoan words, names or readings.
 5. **People.** Faces, bodies, dress and skin colour follow the evidence and say where they follow an artistic convention (T4-3).
-6. **Reports are not evidence.** An Argon report becomes usable only claim by claim, after `docs/research/verification/<lane>.md` checks it against the sources.
+6. **Reports are not evidence.** A research report, whoever wrote it (Gemini or a Claude agent), becomes usable only claim by claim, after `docs/research/verification/<lane>.md` checks it against the sources.
 
 ## 5. Images and rights
 - Photographs of the wall paintings and objects stay out of the repository (D6). The world re-creates motifs in code from checked descriptions and measurements, never by tracing a photograph.

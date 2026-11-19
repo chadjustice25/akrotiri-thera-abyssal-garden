@@ -1,6 +1,6 @@
-# Prompt: Gemini 4 Argon Deep Research, lane T3b: what grew where on Thera, and how thickly
-**For:** Chad, to paste into Gemini with **Argon**, thinking **high** and **Deep Research** on, in its own new chat. Paste everything below the line and add nothing. Steps: `docs/research/RUNBOOK-003-plants.md`.
-**Returns to:** save the report as `docs/research/argon/T3b_Argon.md`. Claude checks its key claims against the sources (`docs/research/verification/T3b.md`) before anything is built from it.
+# Prompt: Gemini Neon Deep Research, lane T3b: what grew where on Thera, and how thickly
+**For:** Chad, to paste into Gemini with **Neon**, its highest thinking setting and **Deep Research** on, in its own new chat. Paste everything below the line and add nothing. Steps: `docs/research/RUNBOOK-003-plants.md`.
+**Returns to:** save the report as `docs/research/neon/T3b_Neon.md`. Claude checks its key claims against the sources (`docs/research/verification/T3b.md`) before anything is built from it.
 **Run order:** with the other two plant lanes (T3b, T3c, T3d), each in its own chat. They prepare work order 003, plants and ground cover (D26), and follow lane T3 and its check.
 
 ---

@@ -1,4 +1,4 @@
-# Template: an Argon Deep Research lane for a new site
+# Template: a Gemini Deep Research lane for a new site (Neon since 2026-11-19, D30; written for Argon)
 **For:** whoever writes the research lanes for the next place (Avaris, Byblos, Knossos ...). Copy this file to `docs/research/prompts/<SITE>-<n>-<slug>.md`, fill every `{...}`, delete this header block down to the line, and keep the rules and the report format word for word: they are what make the sites comparable (`docs/HISTORICAL_STANDARD.md`).
 **Rules for writing one:** one lane per chat and roughly 7 KB or less (`LESSONS.md`); split a site the way Thera was split (land and sea; town and buildings; plants and animals; people; ships, roads and trade; art and colour; events in the window). Use the world clock (`docs/WORLD_CLOCK.md`, from lanes W1 and W2) for the site's "now" and say in the context paragraph which year that is.
 
