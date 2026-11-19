@@ -9,6 +9,10 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 - **From Uruk: grade evidence by its distance in time, not only by whether it exists.** State how far each piece of evidence is from the target moment. A text or image made centuries later is grade C, even when it is famous.
 - **From Uruk and unghost: reports carry errors that only a check against the sources catches.** Nothing from a report is adopted until its claim is checked (`docs/research/verification/`).
 
+## The architecture review (2026-11-19)
+- **Check a statement about the engine against the source before it goes into a record.** A first draft of `docs/ARCHITECTURE.md` said the ground was one fixed mesh and proposed nested grids as an improvement. The ground has been nested grids over baked height maps since work order 001. The session was working from its memory of earlier work, not from the code; one `grep` showed the truth.
+- **A project that publishes no source can still teach.** Voidstruck's repository holds only its built page, but its README says how it is made and where each kB goes. Read what the author chose to explain before reaching for the code.
+
 ## Research on Gemini Neon (2026-11-19)
 - **A Deep Research run can hand back your own prompt.** Lane T3c's first "report" was 7 KB: the prompt, under the line "I have all the information to proceed for meta planning", with no link and no table row. Before saving a report, look for links and numbered rows. The Research Desk counts both.
 - **Deep Research runs fail fairly often** (Chad). Plan for a lane to need a second run, and never let a build wait on a single one.

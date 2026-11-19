@@ -27,7 +27,8 @@ Chad's four words for the result: **high performing, efficient, small and fluid.
 | Other devices | **Not measured.** Nobody has run it on an iPad yet |
 
 How it works today:
-- Everything is generated once, at load, into fixed GPU buffers: the terrain mesh, the town as one mesh, a shadow map for the island and one for the town.
+- **The ground is already nested grids over a height map** (work order 001). The island's data is baked at load into height, slope and rock textures. One square grid is drawn as a set of rings round the viewer, each with cells twice as wide as the one inside it, and neighbouring rings are blended so nothing pops. The sea is drawn the same way.
+- The town is one fixed mesh, built at load. The island and the town each have a shadow map.
 - JavaScript does almost nothing each frame, and allocates nothing (engine law 3).
 - The town's mesh already marks each vertex as excavated or reconstructed. That flag, and the pale wash the `L` key applies, are the seed of the layers.
 
@@ -59,7 +60,7 @@ For plants, and later people and animals, a compute pass runs each frame. It sca
 This is the design of the Formosa Forest fork (§7), which draws a forested island this way. The three tags become three more inputs to the same pass.
 
 ### 4.3 The island through time
-Two whole islands would cost 74 kB each. The island after the eruption is today's island, which is the data the tools already start from. So the page would hold the island of 1628 BCE, as now, and a compact **difference** to the later one, which is smooth and confined to the caldera and the ash blanket. The vertex shader blends the two. The eruption itself is an effect, not data.
+Two whole islands would cost 74 kB each. The island after the eruption is today's island, which is the data the tools already start from. So the page would hold the island of 1628 BCE, as now, and a compact **difference** to the later one, which is smooth and confined to the caldera and the ash blanket. Because the ground is already drawn from baked height maps (§2), the later island is a second set of maps, and the shader blends the two by the year. The eruption itself is an effect, not data.
 
 ### 4.4 The sky
 An ephemeris inside the page, by the method of Beyond the Gates of Uruk: short series for the Sun, Moon and planets fitted to NASA's ephemeris over the window, a catalogue of bright stars with their own motion, and precession. It is worked out when the date changes, not every frame.
@@ -124,12 +125,38 @@ Others include a space scene, a mine, an extended sea and a Godot port.
 | Voidstruck's way | What it means here |
 |---|---|
 | **A function, not data.** Every star and planet is worked out from a seed and its coordinates, and nothing is stored | The same rule as §3.2. Only what evidence fixes (the terrain, the excavated plan) is data; everything else is a rule |
-| **The ground is a mesh of seven nested grids**, each twice as coarse as the last, over a surface baked into a small map | A better terrain than today's single fixed mesh: fine near the viewer and coarse far away. Because its heights come from a map, blending two islands by the year (§4.3) is one line in a shader |
+| **The ground is a mesh of seven nested grids**, each twice as coarse as the last, over a surface baked into a small map | Thera's ground is already drawn this way (§2), which confirms the choice. Because the heights come from maps, blending two islands by the year (§4.3) is cheap |
 | **Plants and animals are recipes**: a family with a handful of dials | How species are built in §4.6, with the dials set from lane T3c and not from a seed |
 | **The rules are separate from the picture**: plain functions stepped at a fixed rate, with 192 automated tests that run outside the browser | The layer, date and year logic and the sky are written this way, so the sky can be tested against a reference ephemeris, as Uruk's is |
 | **Staying small was planned**: a budget of 300 kB from the start, a build that shortens shaders and numbers, a table of where every kB goes, and the real size shown on the title screen | A per-part size report in the build, and a precedent for a single file of about 300 kB |
 
-**Voidstruck's code cannot be borrowed.** It is under the PolyForm Strict License 1.0.0, which does not allow changing or redistributing it. What is taken from it is technique, learned from its public README and from playing it.
+**We learn how Voidstruck does it and build what this world needs; we do not use its code** (Chad, 2026-11-19). Its repository holds only the built page, so its README and the game itself are what there is to study, and its licence (PolyForm Strict 1.0.0) forbids changing or redistributing it in any case.
+
+One more lesson from its size table: its planets' terrain, plants, animals and cities together take 50 kB, because all of them are rules. **Rules are cheap, and data is what costs.** Here the costly part is what evidence fixes: the measured island (74 kB) and the excavated plan. The estimates for plants, people and animals in §5 may therefore be high.
+
+### How the techniques work, in this project's terms
+
+These are standard methods, described here as they would be built for Thera. Nothing below is taken from another project's source.
+
+**Ground as nested grids over a height map** (known as geometry clipmaps). **The engine already does this.**
+- The island's heights are baked into a texture. The ground is drawn as rings of one square grid centred on the viewer, each ring with cells twice as wide as the one inside it, so the triangle count is set by the grid and not by the island.
+- Neighbouring rings are blended, so no crack or pop shows. Each corner reads its height from the texture in the shader.
+- **What it still has to give Thera:**
+  - The island before and after the eruption as two sets of maps, blended by the year.
+  - A second, finer height map under the town, where the 40 m data cannot hold the steep drop at Xeste 4 (a known weakness of work order 002).
+
+**Placing by rule on the GPU.**
+- Round the viewer, the ground is cut into cells. For each cell a compute pass makes a few candidate spots from a hash of the cell's number, so the same spots come out every frame and nothing is stored.
+- A candidate is kept if the land-cover map says that kind of plant grows there, as thickly as the rule says, and if it is in view. The pass picks a form by distance (full, simple, or a flat picture of the tree for the far ones) and writes the kept instances and their counts straight into the lists the GPU draws from.
+- **What it gives Thera:** the layer, the year and the season are three more tests in the same pass. A forest that is cut down in a given year is a land-cover map that changes with the year.
+
+**Things as recipes.** A species is a short list of numbers that a shared routine turns into a form: height, spread, branching, leaf, colour by season. Voidstruck rolls those numbers from a seed. Here they come from lane T3c and carry its claim references.
+
+**Baking once.** Whatever is costly to work out and does not change every frame is drawn once into a small texture and reused: the land-cover map, the flat pictures of distant trees, the sky's stars for a date.
+
+**Rules apart from the picture.** The clock, the layers, the seasons, the sky's positions and the timeline are plain functions with no drawing in them. They run under Node as well as in the page, so the build can test them: the sky against a reference ephemeris, the timeline against the world clock.
+
+**Knowing where the size goes.** The build prints the page's size part by part, and fails a part that passes its share, so growth is seen when it happens and not at the end.
 
 **Before borrowing code from any fork:** read its licence. Upstream is MIT and forks usually keep it, but each has to be checked, and what is taken is credited in `README.md`. A technique is free to learn from.
 
@@ -137,7 +164,7 @@ Others include a space scene, a mine, an extended sea and a Godot port.
 
 ## 8. Order of work proposed
 
-1. **A measuring spike**, before any work order: a dithered fade on the town with a layer value; a placement pass drawing fifty thousand plain instances on the island; the terrain as nested grids over a height map; and the size of the island's difference. Its numbers replace the estimates above.
+1. **A measuring spike**, before any work order: a dithered fade on the town with a layer value; a placement pass drawing fifty thousand plain instances on the island; two sets of height maps blended by a year value; and the size of the island's difference. Its numbers replace the estimates above.
 2. **Work order 003, layers and time:** the three tags, the fades, the controls (layer, date, year), the town retagged, shadows and collision following, and the change to edit E4 (D29).
 3. **Work order 004, plants**, placed by the GPU, with seasons.
 4. **The sky and the calendar**, after its own research lane.
@@ -153,4 +180,3 @@ Then the harbour and ships, people and animals, interiors, and labels.
 | 2 | Whether the layers and time are built first, as work order 003 (O14) | Yes, after the measuring spike |
 | 3 | Which iPad is the slowest device the world must run well on | The one used in the touch test, until a slower one matters |
 | 4 | Whether to study Formosa Forest's source and credit what is learned | Yes |
-| 5 | Whether the terrain is rebuilt as nested grids over a height map, as Voidstruck's ground is | Decide from the spike's numbers. It is the largest change to working code in this review |
