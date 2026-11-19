@@ -161,15 +161,31 @@
   },
   "E8": {
     "name": "Akrotiri and the south coast",
-    "claims": ["T1#32", "T1#35", "T1#36", "T1#37", "T1b#59", "T1c#15", "T1c#16", "T1c#17", "T1c#34"],
+    "claims": ["T1#32", "T1#35", "T1#36", "T1#37", "T1b#59", "T1c#15", "T1c#16", "T1c#17", "T1c#34", "T2#19", "T2#80", "T2b#36", "T2b#37", "T2b#38"],
     "liberty": "T-L6",
     "note": "The town site (the modern excavation, about 1 km south of today's caldera edge) gets a gently sloping terrace for work order 002: a small rise at about 20-25 m (T1#35, B, to verify) falling gently to the sea. Its exact form is a liberty. The harbour has not been found (T1#36, T1#37): one view puts it in an embayment between Mesovouna and Mavro Rachidi south of the site (T1c#17, #34), another still places an eastern harbour at Potamos, where seismics found no bay (T1c#16, T1c correction 4). So the coast is left as the data and E3 give it: no harbour is cut.",
     "site": [-135, 5937],
     "radiusMetres": 330,
     "blendMetres": 260,
-    "hillTopMetres": 24,
-    "slopeTowardsSea": 0.055,
-    "seaDirection": [0.1, 1]
+    "hillTopMetres": 24.6,
+    "slopeTowardsSea": 0.035,
+    "seaDirection": [0.1, 1],
+    "ridge": {
+      "claims": ["T2b#37", "T2b#38", "T2#11", "T2#12"],
+      "note": "Work order 002 reshaped the terrace for the town. The town grew along the crest of a ridge running north to south, with Complex Delta's west house on the crest and a steep fall to the east at Xeste 4 (T2b#37, T2b#38: grade A that the ridge and the fall exist). The crest here runs due north-south through the middle of the excavated walls; the ground is level for crestHalfWidthMetres on each side of it and then falls away, easing in over easeMetres, never by more than maxFallMetres. North of the excavated town the fall dies out (fadesBetweenZ: none north of the first z, all of it south of the second), because the town is drawn running on over a plateau there (T2b#67, grade C). The 40 m grid cannot hold a sheer slope: the fall at Xeste 4 is far gentler here than the excavator describes. Every number in this block is a liberty (T-L6).",
+      "crestX": -140,
+      "crestHalfWidthMetres": 22,
+      "easeMetres": 12,
+      "eastSlope": 0.06,
+      "westSlope": 0.06,
+      "maxFallMetres": 9,
+      "fadesBetweenZ": [5800, 5900]
+    },
+    "sourcedLevels": {
+      "note": "The two levels a source gives, both above today's sea; E1's sea-level change is added to compare them with the model. They guide hillTopMetres and slopeTowardsSea; they are not forced. No street gradient is measured (T2b verification, Gaps), so the 3.5% fall along the crest is a liberty (T-L6), chosen so that streets drain towards the sea (T2#11, T2#12).",
+      "xeste3": { "at": [-170, 5972], "aboveTodaysSeaMetres": 19.5, "claims": ["T2#19"], "grade": "A (the excavator's \"elevation\"; above sea level is implied)" },
+      "eastEdge": { "at": [-97, 5934], "floorAboveTodaysSeaMetres": [18.1, 18.2], "claims": ["T2#80", "T2b#36"], "grade": "A", "what": "the floor of a part-basement room at the east end of the excavation, beside Xeste 2; the room stood about 1 m above the road, so the road lay above this floor" }
+    }
   },
   "E9": {
     "name": "Profitis Ilias",

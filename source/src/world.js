@@ -184,17 +184,18 @@ function buildTown(hAt) {
   const gl = (u) => ga + (gb - ga) * u / L;
   const W = (u, y, inn) => V(ax + dx * u - ox * inn, y, az + dz * u - oz * inn, u, y - gl(u)); // u metres along, `inn` metres behind the face
   const rect = (u0, u1, y0, y1, inn) => { if (u1 - u0 < 1e-3 || y1 - y0 < 1e-3) return; W(u0, y0, inn); W(u0, y1, inn); W(u1, y1, inn); W(u1, y0, inn); quad(); };
-  // an opening: a frame of dressed tuff flush with the wall (T2#68), the reveal, and what closes it (3 a dark room, 4 a door leaf)
+  // an opening: a frame of dressed tuff flush with the wall (T2#68), a reveal lined with the timbers its wooden frame was
+  // fixed to (T2#39, T2#41), and what closes it (3 a dark room, 4 a door leaf)
   const hole = (u0, u1, y0, y1, fw, fb, d, back) => {
     const m = cm, n0 = nx, n2 = nz;
     cm = 1; W(u0, y1, 0); W(u0 - fw, y1 + fw, 0); W(u1 + fw, y1 + fw, 0); W(u1, y1, 0); quad();
     W(u0 - fw, y0 - fb, 0); W(u0 - fw, y1 + fw, 0); W(u0, y1, 0); W(u0, y0, 0); quad();
     W(u1, y0, 0); W(u1, y1, 0); W(u1 + fw, y1 + fw, 0); W(u1 + fw, y0 - fb, 0); quad();
     if (fb) { W(u0 - fw, y0 - fb, 0); W(u0, y0, 0); W(u1, y0, 0); W(u1 + fw, y0 - fb, 0); quad(); }
-    cm = 2; nx = dx; nz = dz; W(u0, y0, 0); W(u0, y1, 0); W(u0, y1, d); W(u0, y0, d); quad();
+    cm = 9; nx = dx; nz = dz; W(u0, y0, 0); W(u0, y1, 0); W(u0, y1, d); W(u0, y0, d); quad();
     nx = -dx; nz = -dz; W(u1, y0, 0); W(u1, y1, 0); W(u1, y1, d); W(u1, y0, d); quad();
     nx = 0; nz = 0; ny = -1; W(u0, y1, 0); W(u1, y1, 0); W(u1, y1, d); W(u0, y1, d); quad();
-    ny = 1; cm = fb ? 2 : 8; W(u0, y0, 0); W(u1, y0, 0); W(u1, y0, d); W(u0, y0, d); quad(); // a sill, or a threshold of dark stone (T2#40)
+    ny = 1; cm = fb ? 9 : 8; W(u0, y0, 0); W(u1, y0, 0); W(u1, y0, d); W(u0, y0, d); quad(); // a sill, or a threshold of dark stone (T2#40)
     ny = 0; nx = n0; nz = n2; cm = back; W(u0, y0, d); W(u0, y1, d); W(u1, y1, d); W(u1, y0, d); quad();
     cm = m;
   };
@@ -258,7 +259,7 @@ function buildTown(hAt) {
     // how much free ground lies before each wall (a neighbour's wall right against it makes it a party wall)
     for (let i = 0; i < n; i++) {
       const a = i * 2, b = ((i + 1) % n) * 2, ex = o[b] - o[a], ez = o[b + 1] - o[a + 1], l = hypot(ex, ez), pr = [0, 0, 0];
-      for (let s = 0; s < 3; s++) { const x = o[a] + ex * (s + 1) / 4, z = o[a + 1] + ez * (s + 1) / 4; let t = 0.3; for (; t < 8; t += 0.25) { const id = idAt(x + ez / l * t, z - ex / l * t); if (id && id !== k + 1) break; } pr[s] = t < 8 ? t : 12.7; }
+      for (let s = 0; s < 3; s++) { const x = o[a] + ex * (s + 1) / 4, z = o[a + 1] + ez * (s + 1) / 4; let t = 0.3; for (; t < 12.7; t += 0.25) { const id = idAt(x + ez / l * t, z - ex / l * t); if (id && id !== k + 1) break; } pr[s] = t; }
       pr.sort((p, q) => p - q); gp.push(pr[1]); len.push(l);
     }
     const edge = (i) => { const a = i * 2, b = ((i + 1) % n) * 2; ax = o[a]; az = o[a + 1]; L = len[i]; dx = (o[b] - ax) / L; dz = (o[b + 1] - az) / L; ox = dz; oz = -dx; ga = g[i]; gb = g[(i + 1) % n]; nx = ox; ny = 0; nz = oz; cg = min(255, gp[i] * 20); cl = L; };
@@ -316,7 +317,7 @@ function buildTown(hAt) {
         }
         rect(uc, L, Y0, Y1, 0);
         // rows of dressed stone standing out at each floor (T2#68; Xeste 2: T2b#42)
-        if (m.sc && s && gap >= 0.9) { cm = 1; rect(0, L, F0 + s * SH - 0.13, F0 + s * SH + 0.13, -0.05); cm = 0; }
+        if (m.sc && s && gap >= 0.9) { cm = 1; box(0, L, F0 + s * SH - 0.14, F0 + s * SH + 0.14, 0.07); cm = 0; }
       }
     }
     // the roof: a flat terrace of earth inside a parapet (T2#70, T2#73)
@@ -412,7 +413,7 @@ const POSES = [
   [5270, 2.5, 4050, -900, 100, -1600],     // 4 Profitis Ilias summit, looking across the island
   [1250, 1.3, -450, -900, 150, -2700],     // 5 sea level inside the bay
   [250, -7, 6560, -135, -1, 6200],         // 6 under water off the south shore
-  [-151.4, 1.5, 5950.6, -150.2, 26.5, 5936, 1],  // 7 on foot in Telchines Street (a modern label), between Sector Beta and Sector Gamma
+  [-150.3, 1.5, 5939, -151.5, 26, 5956, 1],      // 7 on foot in Telchines Street (a modern label), looking down it between Sector Beta and Sector Gamma
   [-111.5, 1.5, 5916.4, -109, 28, 5929, 1],      // 8 on foot in Double Horns Square, facing Xeste 2's north front
-  [-20, 22, 5512, -128, 14, 5960],               // 9 over the roofs from the town's north edge, looking across it to the sea
+  [-30, 34, 5490, -118, 6, 5900],                // 9 over the roofs from the town's north edge, looking across it to the sea
 ];

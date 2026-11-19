@@ -66,7 +66,7 @@
     "shareOfOutlineOnDrawnWalls": 0.87,
     "squareMetres": 146,
     "storeys": 2,
-    "groundMetres": 28.3
+    "groundMetres": 27.1
    },
    {
     "id": "eta",
@@ -75,7 +75,7 @@
     "shareOfOutlineOnDrawnWalls": 0.54,
     "squareMetres": 174,
     "storeys": 2,
-    "groundMetres": 27.6
+    "groundMetres": 26.5
    },
    {
     "id": "nhol",
@@ -84,7 +84,7 @@
     "shareOfOutlineOnDrawnWalls": 0.5,
     "squareMetres": 136,
     "storeys": 2,
-    "groundMetres": 27.6
+    "groundMetres": 26.8
    },
    {
     "id": "ladies",
@@ -93,7 +93,7 @@
     "shareOfOutlineOnDrawnWalls": 0.86,
     "squareMetres": 226,
     "storeys": 3,
-    "groundMetres": 26.9
+    "groundMetres": 26.4
    },
    {
     "id": "de1",
@@ -102,7 +102,7 @@
     "shareOfOutlineOnDrawnWalls": 0.23,
     "squareMetres": 72,
     "storeys": 2,
-    "groundMetres": 27.1
+    "groundMetres": 26.2
    },
    {
     "id": "de2",
@@ -111,7 +111,7 @@
     "shareOfOutlineOnDrawnWalls": 0.25,
     "squareMetres": 77,
     "storeys": 2,
-    "groundMetres": 26.8
+    "groundMetres": 25.9
    },
    {
     "id": "de3",
@@ -120,7 +120,7 @@
     "shareOfOutlineOnDrawnWalls": 0.02,
     "squareMetres": 110,
     "storeys": 2,
-    "groundMetres": 26.4
+    "groundMetres": 25.7
    },
    {
     "id": "w1",
@@ -129,7 +129,7 @@
     "shareOfOutlineOnDrawnWalls": 0.86,
     "squareMetres": 82,
     "storeys": 2,
-    "groundMetres": 26.4
+    "groundMetres": 26.2
    },
    {
     "id": "w2",
@@ -138,7 +138,7 @@
     "shareOfOutlineOnDrawnWalls": 0.72,
     "squareMetres": 31,
     "storeys": 2,
-    "groundMetres": 26.4
+    "groundMetres": 26
    },
    {
     "id": "west",
@@ -156,7 +156,7 @@
     "shareOfOutlineOnDrawnWalls": 0.34,
     "squareMetres": 89,
     "storeys": 2,
-    "groundMetres": 25.1
+    "groundMetres": 25.2
    },
    {
     "id": "porch",
@@ -165,7 +165,7 @@
     "shareOfOutlineOnDrawnWalls": 0.04,
     "squareMetres": 8,
     "storeys": 2,
-    "groundMetres": 24.9
+    "groundMetres": 25.3
    },
    {
     "id": "delta_w",
@@ -174,7 +174,7 @@
     "shareOfOutlineOnDrawnWalls": 0.76,
     "squareMetres": 166,
     "storeys": 2,
-    "groundMetres": 25.1
+    "groundMetres": 25.4
    },
    {
     "id": "delta_n1",
@@ -183,7 +183,7 @@
     "shareOfOutlineOnDrawnWalls": 0.9,
     "squareMetres": 39,
     "storeys": 2,
-    "groundMetres": 25.6
+    "groundMetres": 25.5
    },
    {
     "id": "delta_n2",
@@ -201,7 +201,7 @@
     "shareOfOutlineOnDrawnWalls": 0.65,
     "squareMetres": 46,
     "storeys": 2,
-    "groundMetres": 24.7
+    "groundMetres": 25
    },
    {
     "id": "delta_e_n",
@@ -210,7 +210,7 @@
     "shareOfOutlineOnDrawnWalls": 0.66,
     "squareMetres": 34,
     "storeys": 2,
-    "groundMetres": 25.2
+    "groundMetres": 25
    },
    {
     "id": "delta_e",
@@ -219,7 +219,7 @@
     "shareOfOutlineOnDrawnWalls": 0.95,
     "squareMetres": 56,
     "storeys": 2,
-    "groundMetres": 24.8
+    "groundMetres": 24.9
    },
    {
     "id": "delta_s",
@@ -228,7 +228,7 @@
     "shareOfOutlineOnDrawnWalls": 0.97,
     "squareMetres": 72,
     "storeys": 2,
-    "groundMetres": 24.3
+    "groundMetres": 25.1
    },
    {
     "id": "delta_s16",
@@ -237,7 +237,7 @@
     "shareOfOutlineOnDrawnWalls": 0.93,
     "squareMetres": 89,
     "storeys": 1,
-    "groundMetres": 24.2
+    "groundMetres": 24.9
    },
    {
     "id": "xeste5",
@@ -246,7 +246,7 @@
     "shareOfOutlineOnDrawnWalls": 0.29,
     "squareMetres": 178,
     "storeys": 2,
-    "groundMetres": 25.5
+    "groundMetres": 25
    },
    {
     "id": "dhe",
@@ -255,7 +255,7 @@
     "shareOfOutlineOnDrawnWalls": 0.41,
     "squareMetres": 97,
     "storeys": 2,
-    "groundMetres": 24.7
+    "groundMetres": 24.3
    },
    {
     "id": "xeste2",
@@ -264,7 +264,7 @@
     "shareOfOutlineOnDrawnWalls": 0.5,
     "squareMetres": 342,
     "storeys": 3,
-    "groundMetres": 24.1
+    "groundMetres": 24.2
    },
    {
     "id": "x2s",
@@ -273,7 +273,7 @@
     "shareOfOutlineOnDrawnWalls": 0.21,
     "squareMetres": 87,
     "storeys": 2,
-    "groundMetres": 23.5
+    "groundMetres": 23.9
    },
    {
     "id": "gamma_n",
@@ -282,7 +282,7 @@
     "shareOfOutlineOnDrawnWalls": 0.61,
     "squareMetres": 61,
     "storeys": 2,
-    "groundMetres": 23.6
+    "groundMetres": 24.3
    },
    {
     "id": "gamma_s",
@@ -291,7 +291,7 @@
     "shareOfOutlineOnDrawnWalls": 0.96,
     "squareMetres": 95,
     "storeys": 2,
-    "groundMetres": 22.9
+    "groundMetres": 23.8
    },
    {
     "id": "beta_n",
@@ -300,7 +300,7 @@
     "shareOfOutlineOnDrawnWalls": 1,
     "squareMetres": 21,
     "storeys": 2,
-    "groundMetres": 23.8
+    "groundMetres": 24.7
    },
    {
     "id": "beta_w",
@@ -309,7 +309,7 @@
     "shareOfOutlineOnDrawnWalls": 0.92,
     "squareMetres": 148,
     "storeys": 2,
-    "groundMetres": 23.4
+    "groundMetres": 24.4
    },
    {
     "id": "beta_m",
@@ -318,7 +318,7 @@
     "shareOfOutlineOnDrawnWalls": 0.76,
     "squareMetres": 53,
     "storeys": 2,
-    "groundMetres": 23.6
+    "groundMetres": 24.5
    },
    {
     "id": "beta_e",
@@ -327,7 +327,7 @@
     "shareOfOutlineOnDrawnWalls": 0.81,
     "squareMetres": 58,
     "storeys": 2,
-    "groundMetres": 23.4
+    "groundMetres": 24.3
    },
    {
     "id": "bs",
@@ -336,7 +336,7 @@
     "shareOfOutlineOnDrawnWalls": 0.45,
     "squareMetres": 91,
     "storeys": 2,
-    "groundMetres": 22.9
+    "groundMetres": 24
    },
    {
     "id": "xeste3_w",
@@ -345,7 +345,7 @@
     "shareOfOutlineOnDrawnWalls": 0.97,
     "squareMetres": 142,
     "storeys": 3,
-    "groundMetres": 22.5
+    "groundMetres": 23
    },
    {
     "id": "xeste3_e",
@@ -354,7 +354,7 @@
     "shareOfOutlineOnDrawnWalls": 0.92,
     "squareMetres": 150,
     "storeys": 3,
-    "groundMetres": 22.5
+    "groundMetres": 23.2
    },
    {
     "id": "se_b1",
@@ -363,7 +363,7 @@
     "shareOfOutlineOnDrawnWalls": 0.92,
     "squareMetres": 108,
     "storeys": 2,
-    "groundMetres": 22.8
+    "groundMetres": 23.7
    },
    {
     "id": "se_b2",
@@ -372,7 +372,7 @@
     "shareOfOutlineOnDrawnWalls": 0.87,
     "squareMetres": 42,
     "storeys": 2,
-    "groundMetres": 22.6
+    "groundMetres": 23.4
    },
    {
     "id": "se_a",
@@ -381,7 +381,7 @@
     "shareOfOutlineOnDrawnWalls": 0.94,
     "squareMetres": 72,
     "storeys": 2,
-    "groundMetres": 22.5
+    "groundMetres": 23.6
    },
    {
     "id": "xeste4_w",
@@ -390,7 +390,7 @@
     "shareOfOutlineOnDrawnWalls": 0.7,
     "squareMetres": 182,
     "storeys": 3,
-    "groundMetres": 22.1
+    "groundMetres": 23.2
    },
    {
     "id": "xeste4_e",
@@ -399,7 +399,7 @@
     "shareOfOutlineOnDrawnWalls": 0.54,
     "squareMetres": 217,
     "storeys": 3,
-    "groundMetres": 21.6
+    "groundMetres": 22.6
    },
    {
     "id": "south",
@@ -408,7 +408,7 @@
     "shareOfOutlineOnDrawnWalls": 0.65,
     "squareMetres": 66,
     "storeys": 2,
-    "groundMetres": 21.4
+    "groundMetres": 22.7
    },
    {
     "id": "swx_w",
@@ -417,7 +417,7 @@
     "shareOfOutlineOnDrawnWalls": 0.71,
     "squareMetres": 56,
     "storeys": 2,
-    "groundMetres": 22.1
+    "groundMetres": 23.5
    },
    {
     "id": "swx_e",
@@ -426,14 +426,14 @@
     "shareOfOutlineOnDrawnWalls": 0.78,
     "squareMetres": 57,
     "storeys": 2,
-    "groundMetres": 21.9
+    "groundMetres": 23.3
    }
   ]
  },
  "ground": {
-  "atXeste3Metres": 22.5,
+  "atXeste3Metres": 23.2,
   "sourcedAtXeste3Metres": 23.1,
-  "atTheEastEdgeByXeste2Metres": 24,
+  "atTheEastEdgeByXeste2Metres": 23.6,
   "sourcedBasementFloorThereMetres": [
    21.7,
    21.8

@@ -166,8 +166,8 @@ fn vor(p: vec2f) -> vec3f {
 }
 // paving of large flagstones (T2#11); its colour is a liberty (A-L2). px = the width of a pixel there, in metres
 fn flags(p: vec2f, px: f32) -> vec3f {
-  let v = vor(p * 1.25); let fine = ss(.3, .06, px);
-  return mix(vec3f(.30, .285, .255) * (.72 + .5 * v.y * fine + .14 * (1. - fine)), vec3f(.105, .095, .085), ss(.035, .008, v.x) * fine);
+  let v = vor(p * 1.6); let fine = ss(.3, .06, px);
+  return mix(vec3f(.25, .235, .21) * (.76 + .5 * v.y * fine + .12 * (1. - fine)), vec3f(.1, .09, .08), ss(.035, .008, v.x) * ss(.05, .012, px));
 }
 `;
 
@@ -506,7 +506,9 @@ fn tri(p: vec3f, n: vec3f, s: f32) -> TP {
     let pv = ss(.07, .24, den);
     alb = mix(alb, flags(i.wp.xz, dist * g.right.w * 2. * g.res.z) * (.8 + .4 * B.h), pv);
     // little sky reaches the foot of a wall, or the floor of a narrow street
-    ao *= mix(1., (.45 + .55 * ss(0., .2, tw.g)) * (1. - .55 * ss(.3, .9, den)), ss(.03, .15, den));
+    ao *= mix(1., (.5 + .5 * ss(0., .2, tw.g)) * (1. - .4 * ss(.3, .9, den)), ss(.03, .15, den));
+    // (and the walls throw sunlight back into the street)
+    am += g.sunc.rgb * max(L.y, 0.) * vec3f(.3, .25, .19) * .22 * ss(.1, .5, den);
     E *= tsh(i.wp + vec3f(0., .06, 0.));
     mark = ss(.085, .05, tw.b) * g.mis.z;
   }
@@ -557,20 +559,23 @@ fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
   // (every texture is read before the materials part ways)
   let lev = abs(N0.y) > .7;
   let tx = select(vec2f(u, v), i.wp.xz, lev);
-  let d1 = textureSample(tD, sR, tx * .47 + seed * 3.1); let d2 = textureSample(tD, sR, tx * .061 + seed * 7.3);
+  let d1 = textureSample(tD, sR, tx * 1.37 + seed * 3.1); let d2 = textureSample(tD, sR, tx * .083 + seed * 7.3);
   let T = select(normalize(vec3f(N0.z, 0., -N0.x) + vec3f(1e-4, 0., 0.)), vec3f(1., 0., 0.), lev); let Bt = select(vec3f(0., 1., 0.), vec3f(0., 0., 1.), lev);
   var alb = vec3f(.3); var bump = 1.; var sky = 1.; var gloss = 0.;
-  let tuff = vec3f(.56, .52, .44); let hard = vec3f(.2, .185, .18); let earth = vec3f(.34, .28, .21);
+  // each house's earth is a little its own: lighter or darker, greyer or redder
+  let tuff = vec3f(.4, .375, .32); let hard = vec3f(.17, .16, .155);
+  let earth = mix(vec3f(.2, .17, .135), vec3f(.235, .185, .13), hs(seed * 13.7)) * (.8 + .4 * hs(seed * 5.3 + 2.));
   if (mat == 0u || mat == 2u || mat == 6u) {
     if (stone == 0u || mat == 6u) {
       // fieldstone bound with earth, with what is left of an earth render over it
-      let st = vor(vec2f(u, v) * vec2f(3.3, 4.1) + seed * 31.);
-      var rock = mix(vec3f(.25, .215, .18), vec3f(.36, .32, .27), st.y);
-      rock = mix(rock, vec3f(.12, .115, .12), step(.78, st.z));          // dark lava
-      rock = mix(rock, vec3f(.3, .17, .125), step(st.z, .13));           // red scoria
-      alb = mix(mix(vec3f(.27, .235, .195), rock, mid), earth * .92, ss(.06, .015, st.x) * fine);
+      let st = vor(vec2f(u, v) * vec2f(4.6, 6.2) + seed * 31.);
+      var rock = mix(vec3f(.19, .165, .14), vec3f(.29, .26, .22), st.y);
+      rock = mix(rock, vec3f(.1, .095, .1), step(.78, st.z));            // dark lava
+      rock = mix(rock, vec3f(.24, .135, .1), step(st.z, .13));           // red scoria
+      alb = mix(mix(vec3f(.21, .185, .155), rock, mid), earth * .9, ss(.09, .03, st.x) * fine);
       let render = ss(.42, .6, d2.a + .25 * d2.b + (seed - .5) * .5) * (1. - .7 * ss(1.1, .2, v));
-      alb = mix(alb, earth * (.92 + .3 * d1.b) * mix(vec3f(1.), vec3f(1.08, 1., .9), seed), render * .85);
+      // (the render: weathered in broad patches, streaked below the parapet, rubbed thin where it meets the street)
+      alb = mix(alb, earth * (.78 + .5 * d2.b) * (1. - .12 * ss(.3, .7, d1.a) * fine), render * .88);
       bump = 1. - .6 * render;
       // corner blocks of hard stone (T2#69), and the timbers that run in the wall at sill and lintel height (T2#43)
       let qd = min(u, len - u); let qr = floor(v / .32);
@@ -580,20 +585,22 @@ fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
     } else {
       // dressed stone in courses: whitish tuff (Xeste 4, T2#24) or ignimbrite (Xeste 3's east front, T2#20)
       let a = ashlar(vec2f(u, v), select(.47, .37, stone == 1u), select(1.35, 1.02, stone == 1u), fine);
-      alb = select(vec3f(.37, .31, .27), tuff, stone == 1u) * a.x * (.9 + .2 * d2.b); alb *= 1. - .55 * a.y; bump = .45;
+      alb = select(vec3f(.3, .25, .22), tuff, stone == 1u) * a.x * (.9 + .2 * d2.b); alb *= 1. - .55 * a.y; bump = .45;
     }
     // damp and dirt at the foot of the wall
     alb *= 1. - .22 * ss(.7, 0., v) * select(1., 0., lev);
     if (mat == 2u) { sky = .5; }
   } else if (mat == 1u) {
-    let a = ashlar(vec2f(u + v * .37, v * .6 + u), .34, .5, fine); alb = tuff * 1.06 * a.x * (1. - .5 * a.y); bump = .35;
+    let a = ashlar(vec2f(u, v), .31, .46, fine); alb = tuff * a.x * (1. - .5 * a.y); bump = .35;
   } else if (mat == 3u) {
     alb = vec3f(.018, .016, .014); sky = .12; bump = 0.;
   } else if (mat == 4u) {
     let pl = fract(u / .21); alb = vec3f(.15, .1, .062) * (.75 + .5 * hs(floor(u / .21) + seed * 5.)) * (1. - .5 * ss(.06, .0, min(pl, 1. - pl)) * fine) * (.8 + .4 * d1.b); sky = .45; bump = .4;
   } else if (mat == 5u) {
     // a roof of rammed earth with sea pebbles in it (T2#70)
-    alb = earth * (.86 + .32 * d2.b) * mix(vec3f(1.), vec3f(.9, .93, 1.), ss(.5, .75, d2.a)); alb = mix(alb, vec3f(.4, .39, .37), ss(.7, .8, d1.a) * fine * .8);
+    alb = earth * (.95 + .3 * d2.b) * mix(vec3f(1.), vec3f(.88, .92, 1.), ss(.5, .75, d2.a)); alb = mix(alb, vec3f(.33, .32, .3), ss(.7, .8, d1.a) * fine * .8);
+  } else if (mat == 9u) {
+    alb = vec3f(.115, .08, .052) * (.7 + .6 * d1.b); sky = .5; bump = .3;
   } else if (mat == 7u) {
     alb = vec3f(.42, .2, .11) * (.8 + .4 * d1.b);
   } else if (mat == 8u) {
@@ -603,17 +610,18 @@ fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
   }
   // with the edge of the evidence shown, what is reconstruction is drawn plain and pale
   let recon = g.mis.z * select(1., 0., (i.m.z & 4u) != 0u);
-  alb = mix(alb, vec3f(.5, .5, .53), recon * .82);
+  alb = mix(alb, vec3f(.4, .41, .45), recon * .85);
   let dn = (d1.rg - .5) * bump * fine * (1. - recon);
-  let N = normalize(N0 + (T * dn.x + Bt * dn.y) * 1.5);
+  let N = normalize(N0 + (T * dn.x + Bt * dn.y) * .7);
   let L = g.sun.xyz;
   let E = g.sunc.rgb * shadow(i.wp + vec3f(0., 2., 0.)) * tsh(i.wp + N0 * .07);
   // how much sky a wall sees over the house across the street, and how much less at its foot
-  if (!lev && gap < 12.) { let up = max(i.lh.y - v, 0.); sky *= 1. - .85 * up / sqrt(up * up + gap * gap + .01); }
-  if (!lev) { sky *= .6 + .4 * ss(0., 1.3, v); }
+  if (!lev) { let up = max(i.lh.y - v, 0.); let far = gap * (1. + 7. * ss(7., 12.7, gap)); sky *= 1. - .85 * up / sqrt(up * up + far * far + .01); }
+  // (a street is never quite dark: its walls light each other)
+  if (!lev) { sky = max(sky, .3) * (.6 + .4 * ss(0., 1.3, v)); }
   var am = (i.zen * (.3 + .7 * (N.y * .5 + .5)) + skyL(normalize(vec3f(N.x, .1, N.z))) * (.5 - .25 * N.y)) * sky;
   // sunlight thrown back by the ground and the walls around
-  am += g.sunc.rgb * max(L.y, 0.) * vec3f(.3, .25, .19) * (.45 - .35 * N.y) * .5 * (.35 + .65 * sky);
+  am += g.sunc.rgb * max(L.y, 0.) * vec3f(.32, .26, .19) * (.6 - .4 * N.y) * (.4 + .6 * sky);
   let ndl = sat(dot(N, L));
   var c = alb * (E * ndl + am + vec3f(.0016, .0022, .004) * g.sunc.w * (.4 + .6 * N.y) * sky);
   c += E * pow(sat(dot(N, normalize(normalize(g.cam.xyz - i.wp) + L))), 30.) * gloss * ndl;

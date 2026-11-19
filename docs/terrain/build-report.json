@@ -98,11 +98,22 @@
       ],
       "terraceKm2": 0.38,
       "terraceHeightsMetres": [
-        5.7,
-        42
+        5,
+        36.1
       ],
       "groundAtSiteBeforeMetres": 13.6,
-      "groundAtSiteMetres": 24
+      "groundAtSiteMetres": 24.5,
+      "groundAtXeste3Metres": 23,
+      "sourcedAtXeste3Metres": 23.1,
+      "groundAtTheEastEdgeMetres": 23.8,
+      "sourcedBasementFloorAtTheEastEdgeMetres": [
+        21.7,
+        21.8
+      ],
+      "crestMetresAcrossTheExcavatedTown": [
+        23.4,
+        27.8
+      ]
     }
   },
   "rockClassLandKm2": {
@@ -119,10 +130,10 @@
     "highestPointMetres": 568.2
   },
   "data": {
-    "bytes": 54257,
-    "sha256": "026887f55b4c80df7cfed05cf0e6fd71fdce1861705da9f2f3ebd09cd5fd592c",
+    "bytes": 54274,
+    "sha256": "96ef04da7bcf0e0778756907c7f1055a36bdda489394a1d805a72ac05e17da4d",
     "heightUnitMetres": 0.25,
-    "fineCellsStored": 138272,
+    "fineCellsStored": 138208,
     "maxErrorMetresOnLand": 3.45,
     "rmsErrorMetresOnLand": 0.35,
     "maxErrorMetresUnderwater": 34.44,

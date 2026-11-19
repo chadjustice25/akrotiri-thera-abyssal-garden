@@ -12,7 +12,7 @@ html { background: #03131c; }
 body {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%; margin: 0; overflow: hidden;
   background: radial-gradient(#0b3a4d, #03131c 70%);
-  font: 700 clamp(13px, .7vw + .9vh, 36px)/1.4 system-ui, sans-serif; color: #e8fbff;
+  font: 700 clamp(12px, .62vw + .8vh, 34px)/1.4 system-ui, sans-serif; color: #e8fbff;
   -webkit-user-select: none; user-select: none;
 }
 /* a phone held upright gets the whole page turned on its side, so the scene is always landscape */
@@ -28,23 +28,25 @@ canvas {
 body:not(.g) canvas { filter: blur(1vmax) brightness(.5); transform: scale(1.06); }
 .l canvas { opacity: 0; }
 
-/* menu: the loading bar and the buttons share one grid cell, so nothing jumps when they swap */
+/* menu: the loading bar and the buttons share one grid cell, so nothing jumps when they swap; a menu taller than the
+   window scrolls */
 #m {
-  position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: min(1.5em, 4vmin);
-  padding: 1em 1em 4.8em; text-align: center; background: radial-gradient(#03131c00 30%, #03131ccc);
+  position: absolute; inset: 0; display: grid; place-content: safe center; justify-items: center; gap: min(1.1em, 2.6vmin);
+  padding: 1em; overflow: hidden auto; text-align: center; background: radial-gradient(#03131c00 30%, #03131ccc);
   transition: opacity .5s, visibility .5s;
 }
 .g #m, .m #l, .l #g { opacity: 0; visibility: hidden; }
 h1 {
-  margin: 0; font: 900 3.8em/1 system-ui, sans-serif; letter-spacing: .05em; text-transform: uppercase;
+  margin: 0; font: 900 3.2em/1 system-ui, sans-serif; letter-spacing: .05em; text-transform: uppercase;
   color: #0000; background: linear-gradient(#fff 25%, #7ff3ff 60%, #14a9c4);
   -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 .06em .2em #000c);
 }
 p { margin: 0; }
 #a { display: grid; width: 30em; max-width: 100%; }
 #a > * { grid-area: 1/1; transition: opacity .8s, visibility .8s; }
-#s, #w, #q, #t, #v, #k, #h, #x { font-size: .8em; letter-spacing: .12em; text-transform: uppercase; }
+#s, #w, #q, #t, #v, #k, #h, #j, #x { font-size: .8em; letter-spacing: .12em; text-transform: uppercase; }
 #w { margin-top: 1.2em; color: #7ff3ff; text-wrap: balance; }
+#j { font-size: .68em; color: #7ff3ff; }
 
 /* loading bar */
 #p {
@@ -74,8 +76,8 @@ button:active, a:active { transform: translateY(.1em); filter: brightness(.9); }
   box-shadow: inset 0 -.2em #0003, 0 0 2em #19c3d6b3;
 }
 
-/* GitHub and Ko-fi: always at the bottom of the menu, in their own colours */
-#f { position: absolute; left: 0; right: 0; bottom: 1.5em; display: flex; justify-content: center; gap: 1em; font-size: .8em; }
+/* GitHub and Ko-fi: at the bottom of the menu, in their own colours */
+#f { display: flex; justify-content: center; gap: 1em; font-size: .8em; }
 a + a { background: #ff5e5b; color: #fff; }
 svg { width: 1.5em; height: 1.5em; fill: currentColor; }
 
@@ -91,8 +93,9 @@ svg { width: 1.5em; height: 1.5em; fill: currentColor; }
 #q button:hover, #t button:hover, #v button:hover { background: #7ff3ff33; }
 #q .on, #t .on, #v .on { background: linear-gradient(#9ff6ff, #19c3d6); box-shadow: inset 0 -.2em #0003; color: #03222d; pointer-events: none; }
 /* what this is, and whose data it is built from */
-#u { margin: -.6em 0 0; font-size: .8em; letter-spacing: .12em; text-transform: uppercase; color: #7ff3ff; text-wrap: balance; }
-#x { max-width: 66em; font-weight: 400; font-size: .55em; line-height: 1.35; letter-spacing: .02em; text-transform: none; color: #e8fbffb3; text-wrap: balance; }
+#u { margin: -.4em 0 0; font-size: .8em; letter-spacing: .12em; text-transform: uppercase; color: #7ff3ff; text-wrap: balance; }
+#x { max-width: 112em; columns: 2; column-gap: 3em; text-align: left; font-weight: 400; font-size: .55em; line-height: 1.35; letter-spacing: .02em; text-transform: none; color: #e8fbffb3; }
+@media (max-width: 60em) { #x { columns: 1; } }
 
 /* list of controls: two groups, key caps right-aligned against their labels */
 #k { display: flex; justify-content: center; gap: 2em; text-align: left; }
@@ -128,7 +131,7 @@ svg { width: 1.5em; height: 1.5em; fill: currentColor; }
 <canvas id=c></canvas>
 <div id=m>
   <h1>Thera</h1>
-  <p id=u>The island before the eruption · 1615 BCE (high chronology) · a reconstruction</p>
+  <p id=u>The island and its town at Akrotiri before the eruption · 1615 BCE (high chronology) · a reconstruction</p>
   <div id=a>
     <div id=l><div id=p><i id=b></i></div><p id=s>Diving…</p><p id=w hidden>Use Google Chrome for optimal experience</p></div>
     <div id=g>
@@ -138,23 +141,24 @@ svg { width: 1.5em; height: 1.5em; fill: currentColor; }
       <p id=v><span>Edge of the excavated walls</span><button>Hidden</button><button>Shown</button></p>
       <div id=k>
         <p>
-          <i><b>W</b><b>A</b><b>S</b><b>D</b></i>Fly / swim / walk
-          <i><b>Q</b><b>E</b></i>Down to land / up to take off
+          <i><b>W</b><b>A</b><b>S</b><b>D</b></i>Fly, swim, walk
+          <i><b>Q</b><b>E</b></i>Down, up
           <i><b>Shift</b></i>Faster
           <i><b>1</b>–<b>9</b></i>Viewpoints
         </p>
         <p>
           <i><b>Esc</b></i>Menu
           <i><b>T</b></i>Time of day
-          <i><b>L</b></i>Edge of the excavated walls
+          <i><b>L</b></i>Excavated edge
           <i><b>M</b></i>Mute
           <i><b>H</b></i>Stats
         </p>
       </div>
+      <p id=j>Come down onto the ground to walk · go up to take off again · walk into the sea to swim</p>
       <p id=h>Hold to move forward · slide to steer · second finger to go faster · fly down onto the ground to walk · look well up to take off</p>
     </div>
   </div>
-  <p id=x>Thera (Santorini) is the island's later name; its Bronze Age name is not known. The land and sea floor are a model of the past, not a survey: present-day data, changed to undo the eruption. Land: produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved. The organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30. Sea floor: EMODnet Digital Bathymetry (DTM 2024). This data product was created by EMODnet ( https://emodnet.ec.europa.eu/en/ ), and is owned by the EU and licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license. Licence: https://creativecommons.org/licenses/by/4.0/ · changed here · not for navigation. This data is not under the engine's MIT licence. Engine: Abyssal Garden by Noniv (MIT).</p>
+  <p id=x>Thera (Santorini) is the island's later name and Akrotiri a modern village's: the Bronze Age names of the island and of the town are not known, and every building, street and square is called by a modern excavation label. The town: its centre follows the excavated plan. Everything beyond the edge of the excavated walls (key L, or the switch above) is reconstruction by rule, to about 10 ha in all, and no colour of any wall, roof or paving is sourced. The town is shown from outside and empty: people, animals, plants and interiors are still to come, and no harbour is built, because none has been found. Excavated walls of Akrotiri digitised, rescaled, georeferenced and reinterpreted from "Akrotiri in the Bronze Age, about 1600 B.C." (File:Map Akrotiri 1600 BC-en.png) by Maximilian Dörrbecker, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Map_Akrotiri_1600_BC-en.png, licensed CC BY-SA 2.5 (https://creativecommons.org/licenses/by-sa/2.5/). Dörrbecker drew it from a Thera Foundation web map (2005) and other sources. This derived data is licensed CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/). The plan is placed on the centre of the modern shelter over the site, measured from OpenStreetMap (way 299988161), © OpenStreetMap contributors, Open Database License (https://www.openstreetmap.org/copyright). The town's outlines are under CC BY-SA 4.0, not the engine's MIT licence. The land and sea floor are a model of the past, not a survey: present-day data, changed to undo the eruption. Land: produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved. The organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30. Sea floor: EMODnet Digital Bathymetry (DTM 2024). This data product was created by EMODnet ( https://emodnet.ec.europa.eu/en/ ), and is owned by the EU and licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license. Licence: https://creativecommons.org/licenses/by/4.0/ · changed here · not for navigation. This data is not under the engine's MIT licence. Engine: Abyssal Garden by Noniv (MIT).</p>
   <p id=f>
     <a href=https://github.com/Noniv/abyssal-garden target=_blank><svg viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>GitHub</a>
     <a href=https://ko-fi.com/noniv target=_blank><svg viewBox="0 0 24 24"><path fill-rule=evenodd d="M2 5h16.5a4.5 4.5 0 0 1 0 9H17a6 6 0 0 1-6 5H8a6 6 0 0 1-6-6zM17 8v3h1.5a1.5 1.5 0 0 0 0-3zM9.5 15.5 5.9 12a2.2 2.2 0 0 1 3.6-2.5 2.2 2.2 0 0 1 3.6 2.5z"/></svg>Support</a>

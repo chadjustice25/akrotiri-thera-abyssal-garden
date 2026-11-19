@@ -214,10 +214,19 @@ const dome = new Uint8Array(N * N);
   const p = E.E8, sl = Math.hypot(...p.seaDirection), sx = p.seaDirection[0] / sl, sz = p.seaDirection[1] / sl; let n = 0, lo = 1e9, hi = -1e9;
   for (let k = 0; k < N * N; k++) {
     const dx = X(k) - p.site[0], dz = Z(k) - p.site[1], d = Math.hypot(dx, dz); if (d > p.radiusMetres + p.blendMetres || h.d[k] <= 0.5) continue;
-    const target = Math.max(1.2, p.hillTopMetres - p.slopeTowardsSea * (dx * sx + dz * sz)), w = 1 - sstep(p.radiusMetres, p.radiusMetres + p.blendMetres, d);
+    let target = p.hillTopMetres - p.slopeTowardsSea * (dx * sx + dz * sz);
+    // the ridge the town grew along (T2b#37): level across its crest, the ground falling away on both sides (T2b#38), and
+    // the fall dying out to the north, where the town runs on over the plateau
+    const rg = p.ridge, off = X(k) - rg.crestX, t = Math.abs(off) - rg.crestHalfWidthMetres;
+    if (t > 0) target -= Math.min((off > 0 ? rg.eastSlope : rg.westSlope) * t * t / (t + rg.easeMetres), rg.maxFallMetres) * sstep(rg.fadesBetweenZ[0], rg.fadesBetweenZ[1], Z(k));
+    target = Math.max(1.2, target); const w = 1 - sstep(p.radiusMetres, p.radiusMetres + p.blendMetres, d);
     h.d[k] = mix(h.d[k], target, w); if (w > 0.99) { n++; lo = Math.min(lo, h.d[k]); hi = Math.max(hi, h.d[k]); }
   }
-  report.edits.E8 = { siteLonLat: [r3(toLon(p.site[0]) * 10) / 10, r3(toLat(p.site[1]) * 10) / 10], terraceKm2: r2(n * A / 1e6), terraceHeightsMetres: [r1(lo), r1(hi)], groundAtSiteBeforeMetres: r1(afterE3.sample(...p.site)), groundAtSiteMetres: r1(h.sample(...p.site)) };
+  const lv = p.sourcedLevels;
+  report.edits.E8 = { siteLonLat: [r3(toLon(p.site[0]) * 10) / 10, r3(toLat(p.site[1]) * 10) / 10], terraceKm2: r2(n * A / 1e6), terraceHeightsMetres: [r1(lo), r1(hi)], groundAtSiteBeforeMetres: r1(afterE3.sample(...p.site)), groundAtSiteMetres: r1(h.sample(...p.site)),
+    groundAtXeste3Metres: r1(h.sample(...lv.xeste3.at)), sourcedAtXeste3Metres: r1(lv.xeste3.aboveTodaysSeaMetres + E.E1.seaLevelBelowPresent),
+    groundAtTheEastEdgeMetres: r1(h.sample(...lv.eastEdge.at)), sourcedBasementFloorAtTheEastEdgeMetres: lv.eastEdge.floorAboveTodaysSeaMetres.map((v) => r1(v + E.E1.seaLevelBelowPresent)),
+    crestMetresAcrossTheExcavatedTown: [r1(h.sample(p.ridge.crestX, lv.xeste3.at[1])), r1(h.sample(p.ridge.crestX, p.site[1] - 90))] };
 }
 
 // ---------------------------------------------------------------- E9: Profitis Ilias, checked

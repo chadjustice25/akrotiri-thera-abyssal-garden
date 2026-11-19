@@ -179,9 +179,9 @@ const TB = buildTown(hAt), vbTown = buf(TB.v, BU.VERTEX), ibTown = buf(TB.ix, BU
 // the top of whatever is built at (x, z), or far below the ground where nothing is; then the height of the solid world there
 function tAt(x, z) { const i = floor((x - TGX) / TCELL), j = floor((z - TGZ) / TCELL); return i < 0 || j < 0 || i >= TGW || j >= TGH ? -1e9 : TTOP[TGRID[j * TGW + i]]; }
 function sAt(x, z) { const h = hAt(x, z), t = tAt(x, z); return t > h ? t : h; }
-// the same two, for a body 60 cm across
-function wallAt(x, z) { return max(tAt(x, z), tAt(x - 0.3, z), tAt(x + 0.3, z), tAt(x, z - 0.3), tAt(x, z + 0.3)); }
-function solid(x, z) { return max(sAt(x, z), sAt(x - 0.3, z), sAt(x + 0.3, z), sAt(x, z - 0.3), sAt(x, z + 0.3)); }
+// the same two, for a body 40 cm across (the narrowest street on the plan is about a metre between its walls)
+function wallAt(x, z) { return max(tAt(x, z), tAt(x - 0.2, z), tAt(x + 0.2, z), tAt(x, z - 0.2), tAt(x, z + 0.2)); }
+function solid(x, z) { return max(sAt(x, z), sAt(x - 0.2, z), sAt(x + 0.2, z), sAt(x, z - 0.2), sAt(x, z + 0.2)); }
 
 // ---------------------------------------------------------------- meshes
 const GM = gridMesh(), vbMesh = buf(GM.v, BU.VERTEX), ibMesh = buf(GM.idx, BU.INDEX);
@@ -486,7 +486,7 @@ function frame(now) {
       if (solid(x, nz) - ft <= TOWNR.step) z = nz; else vz = 0;
       const gr = solid(x, z);
       if (ft > gr + 0.02) { vy -= 9.8 * dt; ft += vy * dt; if (ft <= gr) { ft = gr; vy = 0; } } // down a step, or off a roof
-      else { vy = 0; ft += (gr - ft) * (1 - exp(-dt * 14)); }                                    // up a step
+      else { vy = 0; if (gr - ft <= TOWNR.step) ft += (gr - ft) * (1 - exp(-dt * 14)); }         // up a step
       F[FEET] = ft; y += (ft + TOWNR.eye - y) * (1 - exp(-dt * 12));
       // up and away (on a touch screen: look well up and keep going); or out of one's depth, and swimming
       if (ku || (tId >= 0 && pitch > 0.6)) { walk = 0; vy = 5; } else if (hAt(x, z) < 0.3 - TOWNR.eye) { walk = 0; vy = -2.5; }
