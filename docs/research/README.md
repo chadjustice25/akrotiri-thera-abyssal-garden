@@ -40,6 +40,7 @@ They follow lane T3 and its check, share its source rules and report format word
 3. Paste the prompt, add nothing, and send.
 4. Gemini shows a research plan. Click **Start research** without editing it.
 5. Wait for the report. You can leave the tab.
+   - Since 2026-11-19 a prompt ends by asking Gemini to save the report to the Google Drive folder `Thera Research` under the lane's file name (D35). The report's last line says `DRIVE: saved as …` or `DRIVE: not saved`. If it was saved, download it from Drive into the folder in step 6; if not, carry on with step 6 by hand.
 6. Save it as the file named in the table, in `docs/research/neon/`:
    - **Preferred:** export the report to Google Docs, then in Docs choose **File → Download → Markdown (.md)**. Move the file here and rename it. This keeps the tables intact.
    - **Quicker:** use the report's copy option, then in Terminal:

@@ -28,6 +28,8 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
   - Chad confirmed how art is graded: Theran art B, art from elsewhere C (D26).
   - The world's year moves earlier than 1615 BCE, to between about 1630 and 1620 BCE; the exact year is open (D32, O16). **The page and the records still say 1615 until it is chosen.**
   - The viewer can move the date and time and jump to astronomical events; the sky is to be computed, and what grows is built with its yearly cycle (D33).
+  - The year can be moved as well as the date, so that the world and the sky are seen to change; every thing is to carry the years it stands for (D34).
+  - Every Gemini Deep Research prompt ends by asking for the report to be saved to the Google Drive folder `Thera Research` (D35), first tried on the rerun of T3c.
   - The world is shown in three cumulative layers (found; what the evidence points to; what is there for the experience), and changing layer fades things in and out without a reload or a pause (D31, closes O12).
 - **Research:** X1, T1, T1b, T1c, T2, T2b and T3–T7 are in `docs/research/claude/`, each checked in `docs/research/verification/`. T1c is applied to the terrain; T2 and T2b to the town.
 - **Two kinds of data in the page are not MIT.**
@@ -47,8 +49,9 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
    - **The page must be on the web first.** GitHub Pages is off for the fork. Turning it on is Chad's action (the command is below); the page is then at <https://chadjustice25.github.io/akrotiri-thera-abyssal-garden/>, which is the address the runbook's button opens. `.nojekyll` is in the repository so that Pages serves the files as they are.
    - Read from the code, and not yet tried by anyone: walking on touch is 0.7 of the keyboard's pace; looking up by more than about 34° while on foot takes off; an iPad held upright gets the page turned on its side; and there is no sound above the water yet. The runbook asks about each.
 3. **Chad: decisions and actions due.**
-   - **O16, the exact year.** Suggested: 1628 BCE, the year of the Aniakchak II eruption, which every place shares. Once chosen, one sweep changes `docs/WORLD_CLOCK.md` (with the corrections D32 lists), the page's menu, the records and the prompts for lanes not yet run.
-   - **O17, how far the date can be moved and what moves with it.** Leaning: the sky, light, weather and plants move; the town and its people stay in the world's year.
+   - **O16, the year the world opens in.** Suggested: 1628 BCE, the year of the Aniakchak II eruption, which every place shares, in the reign of Ammisaduqa at Babylon. Once chosen, one sweep changes `docs/WORLD_CLOCK.md` (with the corrections D32 lists), the page's menu, the records and the prompts for lanes not yet run.
+   - **O18, how far the year slider reaches**, and whether Thera's passes the end of the living town into the earthquake, the eruption and the buried island, which D19 kept out.
+   - **The size budget.** A world with layers, seasons, a year slider, a computed sky, plants, people and interiors is unlikely to fit in one 256 kB page (166 kB are used). D11 says a newer decision changes the law when the work shows this; the engine order for layers and time is the place to measure it.
    - **O13, the layers' names.** Suggested: Found, Inferred, Imagined.
    - **O14, whether the layers are built first**, as their own work order, while the plant research comes in. Leaning: yes. It would make the layers work order 003 and plants 004.
    - **D21, the Copernicus licence questions.** A fresh draft of the message, not sent, is in `docs/terrain/message-to-copernicus.md`, with where to send it. Chad is looking into it (2026-11-19). Rebuilding the land from NASA's NASADEM stays the fallback.
@@ -61,7 +64,7 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
    - **Interiors and wall paintings** (lane T6; image rights, D6). The size budget is the first hard decision here: the page is 166 kB of 256 kB (D11, D17).
    - **Marking and labelling what has been found** (D25).
    - **A second pass on the town**, when the book or the excavation's plan arrives. It would close liberties A-L3, A-L6, A-L7, A-L10 and A-L12, and should add the drain and the cobbles that are sourced and not yet shown (A-L14).
-   - **The sky and the calendar** (D33; liberty T-L12): a computed sky, a date and time the viewer can move, seasons, and jumps to eclipses and other events. Chad, 2026-11-18: the sky is to be corrected the way Beyond the Gates of Uruk's is being. That method computes the sky for the date and place (`~/Developer/beyond-gates-uruk/docs/research/2026-10-19-sky-ephemeris.md`); Uruk's work was still in progress when he said this. Thera's one-file law means a star catalogue has to fit inside the page.
+   - **The sky and the calendar** (D33, D34; liberty T-L12): a computed sky, a date, time and year the viewer can move, seasons, and jumps to eclipses and other events. It needs its own research lane first: eclipses visible from Thera in the window, how uncertain they are that far back, and the Venus observations of Ammisaduqa's reign. Chad, 2026-11-18: the sky is to be corrected the way Beyond the Gates of Uruk's is being. That method computes the sky for the date and place (`~/Developer/beyond-gates-uruk/docs/research/2026-10-19-sky-ephemeris.md`); Uruk's work was still in progress when he said this. Thera's one-file law means a star catalogue has to fit inside the page.
    - **Also noted by 001:** sound above the water, and a cliff form for the restored southern wall.
 5. **The town's weaknesses, for whoever works on it next** (`docs/town/README.md` §9):
    - The excavated part looks sparser than the reconstruction round it.

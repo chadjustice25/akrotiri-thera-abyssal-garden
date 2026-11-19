@@ -6,6 +6,15 @@ Allow about ten minutes of your time to start them, then the wait while Neon wor
 
 **Neon replaced Argon in Gemini's list of models on 2026-11-19 (D30).** Nobody on this project has run a lane on Neon yet. The steps below are the ones written for Argon, with the name changed: if Neon's settings are called something else, choose the nearest and tell Claude.
 
+## New: the report saves itself to Google Drive (a trial, D35)
+
+The prompts for T3b and T3c now end by asking Gemini to save the finished report to your Google Drive: folder **Thera Research**, file `T3b_Neon.md` or `T3c_Neon.md`. Nobody knows yet whether Neon can do this, so the report's last line tells you:
+
+- **`DRIVE: saved as T3c_Neon.md`**: it is in Drive. Download it into `docs/research/neon/`, or tell Claude it is there. Skip the copying steps below.
+- **`DRIVE: not saved`**, or no such line: save it by hand, as below.
+
+Either way, tell Claude what the last line said, so that we learn whether this works. The T3b run that was already going on 2026-11-19 used the prompt from before this section was added.
+
 ## The three lanes
 
 | Lane | It answers | Prompt file | Save the report as |
@@ -33,7 +42,7 @@ For each lane:
 
 When a report is finished:
 
-7. **Check that the chat still says Neon.** If it has dropped to another model, see "If something goes wrong".
+7. **Check that the chat still says Neon.** If it has dropped to another model, see "If something goes wrong". Then read the report's last line: if it says `DRIVE: saved as …`, the report is in your Drive and steps 8 and 9 are not needed.
 8. Copy the whole report (the report's copy button, or Share then Copy).
 9. On the Desk, open **Save the report** on that lane, paste, and tap **Save**. The Desk counts the links and table rows so you can see that the whole report arrived.
 

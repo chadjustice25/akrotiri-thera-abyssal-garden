@@ -51,3 +51,11 @@ E. **The ground itself.** Colours and textures of the pre-eruption surface where
 - **Section 7, "Sources":** the full list with links.
 
 Keep the narrative short. The tables are what will be used.
+
+## Delivery (do this last)
+When the report is complete, save a copy to my Google Drive:
+- **Folder:** `Thera Research`, in My Drive. Create it if it does not exist.
+- **File:** `T3b_Neon.md`, a plain Markdown text file (not a Google Doc and not a PDF). If a file of that name is already there, add `_2`, `_3` and so on to the name; never overwrite.
+- **Content:** the whole report exactly as given here, with every section and table.
+
+This is the one exception to source rule 7. Then end the report with one line: `DRIVE: saved as <file name>`. If you cannot write to Google Drive, try nothing else and end with the line `DRIVE: not saved`.
