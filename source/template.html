@@ -61,25 +61,20 @@ p { margin: 0; }
 .e #s { font-size: 1.1em; letter-spacing: 0; text-transform: none; }
 
 /* buttons */
-button, a {
+button {
   display: flex; align-items: center; justify-content: center; gap: .6em; padding: .8em 1.4em; border: 0;
   border-radius: .5em; background: #fff; box-shadow: inset 0 -.2em #0003, 0 .3em 1em #0009;
-  font: 800 1em/1.2 system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
+  font: 800 1em/1.2 system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase;
   color: #03222d; cursor: pointer; transition: transform .12s, filter .12s;
 }
-button:hover, a:hover { transform: translateY(-.12em); filter: brightness(1.15); }
-button:active, a:active { transform: translateY(.1em); filter: brightness(.9); }
+button:hover { transform: translateY(-.12em); filter: brightness(1.15); }
+button:active { transform: translateY(.1em); filter: brightness(.9); }
 :focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 #g { display: grid; gap: min(1em, 3vmin); }
 #d {
   padding: .9em; background: linear-gradient(#9ff6ff, #19c3d6); font-size: 1.3em;
   box-shadow: inset 0 -.2em #0003, 0 0 2em #19c3d6b3;
 }
-
-/* GitHub and Ko-fi: at the bottom of the menu, in their own colours */
-#f { display: flex; justify-content: center; gap: 1em; font-size: .8em; }
-a + a { background: #ff5e5b; color: #fff; }
-svg { width: 1.5em; height: 1.5em; fill: currentColor; }
 
 /* dark plates under the dive button: detail level, list of controls, touch hint */
 #q, #t, #v, #k, #h { padding: 1em 1.6em; border-radius: .7em; background: #03131cb3; }
@@ -159,10 +154,6 @@ svg { width: 1.5em; height: 1.5em; fill: currentColor; }
     </div>
   </div>
   <p id=x>Thera (Santorini) is the island's later name and Akrotiri a modern village's: the Bronze Age names of the island and of the town are not known, and every building, street and square is called by a modern excavation label. The town: its centre follows the excavated plan. Everything beyond the edge of the excavated walls (key L, or the switch above) is reconstruction by rule, to about 10 ha in all, and no colour of any wall, roof or paving is sourced. The town is shown from outside and empty: people, animals, plants and interiors are still to come, and no harbour is built, because none has been found. Excavated walls of Akrotiri digitised, rescaled, georeferenced and reinterpreted from "Akrotiri in the Bronze Age, about 1600 B.C." (File:Map Akrotiri 1600 BC-en.png) by Maximilian Dörrbecker, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Map_Akrotiri_1600_BC-en.png, licensed CC BY-SA 2.5 (https://creativecommons.org/licenses/by-sa/2.5/). Dörrbecker drew it from a Thera Foundation web map (2005) and other sources. This derived data is licensed CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/). The plan is placed on the centre of the modern shelter over the site, measured from OpenStreetMap (way 299988161), © OpenStreetMap contributors, Open Database License (https://www.openstreetmap.org/copyright). The town's outlines are under CC BY-SA 4.0, not the engine's MIT licence. The land and sea floor are a model of the past, not a survey: present-day data, changed to undo the eruption. Land: produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved. The organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30. Sea floor: EMODnet Digital Bathymetry (DTM 2024). This data product was created by EMODnet ( https://emodnet.ec.europa.eu/en/ ), and is owned by the EU and licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license. Licence: https://creativecommons.org/licenses/by/4.0/ · changed here · not for navigation. This data is not under the engine's MIT licence. Engine: Abyssal Garden by Noniv (MIT).</p>
-  <p id=f>
-    <a href=https://github.com/Noniv/abyssal-garden target=_blank><svg viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>GitHub</a>
-    <a href=https://ko-fi.com/noniv target=_blank><svg viewBox="0 0 24 24"><path fill-rule=evenodd d="M2 5h16.5a4.5 4.5 0 0 1 0 9H17a6 6 0 0 1-6 5H8a6 6 0 0 1-6-6zM17 8v3h1.5a1.5 1.5 0 0 0 0-3zM9.5 15.5 5.9 12a2.2 2.2 0 0 1 3.6-2.5 2.2 2.2 0 0 1 3.6 2.5z"/></svg>Support</a>
-  </p>
 </div>
 <button id=o aria-label=Menu>≡</button>
 <pre id=i></pre>
