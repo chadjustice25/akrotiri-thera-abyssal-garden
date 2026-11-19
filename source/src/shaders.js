@@ -563,16 +563,16 @@ fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
   let T = select(normalize(vec3f(N0.z, 0., -N0.x) + vec3f(1e-4, 0., 0.)), vec3f(1., 0., 0.), lev); let Bt = select(vec3f(0., 1., 0.), vec3f(0., 0., 1.), lev);
   var alb = vec3f(.3); var bump = 1.; var sky = 1.; var gloss = 0.;
   // each house's earth is a little its own: lighter or darker, greyer or redder
-  let tuff = vec3f(.4, .375, .32); let hard = vec3f(.17, .16, .155);
+  let tuff = vec3f(.36, .335, .285); let hard = vec3f(.17, .16, .155);
   let earth = mix(vec3f(.2, .17, .135), vec3f(.235, .185, .13), hs(seed * 13.7)) * (.8 + .4 * hs(seed * 5.3 + 2.));
   if (mat == 0u || mat == 2u || mat == 6u) {
     if (stone == 0u || mat == 6u) {
       // fieldstone bound with earth, with what is left of an earth render over it
       let st = vor(vec2f(u, v) * vec2f(4.6, 6.2) + seed * 31.);
-      var rock = mix(vec3f(.19, .165, .14), vec3f(.29, .26, .22), st.y);
-      rock = mix(rock, vec3f(.1, .095, .1), step(.78, st.z));            // dark lava
-      rock = mix(rock, vec3f(.24, .135, .1), step(st.z, .13));           // red scoria
-      alb = mix(mix(vec3f(.21, .185, .155), rock, mid), earth * .9, ss(.09, .03, st.x) * fine);
+      var rock = mix(vec3f(.2, .175, .15), vec3f(.26, .235, .2), st.y);
+      rock = mix(rock, vec3f(.125, .12, .125), step(.86, st.z));         // dark lava
+      rock = mix(rock, vec3f(.225, .15, .12), step(st.z, .08));          // red scoria
+      alb = mix(mix(vec3f(.21, .185, .155), rock, mid), earth * .8, ss(.09, .03, st.x) * fine);
       let render = ss(.42, .6, d2.a + .25 * d2.b + (seed - .5) * .5) * (1. - .7 * ss(1.1, .2, v));
       // (the render: weathered in broad patches, streaked below the parapet, rubbed thin where it meets the street)
       alb = mix(alb, earth * (.78 + .5 * d2.b) * (1. - .12 * ss(.3, .7, d1.a) * fine), render * .88);
@@ -585,7 +585,7 @@ fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
     } else {
       // dressed stone in courses: whitish tuff (Xeste 4, T2#24) or ignimbrite (Xeste 3's east front, T2#20)
       let a = ashlar(vec2f(u, v), select(.47, .37, stone == 1u), select(1.35, 1.02, stone == 1u), fine);
-      alb = select(vec3f(.3, .25, .22), tuff, stone == 1u) * a.x * (.9 + .2 * d2.b); alb *= 1. - .55 * a.y; bump = .45;
+      alb = select(vec3f(.235, .195, .17), tuff * .95, stone == 1u) * a.x * (.85 + .3 * d2.b); alb *= 1. - .55 * a.y; bump = .45;
     }
     // damp and dirt at the foot of the wall
     alb *= 1. - .22 * ss(.7, 0., v) * select(1., 0., lev);
@@ -621,7 +621,7 @@ fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
   if (!lev) { sky = max(sky, .3) * (.6 + .4 * ss(0., 1.3, v)); }
   var am = (i.zen * (.3 + .7 * (N.y * .5 + .5)) + skyL(normalize(vec3f(N.x, .1, N.z))) * (.5 - .25 * N.y)) * sky;
   // sunlight thrown back by the ground and the walls around
-  am += g.sunc.rgb * max(L.y, 0.) * vec3f(.32, .26, .19) * (.6 - .4 * N.y) * (.4 + .6 * sky);
+  am += g.sunc.rgb * max(L.y, 0.) * vec3f(.34, .27, .19) * (.85 - .6 * N.y) * (.5 + .5 * sky);
   let ndl = sat(dot(N, L));
   var c = alb * (E * ndl + am + vec3f(.0016, .0022, .004) * g.sunc.w * (.4 + .6 * N.y) * sky);
   c += E * pow(sat(dot(N, normalize(normalize(g.cam.xyz - i.wp) + L))), 30.) * gloss * ndl;

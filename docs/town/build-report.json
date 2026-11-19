@@ -1,7 +1,7 @@
 {
  "inputs": {
-  "townJson": "342c0d88922b13df7613b6c73c8a149f9487f9ea65c25d4ebbbf00b9b81efc46",
-  "tracedJson": "8e91c5829c6d150a577901677111a158124a4c3aa02688d56bf3bd0cb4878177",
+  "townJson": "5e8ea7516e41ba06c2247091619e987eb9fd1abf5ecff142199bb0b58eeefa60",
+  "tracedJson": "21d030394bfbf88eb820925942d465cc2b1fd760eafc9de975d1f45231e81e0f",
   "plan": {
    "file": "Map_Akrotiri_1600_BC-en.png",
    "sha1": "cd0dbc4a0107e624b511b7351d8d50497dc55eff",
@@ -11,19 +11,19 @@
  "town": {
   "hectares": 9.95,
   "hectaresAimedAt": 10,
-  "builtSquareMetres": 67570,
+  "builtSquareMetres": 67747,
   "shareBuilt": 0.68
  },
- "masses": 461,
+ "masses": 463,
  "buildings": {
-  "all": 455,
+  "all": 457,
   "excavated": 24,
-  "reconstructedInsideThePlan": 11,
+  "reconstructedInsideThePlan": 13,
   "reconstructedByRule": 420
  },
  "storeys": {
   "one": 0,
-  "two": 334,
+  "two": 336,
   "three": 121
  },
  "byRule": {
@@ -157,6 +157,24 @@
     "squareMetres": 89,
     "storeys": 2,
     "groundMetres": 25.2
+   },
+   {
+    "id": "tw1",
+    "label": "unnamed, west side of Telchines Street",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0,
+    "squareMetres": 94,
+    "storeys": 2,
+    "groundMetres": 24.9
+   },
+   {
+    "id": "tw2",
+    "label": "unnamed, west side of Telchines Street",
+    "status": "reconstructed",
+    "shareOfOutlineOnDrawnWalls": 0.12,
+    "squareMetres": 83,
+    "storeys": 2,
+    "groundMetres": 24.7
    },
    {
     "id": "porch",
@@ -445,8 +463,8 @@
   ]
  },
  "data": {
-  "bytes": 10704,
-  "sha256": "f1410ed1463156d31eb95edff95485b4f35524e58deb5ddd8d67c08c4511b656",
-  "textKilobytes": 13.9
+  "bytes": 10744,
+  "sha256": "52cbe1bde322afdc60d222952f0640d5fa50c858c37f4550f51d0470d61141b8",
+  "textKilobytes": 14
  }
 }

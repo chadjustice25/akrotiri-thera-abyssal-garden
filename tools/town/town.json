@@ -48,6 +48,8 @@
     { "id": "w2", "regionPx": [[1132, 1140], [1235, 1102], [1362, 1056], [1298, 1225], [1132, 1162]] },
     { "id": "west", "regionPx": [[705, 1380], [957, 1216], [1112, 1428], [810, 1603]] },
     { "id": "anchor", "regionPx": [[598, 1605], [838, 1605], [897, 1740], [897, 1794], [598, 1794]], "addPx": [[602, 1608], [602, 1790]] },
+    { "id": "tw1", "regionPx": [[628, 1808], [882, 1808], [882, 1988], [628, 1988]], "addPx": [[632, 1812], [878, 1812], [878, 1984], [632, 1984]] },
+    { "id": "tw2", "regionPx": [[628, 1996], [876, 1996], [864, 2162], [628, 2162]], "addPx": [[632, 2000], [872, 2000], [861, 2158], [632, 2158]] },
     { "id": "porch", "outlinePx": [[926, 1706], [972, 1706], [964, 1788], [918, 1788]] },
     {
       "id": "delta_w",
@@ -261,6 +263,8 @@
       "features": [{ "type": "lowWindow", "nearPx": [818, 1690] }, { "type": "door", "nearPx": [806, 1625] }],
       "note": "Only its front on Triangle Square is excavated, with tuff frames of a door and windows; the body behind it is reconstruction."
     },
+    "tw1": { "label": "unnamed, west side of Telchines Street", "storeys": 2, "status": "reconstructed", "claims": ["T2b#35"], "liberty": "A-L11", "note": "The plan draws no wall here: the street's west side is unexcavated, though it lies inside the plan's limits of the excavation site, between the House of the Anchor and Building Gamma. Two houses are put there by rule so that the street has its two sides. They stand no further west than the buildings to their north and south." },
+    "tw2": { "label": "unnamed, west side of Telchines Street", "storeys": 2, "status": "reconstructed", "claims": ["T2b#35"], "liberty": "A-L11" },
     "porch": {
       "label": "\"Pylon\" (the plan's label): the porch at Delta West's entrance",
       "storeys": 2,

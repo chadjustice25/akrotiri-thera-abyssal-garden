@@ -252,9 +252,10 @@ function flyRaw() {
   }
   aim();
 }
-{ // arc-length table: flyLUT[k] = spline parameter at fraction k/LUTN of the total path length
+{ // time table: flyLUT[k] = spline parameter at fraction k/LUTN of the flight. It keeps the free camera's rule: slow when low, fast when
+  // high, so that the flight crosses the island quickly, and it goes three times slower again over the town
   const M = 4096, len = new Float32Array(M + 1); let px = 0, py = 0, pz = 0;
-  for (let k = 0; k <= M; k++) { F[SPL] = k / M * (FLYN - 1); flyRaw(); if (k) len[k] = len[k - 1] + hypot(F[CX] - px, F[CY] - py, F[CZ] - pz); px = F[CX]; py = F[CY]; pz = F[CZ]; }
+  for (let k = 0; k <= M; k++) { F[SPL] = k / M * (FLYN - 1); flyRaw(); if (k) len[k] = len[k - 1] + hypot(F[CX] - px, F[CY] - py, F[CZ] - pz) / (7 + min(max(F[CY] - max(hAt(F[CX], F[CZ]), 0), 0) * 0.45, 500)) * (abs(F[CX] - TNX) < TNS / 2 && abs(F[CZ] - TNZ) < TNS / 2 ? 3 : 1); px = F[CX]; py = F[CY]; pz = F[CZ]; }
   for (let k = 0, j = 0; k <= LUTN; k++) { const d = k / LUTN * len[M]; while (j < M - 1 && len[j + 1] < d) j++; flyLUT[k] = (j + (d - len[j]) / max(len[j + 1] - len[j], 1e-6)) / M * (FLYN - 1); }
 }
 // camera on the scripted path at time F[FLT] (kept off the ground: the spline cuts corners)
