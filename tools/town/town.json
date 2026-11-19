@@ -1,5 +1,5 @@
 {
-  "about": "The town at Akrotiri in 1615 BCE (work order 002): every rule and number the town is built from, each with its claim references (lane#row, used only as corrected in docs/research/verification/) and grade, or a liberty number (A-L…, listed in docs/town/README.md). A later research result changes a number here, not the code. Positions marked Px are pixels on the plan (2,075 x 3,345); all others are [x, z] in metres from 36.405 N, 25.405 E (x east, z south), the terrain's frame.",
+  "about": "The town at Akrotiri in 1628 BCE (work order 002): every rule and number the town is built from, each with its claim references (lane#row, used only as corrected in docs/research/verification/) and grade, or a liberty number (A-L…, listed in docs/town/README.md). A later research result changes a number here, not the code. Positions marked Px are pixels on the plan (2,075 x 3,345); all others are [x, z] in metres from 36.405 N, 25.405 E (x east, z south), the terrain's frame.",
   "credit": {
     "plan": "Excavated walls of Akrotiri digitised, rescaled, georeferenced and reinterpreted from \"Akrotiri in the Bronze Age, about 1600 B.C.\" (File:Map Akrotiri 1600 BC-en.png) by Maximilian Dörrbecker, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Map_Akrotiri_1600_BC-en.png, licensed CC BY-SA 2.5 (https://creativecommons.org/licenses/by-sa/2.5/). Dörrbecker drew it from a Thera Foundation web map (2005) and other sources. This derived data is licensed CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).",
     "position": "The plan is placed on the centre of the modern shelter over the site, measured from OpenStreetMap (way 299988161), © OpenStreetMap contributors, Open Database License (https://www.openstreetmap.org/copyright)."
@@ -100,8 +100,8 @@
   "rules": {
     "about": "What a house is built from. The page reads these numbers from the generated data file, so a change here changes the town without a change to the code.",
     "year": {
-      "value": -1615,
-      "claims": ["D15", "D16"],
+      "value": -1628,
+      "claims": ["D15", "D36"],
       "note": "The living town, whole: no damage, rubble or repairs (D19; T2#93-T2#96 belong to the last weeks and are left out)."
     },
     "footprint": {

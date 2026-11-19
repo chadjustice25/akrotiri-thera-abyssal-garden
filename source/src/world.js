@@ -1,7 +1,7 @@
 // ============================================================================
 // the world: Thera's terrain data, the sun over it, the sea's waves, the meshes (load-time only unless noted)
 // ============================================================================
-// The frame: x east, z south, y up, in metres. The origin is 36.405 N, 25.405 E and y = 0 is the sea level of 1615 BCE.
+// The frame: x east, z south, y up, in metres. The origin is 36.405 N, 25.405 E and y = 0 is the sea level of 1628 BCE.
 // The terrain itself comes from terrain-data.js, which tools/terrain/build.mjs writes (docs/terrain/README.md).
 const DOM = 25600; // side of the square the terrain data covers: 640 cells of 40 m
 
@@ -57,7 +57,7 @@ function decodeTerrain(b) {
 
 // ---------------------------------------------------------------- the sun
 // Thera is at 36.4 N. The day is a liberty (docs/terrain/README.md, T-L9): late May, given as the sun's ecliptic longitude
-// of 65 degrees, with the tilt of the Earth's axis as it was around 1615 BCE (23.89 degrees, from Laskar's 1986 series).
+// of 65 degrees, with the tilt of the Earth's axis as it was around 1628 BCE (23.89 degrees, from Laskar's 1986 series).
 // Time is local solar time: the sun is due south at 12.
 const LAT = 36.4 * PI / 180, DECL = asin(sin(23.89 * PI / 180) * sin(65 * PI / 180));
 // direction to the sun at `hour` into out[0..2]; returns its height above the horizon in radians

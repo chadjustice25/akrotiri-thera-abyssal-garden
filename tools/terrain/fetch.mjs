@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Downloads the two elevation datasets the 1615 BCE island is rebuilt from, into tools/terrain/cache/ (ignored by git).
+// Downloads the two elevation datasets the 1628 BCE island is rebuilt from, into tools/terrain/cache/ (ignored by git).
 // Their licences, attribution texts and terms are recorded in docs/terrain/README.md; read that before using the data.
 //   node tools/terrain/fetch.mjs [--force]
 // 1. Copernicus DEM GLO-30 (30 m surface model), tile N36 E025, from the open AWS bucket (no account).

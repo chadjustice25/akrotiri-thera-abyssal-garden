@@ -1,6 +1,6 @@
 # Akrotiri–Thera (a fork of Abyssal Garden)
 
-**Work in progress.** This fork is turning Noniv's [Abyssal Garden](https://github.com/Noniv/abyssal-garden) into an archaeologically grounded reconstruction of the island of **Thera (Santorini) and its Bronze Age town at Akrotiri**, as they stood just before the Late Bronze Age eruption: the year shown is **1615 BCE** on the high (radiocarbon) chronology. Like the original, it is one HTML file with no images, models or sound files. Thera is the proof of concept. The same world clock will later extend to Crete, Egypt, Byblos and other places of the same moment.
+**Work in progress.** This fork is turning Noniv's [Abyssal Garden](https://github.com/Noniv/abyssal-garden) into an archaeologically grounded reconstruction of the island of **Thera (Santorini) and its Bronze Age town at Akrotiri**, as they stood just before the Late Bronze Age eruption: the world opens in **1628 BCE** on the high (radiocarbon) chronology. Like the original, it is one HTML file with no images, models or sound files. Thera is the proof of concept. The same world clock will later extend to Crete, Egypt, Byblos and other places of the same moment.
 
 **Status:** the island's land, sea, sky and light are in (work order 001), and so is the town at Akrotiri, from the outside (work order 002). There is no plant, animal or person yet: the ground is bare and the town is empty. Open [`index.html`](index.html) in Chrome or Edge on a computer.
 

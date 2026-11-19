@@ -4,7 +4,7 @@ The evidence rules for every place in this world: Thera now, and Crete, Egypt, B
 
 ## 1. The moment
 - **Window:** c. 1650 BCE, give or take 100–150 years, so about 1800–1500 BCE. Evidence from outside the window can be used only as grade C, with its distance from the window stated.
-- **Each place shows the same moment.** For Thera that moment is the living town in its final phase: after its rebuilding from the earthquake of c. 1650 BCE and before the final earthquake and evacuation, under the high chronology (D15). The year is **1615 BCE** (D16); `docs/WORLD_CLOCK.md` gives the details. Every other place takes its "now" from that file.
+- **Each place shows the same moment.** For Thera the opening moment is the living town in its final phase: after its rebuilding from the earthquake of c. 1650 BCE and before the final earthquake and evacuation, under the high chronology (D15). The world opens in **1628 BCE** (D36); `docs/WORLD_CLOCK.md` gives the details. The viewer can move the date and the year (D33, D34), and every place moves with them: at any setting, all places show the same date. Every other place takes its "now" from that file.
 
 ## 2. One world clock
 - `docs/WORLD_CLOCK.md` (to be written from W1 and W2) lists every region's period, dates, rulers and main centres in the window, plus the objects and texts that link regions.
@@ -54,7 +54,7 @@ Departures from the evidence, made for the experience. One row each; nothing is 
 
 | # | Liberty | Why | Where | Decision |
 |---|---|---|---|---|
-| T-L1 | The thickness of the eruption deposits between the places where it is measured. | No thickness map could be opened. Without stripping, the land of 1615 BCE would wear the eruption's ash. | terrain edit E3 | work order 001 |
+| T-L1 | The thickness of the eruption deposits between the places where it is measured. | No thickness map could be opened. Without stripping, the land of 1628 BCE would wear the eruption's ash. | terrain edit E3 | work order 001 |
 | T-L2 | The shape of the restored ring land on the caldera side. | Its volume range and rim height are sourced (T1#14, T1b#51); its surface is gone. | E4 | work order 001 |
 | T-L3 | The bay's depth (5 m), its south shore, and Therasia's east cliffs as its west wall. | "No more than a few metres" (T1b#46) is contested, and no outline is published. | E5 | work order 001 |
 | T-L4 | The channel's width (280 m), depth (3 m) and course, and the height of the low ground beside it. | Only "low, narrow, if any" and an upper bound of 1 km are sourced. | E6 | work order 001 |
@@ -65,7 +65,7 @@ Departures from the evidence, made for the experience. One row each; nothing is 
 | T-L9 | The day shown: late May, with the Earth's tilt of the time (23.89°), in local solar time. | The season is open between spring and early summer (T3). The tilt is computed, not from a research lane. | sun | work order 001 |
 | T-L10 | Calm mornings and a north breeze that builds through the afternoon. | Today's summer Etesians carried back (T1#50, grade C). | sea state | work order 001 |
 | T-L11 | The amount of haze. | A clear Aegean summer day was chosen; nothing dates the air. | sky | work order 001 |
-| T-L12 | The stars are a random field, and there is no moon. | The real sky of 1615 BCE needs a star catalogue and precession: a later order. | night sky | work order 001 |
+| T-L12 | The stars are a random field, and there is no moon. | The real sky of 1628 BCE needs a star catalogue and precession: a later order. | night sky | work order 001 |
 | T-L13 | Sea level 3.6 m below today's, and the land and sea-floor data joined with no offset between their height references. | Two estimates disagree (3.6 m and under 0.5 m), and neither is measured on Santorini. It stays a parameter. | E1 | work order 001 |
 | T-L14 | The coastline is today's, moved only by the sea-level change. The sea floor is today's too. | The pre-eruption coast is not known, and the harbour has not been found. | E3, E8 | work order 001 |
 | T-L15 | Ground detail finer than the 40 m data. | It has zero mean, stays within a few metres and fades out at the shore, so it does not contradict the data. | terrain detail | work order 001 |
@@ -91,3 +91,14 @@ Departures from the evidence, made for the experience. One row each; nothing is 
 | A-L13 | The town is empty, silent and dark at night: no people, animals, plants, vessels or lamps; every door shut. | Outsides only in this order (D19). Lamps exist (T2#88) but belong to interiors and people. | whole town | D19, until people and plants are in |
 | A-L14 | Paving is drawn wherever houses stand close. The covered drain, the houses' drains and the cobbles of one side street are not shown. | Flagstones are sourced for the rebuilt streets (T2#11). The drain (T2#12, T2#13) and the cobbles (T2#60) are sourced and wait for a later order. | streets and squares | work order 002 |
 | A-L15 | The forms of the few things added: the pithos's profile, the benches, the horns, the light-well, the West House's upper room, the porch. | Their existence is sourced; their sizes and shapes are not. | named buildings | work order 002 |
+
+## 7. Layers, dates and years
+How the world shows what is known and what is added (D31, D38), and how it moves in time (D33, D34, D36, D37).
+- **Three layers, each adding to the one before.**
+  - **Found:** only what was dug up, where it was found (grade A, in its place).
+  - **Inferred:** adds what the evidence points to (grades B and C, and every liberty whose reason is evidence).
+  - **Imagined:** adds what brings the place to life (liberties made for the experience, and things known only from paintings).
+- A thing's layer follows from the grade or liberty it already carries. The land is drawn in every layer, and in Found a colour or form with no source is drawn plain.
+- **The date and the year can be moved.** The world opens in late May of 1628 BCE. Everything that grows carries its yearly cycle. Every thing carries the years it stands for, with a grade for that dating; a thing with no dated beginning or end stands for the whole span.
+- **Thera's years run through the end:** the damaged town, the eruption and the island it left are shown when the year reaches them.
+- **Changing layer, date or year never reloads or pauses the world.** Things fade in and fade out.

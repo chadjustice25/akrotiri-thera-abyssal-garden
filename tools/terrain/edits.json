@@ -1,5 +1,5 @@
 {
-  "about": "The named edits that turn today's elevation data into the island of 1615 BCE (work order 001). Each edit carries its claim references (lane#row, as corrected in docs/research/verification/) or a liberty number (T-L…, listed in docs/terrain/README.md), and its parameters. A later research result changes a number here, not the code in build.mjs. All positions are [x, z] in metres from 36.405 N, 25.405 E (x east, z south); heights are metres above the sea level of 1615 BCE.",
+  "about": "The named edits that turn today's elevation data into the island of 1628 BCE (work order 001). Each edit carries its claim references (lane#row, as corrected in docs/research/verification/) or a liberty number (T-L…, listed in docs/terrain/README.md), and its parameters. A later research result changes a number here, not the code in build.mjs. All positions are [x, z] in metres from 36.405 N, 25.405 E (x east, z south); heights are metres above the sea level of 1628 BCE.",
   "grid": {
     "cells": 640,
     "cellMetres": 40,
@@ -218,7 +218,7 @@
   "rock": {
     "name": "Rock classes",
     "liberty": "T-L7",
-    "note": "0 undivided volcanic rocks of the ring (default); 1 light-grey andesite, Akrotiri peninsula (T1#23); 2 dark-grey andesite, Therasia (T1#23); 3 black glassy andesite, Pre-Kameni (T1b#43); 4 phyllite and schist basement (T1#21); 5 marble (T1b#56); 6 the floor of the bay, shown as pale sediment (T1#12: aragonite buildups and shallow-marine, lagoonal life in the bay; its colour is a liberty). The claims name places, not boundaries: every outline here is a liberty. Athinios (T1#21) is not drawn: its basement crops out in the caldera wall that the eruption exhumed (T1#20), which in 1615 BCE lay under the restored land.",
+    "note": "0 undivided volcanic rocks of the ring (default); 1 light-grey andesite, Akrotiri peninsula (T1#23); 2 dark-grey andesite, Therasia (T1#23); 3 black glassy andesite, Pre-Kameni (T1b#43); 4 phyllite and schist basement (T1#21); 5 marble (T1b#56); 6 the floor of the bay, shown as pale sediment (T1#12: aragonite buildups and shallow-marine, lagoonal life in the bay; its colour is a liberty). The claims name places, not boundaries: every outline here is a liberty. Athinios (T1#21) is not drawn: its basement crops out in the caldera wall that the eruption exhumed (T1#20), which in 1628 BCE lay under the restored land.",
     "akrotiriPeninsula": [[-4700, 5600], [-4400, 4700], [-3300, 4500], [-2200, 4600], [-800, 4900], [500, 4700], [1100, 5200], [900, 6500], [-200, 6700], [-2000, 6600], [-3500, 6100]],
     "therasia": [[-7800, -1400], [-7500, -4500], [-6400, -6700], [-5300, -6300], [-4000, -4200], [-4700, -2600], [-4100, -300], [-5500, -900], [-7000, -1300]]
   }

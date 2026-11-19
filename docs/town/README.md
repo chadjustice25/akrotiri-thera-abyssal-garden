@@ -1,6 +1,6 @@
 # The town record
 
-How the town at Akrotiri in **1615 BCE** (high chronology, D16) is built: the plan it follows and that plan's licence, where the evidence ends, every rule with its claims, every liberty, how to make the town again, how walking was tested, and what was looked at. Written for work order 002 (`docs/tasks/002-town-of-akrotiri.md`).
+How the town at Akrotiri in **1628 BCE** (high chronology, D36; the year was 1628 BCE until 2026-11-19, and nothing in the build depends on the difference) is built: the plan it follows and that plan's licence, where the evidence ends, every rule with its claims, every liberty, how to make the town again, how walking was tested, and what was looked at. Written for work order 002 (`docs/tasks/002-town-of-akrotiri.md`).
 
 Claim references are lane and row (`T2#30`, `T2b#45`, `T1c#15`), used only as corrected in `docs/research/verification/`. The numbers come from `docs/town/build-report.json`, which `tools/town/build.mjs` writes on every run. Every rule and number is a parameter in `tools/town/town.json`.
 
@@ -156,7 +156,7 @@ Each rule is in `town.json` (`rules`, `town`) with its numbers. "Page" means the
 
 | Rule | Numbers | Claims | Grade, or liberty |
 |---|---|---|---|
-| **The moment** | 1615 BCE: whole and lived in, no damage, rubble or repairs | D15, D16, D19 | T2#93–T2#96 belong to the last weeks and are left out |
+| **The moment** | 1628 BCE: whole and lived in, no damage, rubble or repairs | D15, D36, D19 | T2#93–T2#96 belong to the last weeks and are left out |
 | **Fabric** | Dense, no courtyards, no animal enclosures; streets, alleys and blind alleys roughly north–south and east–west; fronts step in and out | T2#8, T2#9, T2#102 | A for the excavated part. Beyond it: A-L1 |
 | **Footprint** of a house by rule | 96–187 m² of ground; built: 97–187, median 150. No large building (300–370 m²) is invented | T2#6 | A, to verify against Palyvou 2005 |
 | **Storeys** | Two or three | T2#86 | A for two or three; which house has which: A-L4 |

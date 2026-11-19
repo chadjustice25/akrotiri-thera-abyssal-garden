@@ -705,7 +705,7 @@ struct VO { @builtin(position) cp: vec4f, @location(0) rd: vec3f };
   var c = skyL(rd);
   let q = rd - g.sun.xyz;
   c += g.sunc.rgb * ss(2.3e-5, 1.8e-5, dot(q, q)) * 45.;
-  // stars: a random field, not the sky of 1615 BCE (T-L12)
+  // stars: a random field, not the sky of 1628 BCE (T-L12)
   let sv = rd * 190.; let id = floor(sv); let hh = fract(sin(vec3f(dot(id, vec3f(12.99, 78.23, 37.72)), dot(id, vec3f(39.35, 11.14, 83.16)), dot(id, vec3f(73.16, 52.24, 9.15)))) * 43758.5453);
   let sd = length(fract(sv) - .5 - (hh - .5) * .7);
   c += vec3f(.9, .95, 1.) * step(.9, hh.x) * pow(hh.y, 3.) * ss(.11, 0., sd) * ss(-.02, .25, rd.y) * g.sunc.w * (.75 + .25 * sin(g.cam.w * (2. + hh.z * 4.) + hh.x * 90.)) * .3;

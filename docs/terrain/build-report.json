@@ -27,7 +27,7 @@
         }
       },
       "summitInTheSourceDemMetres": 557.5,
-      "summitOnTheGridMetresAbove1615Sea": 568.2,
+      "summitOnTheGridMetresAbove1628Sea": 568.2,
       "summitLonLat": [
         25.4641,
         36.3684
@@ -125,7 +125,7 @@
     "5 marble": 3.45
   },
   "island": {
-    "landKm2In1615": 145.37,
+    "landKm2In1628": 145.37,
     "landKm2Today": 90.96,
     "highestPointMetres": 568.2
   },

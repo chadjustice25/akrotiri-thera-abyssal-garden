@@ -3,7 +3,7 @@
 As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pushed, and the research for work order 003 (plants and ground cover) was prepared. Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
 
 ## Where things stand
-- **The world is Thera with its town.** `main` holds the island of 1615 BCE (high chronology, D16) and the town at Akrotiri from the outside, in one `index.html` of 166 kB. There is no plant, animal, person, interior, harbour or ship yet: the ground is bare and the town is empty.
+- **The world is Thera with its town.** `main` holds the island of 1628 BCE (high chronology, D36; the year was 1615 until 2026-11-19) and the town at Akrotiri from the outside, in one `index.html` of 166 kB. There is no plant, animal, person, interior, harbour or ship yet: the ground is bare and the town is empty.
 - **The town** (`docs/town/README.md`):
   - Its centre follows the excavated plan, redrawn from Dörrbecker's map on Wikimedia Commons (D22). Everything beyond the edge of the excavated walls is reconstruction by rule, to 9.95 ha.
   - It has 452 buildings: 19 excavated, 13 reconstructed inside the plan, 420 by rule.
@@ -26,7 +26,9 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
   - Edit E4 is to put back more land, as the first step of work order 003 (D29, closes O11).
   - Gemini Neon replaces Argon for Deep Research; reports go to `docs/research/neon/` (D30).
   - Chad confirmed how art is graded: Theran art B, art from elsewhere C (D26).
-  - The world's year moves earlier than 1615 BCE, to between about 1630 and 1620 BCE; the exact year is open (D32, O16). **The page and the records still say 1615 until it is chosen.**
+  - The world opens in 1628 BCE, not 1615 (D32, D36). The page, the tools and the living records say 1628, and `docs/WORLD_CLOCK.md` carries the corrections from the second X1 report. Decisions, work orders and research files keep the year they were written with.
+  - Thera's years run through the end: the damaged town, the eruption and the island it left are shown when the year reaches them (D37, amends D19).
+  - The layers are called Found, Inferred and Imagined (D38).
   - The viewer can move the date and time and jump to astronomical events; the sky is to be computed, and what grows is built with its yearly cycle (D33).
   - The year can be moved as well as the date, so that the world and the sky are seen to change; every thing is to carry the years it stands for (D34).
   - Every Gemini Deep Research prompt ends by asking for the report to be saved to the Google Drive folder `Thera Research` (D35), first tried on the rerun of T3c.
@@ -49,10 +51,7 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
    - **The page must be on the web first.** GitHub Pages is off for the fork. Turning it on is Chad's action (the command is below); the page is then at <https://chadjustice25.github.io/akrotiri-thera-abyssal-garden/>, which is the address the runbook's button opens. `.nojekyll` is in the repository so that Pages serves the files as they are.
    - Read from the code, and not yet tried by anyone: walking on touch is 0.7 of the keyboard's pace; looking up by more than about 34° while on foot takes off; an iPad held upright gets the page turned on its side; and there is no sound above the water yet. The runbook asks about each.
 3. **Chad: decisions and actions due.**
-   - **O16, the year the world opens in.** Suggested: 1628 BCE, the year of the Aniakchak II eruption, which every place shares, in the reign of Ammisaduqa at Babylon. Once chosen, one sweep changes `docs/WORLD_CLOCK.md` (with the corrections D32 lists), the page's menu, the records and the prompts for lanes not yet run.
-   - **O18, how far the year slider reaches**, and whether Thera's passes the end of the living town into the earthquake, the eruption and the buried island, which D19 kept out.
    - **The size budget.** A world with layers, seasons, a year slider, a computed sky, plants, people and interiors is unlikely to fit in one 256 kB page (166 kB are used). D11 says a newer decision changes the law when the work shows this; the engine order for layers and time is the place to measure it.
-   - **O13, the layers' names.** Suggested: Found, Inferred, Imagined.
    - **O14, whether the layers are built first**, as their own work order, while the plant research comes in. Leaning: yes. It would make the layers work order 003 and plants 004.
    - **D21, the Copernicus licence questions.** A fresh draft of the message, not sent, is in `docs/terrain/message-to-copernicus.md`, with where to send it. Chad is looking into it (2026-11-19). Rebuilding the land from NASA's NASADEM stays the fallback.
    - **O8, the excavation and the book.** A draft letter to the Akrotiri Excavations, not sent, is in `docs/town/letter-to-the-excavation.md`. Palyvou 2005 is not in Chad's library and can be bought; the same file says where. Chad decides on the letter this weekend.

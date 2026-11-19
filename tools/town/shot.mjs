@@ -8,7 +8,7 @@
 //   name            save a picture DIR/<name>.jpg after the step
 //   key             press this key once, e.g. "Digit7", "KeyL", "KeyT"
 //   hold, ms        hold these keys (e.g. ["KeyW", "ShiftLeft"]) for ms milliseconds
-//   look            [x, y, z, tx, ty, tz, onFoot]: put the camera there (y is a height above the sea of 1615 BCE)
+//   look            [x, y, z, tx, ty, tz, onFoot]: put the camera there (y is a height above the sea of 1628 BCE)
 //   above           with look: y is a height above the ground instead
 //   hour            the solar hour, at once
 //   run             JavaScript to run in the page

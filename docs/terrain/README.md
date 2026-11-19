@@ -1,6 +1,6 @@
 # The terrain record
 
-How the island of Thera in **1615 BCE** (high chronology, D16) is rebuilt from present-day elevation data: the datasets and their licences, every edit with its claims, every liberty, and how to make the data again. Written for work order 001 (`docs/tasks/001-terrain-and-sea.md`).
+How the island of Thera in **1628 BCE** (high chronology, D36; the year was 1628 BCE until 2026-11-19, and nothing in the build depends on the difference) is rebuilt from present-day elevation data: the datasets and their licences, every edit with its claims, every liberty, and how to make the data again. Written for work order 001 (`docs/tasks/001-terrain-and-sea.md`).
 
 Claim references are lane and row (`T1#24`, `T1b#40`, `T1c#7`), used only as corrected in `docs/research/verification/`. The numbers come from `docs/terrain/build-report.json`, which `tools/terrain/build.mjs` writes on every run.
 
@@ -52,7 +52,7 @@ cd source && npm run build          # then rebuild index.html (also: npm run ter
 - The build stops with an error if E4's added volume leaves 9.1–17.1 km³, if Pre-Kameni's summit reaches 260 m or its outline touches land, if the bay leaks to the open sea, or if the page's decoder (`source/src/world.js`) does not give back exactly the grid that was written.
 - Every parameter is in `tools/terrain/edits.json`. A new research result changes a number there, not the code.
 
-**The grid.** 640 × 640 cells of 40 m, centred on 36.405 N, 25.405 E: a square of 25.6 km. x is east, z is south, y is up, in metres, and y = 0 is the sea level of 1615 BCE. Each cell has a height and a rock class.
+**The grid.** 640 × 640 cells of 40 m, centred on 36.405 N, 25.405 E: a square of 25.6 km. x is east, z is south, y is up, in metres, and y = 0 is the sea level of 1628 BCE. Each cell has a height and a rock class.
 
 **The compact form** (54 kB, 71 kB as text in the page). Heights are stored in steps of 0.25 m, predicted from the cells already stored and written with an adaptive binary range coder. A coarse 160 m grid covers the whole square. The full 40 m cells are stored only where that grid is land or water shallower than 15 m. The step between storable heights grows with the local slope and with depth. On land the stored grid is within 0.35 m (rms) of the model, 3.5 m at worst on the steepest cliffs. Deep water is the coarse grid interpolated. The page decodes it in its own code at start; nothing is fetched.
 
@@ -72,10 +72,10 @@ In the order the build applies them. "Changed" is from the build report.
 | E6 | **The opening to the sea.** Today's strait between Thera and Therasia is low land again, with one narrow channel through it to the north-west. | T1#9–#11, T1b#49, T1b#52 | **T-L4** | channel 280 m wide, 3 m deep; low ground 45–80 m | counted in E4's volume |
 | E7 | **Pre-Kameni** (a modern label), the island in the bay: a low dome of black glassy andesite. | T1#13, T1#15, T1b#19, #39, #40, #42, #43, T1b correction 1 | B/C; shape and height **T-L5** | ellipse 5.46 × 3.8 km, long axis to the south-east; h = H(1 − r³); volume fixed at 2.4 km³ | 2.40 km³, summit 231 m, 16.3 km² |
 | E8 | **The Akrotiri terrace, with the ridge the town grew along.** Reshaped by work order 002 (2026-11-18). A crest runs north to south through the excavated walls; the ground is level for 22 m on each side of it and then falls away to east and west, by 9 m at most, and the fall dies out north of the excavated town. Along the crest the ground falls 3.5% towards the sea, so that streets drain that way (T2#11, T2#12). No harbour is cut: both candidates stay open, the embayment south of the site (T1c#17, #34) and Potamos to the east, where seismics found no bay (T1c#16, T1c correction 4). | T1#32, T1#35–#37, T1b#59, T1c#15–#17, #34; the ridge and the fall to the east: T2b#37, T2b#38 (A that they exist); the two levels: T2#19, T2#80, T2b#36 (A) | the form and every number: **T-L6** | radius 330 m; crest at x −140; 3.5% along it; 6% down each side | 0.38 km²; the ground at the site goes from 13.6 m to 24.5 m. At Xeste 3 the model gives 23.0 m (sourced: about 19.5 m above today's sea, so 23.1 m). At the east edge by Xeste 2 it gives 23.8 m (sourced there: a part-basement's floor at 21.7–21.8 m, and its room stood about 1 m above the road). |
-| E9b | **Profitis Ilias, checked.** The old basement keeps its shape; E3 strips 0.13 m at the summit. | T1#21, T1b#56, T1c#55 | B | — | summit 568.2 m above the 1615 sea (565 m above today's) |
+| E9b | **Profitis Ilias, checked.** The old basement keeps its shape; E3 strips 0.13 m at the summit. | T1#21, T1b#56, T1c#55 | B | — | summit 568.2 m above the 1628 sea (565 m above today's) |
 | rock | **Rock classes** per cell. | T1#23, T1b#43, T1#21, T1b#56, T1#12 | outlines **T-L7** | two outlines, two marble heights | land by class, km²: undivided volcanic 103.8; light-grey andesite 7.8; dark-grey andesite 11.0; black glassy andesite 16.3; phyllite and schist 3.0; marble 3.5 |
 
-The island in 1615 BCE: 145.4 km² of land (91.0 km² today), highest point 568.2 m.
+The island in 1628 BCE: 145.4 km² of land (91.0 km² today), highest point 568.2 m.
 
 ### Notes on single edits
 
@@ -83,12 +83,12 @@ The island in 1615 BCE: 145.4 km² of land (91.0 km² today), highest point 568.
 - The cap is 55 m, the most reported for the whole pile (T1c#1, T1c correction 1). Another source gives 50 m, recorded in `edits.json` as the alternative. No source gives more.
 - The rim value (36 m) sits below the 40 m reported for the rim and the 55 m for the caldera wall (T1c#7), because those are maxima.
 - The mean (15.5 m) and the volume (1.50 km³) come out close to what the digitised maps imply: 1.43 km³ on land, about 17 m (T1c#18, #19, the latter an inference).
-- The strip never takes more than 80% of a cell's height above the sea, so **the coast does not move** (T-L14). The coastal fans are not part of the 1615 BCE ground (T1c correction 6), but where the shore lay under them is not known.
+- The strip never takes more than 80% of a cell's height above the sea, so **the coast does not move** (T-L14). The coastal fans are not part of the 1628 BCE ground (T1c correction 6), but where the shore lay under them is not known.
 - **At the town:** a 1978 conference report gives a fall of fine pumice of about 1–2 cm, then an ash fall of about 1–2 m over the town, then the main pumice as a base surge (T1c#22, B, to verify; no author is named for the figures). It is recorded in `edits.json` (`E3.atTown`) and does not set the strip depth, because it conflicts with today's description of metres of first-phase pumice (T1c correction 2). The model strips 20.1 m at the town site, which is its own liberty (T-L1); today's ground there is at 26–40 m (T1c#54).
 - Not used: Mavrorachidi's ~25 m, which is depth to bedrock at one core (T1 correction 1); the ~32 m average, an inference (T1 correction 2).
 - Archangelos hill (T1#43) has no zone: its position was not checked.
 
-**E4.** How the 13.16 km³ is measured: the volume between the restored surface and today's surface (land and sea floor, in the 1615 datum) over the restored area, including the low ground of E6 and the submarine slope outside the new coast. Of that, 4.76 km³ stands above the 1615 sea. **This is the source's own measure.** The full paper behind T1#14 was read on 2026-11-18 (`docs/research/verification/T1.md`, addendum): Karátson et al. take the volume between their restored surface and the present-day one, and their present-day model includes the sea floor, so the two figures are comparable. Two things follow. The "up to 3 km³" that may have sunk is inside their 17.1 km³, not on top of it. And 13.16 km³ sits below both the value they prefer (17.1 km³, the largest land that fits) and their separate estimate from rock fragments (14.4 ± 0.8 km³); raising it would mean a smaller bay or higher restored ground, which is open for Chad to decide. The raising of today's caldera floor to the bay floor (9.81 km³) is not counted: that ground was bay, not ring island.
+**E4.** How the 13.16 km³ is measured: the volume between the restored surface and today's surface (land and sea floor, in the 1628 datum) over the restored area, including the low ground of E6 and the submarine slope outside the new coast. Of that, 4.76 km³ stands above the 1628 sea. **This is the source's own measure.** The full paper behind T1#14 was read on 2026-11-18 (`docs/research/verification/T1.md`, addendum): Karátson et al. take the volume between their restored surface and the present-day one, and their present-day model includes the sea floor, so the two figures are comparable. Two things follow. The "up to 3 km³" that may have sunk is inside their 17.1 km³, not on top of it. And 13.16 km³ sits below both the value they prefer (17.1 km³, the largest land that fits) and their separate estimate from rock fragments (14.4 ± 0.8 km³); raising it would mean a smaller bay or higher restored ground, which is open for Chad to decide. The raising of today's caldera floor to the bay floor (9.81 km³) is not counted: that ground was bay, not ring island.
 
 **E5.** The bay is found, not drawn: all of today's caldera water (and the Kameni islands) that can be reached from a seed point without crossing E4's land or E6's low ground. The work order's "north part of today's caldera only" is met by where E4's north edge is drawn: on the Thera side the bay ends 1.7 km south of the latitude of Fira and 1.7 km north of Athinios (T1#19, T1#20).
 
@@ -103,7 +103,7 @@ The island in 1615 BCE: 145.4 km² of land (91.0 km² today), highest point 568.
 
 **E7.** The first-phase vent is "1–2 km west of modern Fira" on Pre-Kameni (T1b#39). In this model the point 2 km west of Fira is on the dome (at 0.79 of its radius); the point 1 km west is in the lagoon beside it. A dome reaching further east would touch Skaros. The work order's paraboloid (5 km across, 245 m) fills the bay almost from wall to wall, so the dome here is an ellipse with a flatter top (exponent 3), which keeps open water on every side at the same volume.
 
-**Rock classes: one departure from the work order.** The order lists phyllite and schist at Athinios. T1#21 has that basement cropping out *in the caldera wall* at Athinios, and T1#20 says the eruption's collapse exhumed that wall. In 1615 BCE it lay under the restored land, so no phyllite is drawn there. It is drawn on Profitis Ilias and Mesa Vouno, below the marble.
+**Rock classes: one departure from the work order.** The order lists phyllite and schist at Athinios. T1#21 has that basement cropping out *in the caldera wall* at Athinios, and T1#20 says the eruption's collapse exhumed that wall. In 1628 BCE it lay under the restored land, so no phyllite is drawn there. It is drawn on Profitis Ilias and Mesa Vouno, below the marble.
 
 ## 4. Liberties
 
@@ -111,7 +111,7 @@ Departures from the evidence, or choices where there is none. They were recorded
 
 | # | Liberty | Why | Where |
 |---|---|---|---|
-| T-L1 | The thickness of the eruption deposits between the places where it is measured. | No thickness map could be opened; without stripping, the land of 1615 BCE would wear the eruption's ash. | E3 |
+| T-L1 | The thickness of the eruption deposits between the places where it is measured. | No thickness map could be opened; without stripping, the land of 1628 BCE would wear the eruption's ash. | E3 |
 | T-L2 | The shape of the restored ring land: a membrane between the surviving land, a rim crest and an outer coast, then a stream-erosion model for gullies. | Its volume range and rim height are sourced (T1#14, T1b#51); its surface is gone. | E4 |
 | T-L3 | The bay's depth (5 m), its south shore, and Therasia's east cliffs as its west wall. | "No more than a few metres" (T1b#46) is contested and no outline is published. | E5 |
 | T-L4 | The channel's width (280 m), depth (3 m) and course, and the height of the low ground beside it. | Only "low, narrow, if any" and the upper bound of 1 km are sourced. | E6 |
@@ -122,7 +122,7 @@ Departures from the evidence, or choices where there is none. They were recorded
 | T-L9 | The day: late May (the sun at ecliptic longitude 65°), with the Earth's tilt of the time, 23.89°. Time is local solar time. | The season is open between spring and early summer (T3). The tilt is computed from Laskar's 1986 series and is not from a research lane. | `source/src/world.js` |
 | T-L10 | Calm mornings and a north breeze that builds through the afternoon. | Today's summer Etesians carried back (T1#50, grade C). | `WIND` in `world.js` |
 | T-L11 | The amount of haze. | A clear Aegean summer day was chosen; nothing dates the air. | `BM` in `world.js` |
-| T-L12 | The stars are a random field, and there is no moon. | The real sky of 1615 BCE needs a star catalogue and precession: a later order. | `W_SKY` |
+| T-L12 | The stars are a random field, and there is no moon. | The real sky of 1628 BCE needs a star catalogue and precession: a later order. | `W_SKY` |
 | T-L13 | Sea level 3.6 m below today's, and the land and sea-floor data joined with no offset between their height references. | Two estimates disagree (3.6 m and under 0.5 m) and neither is measured on Santorini (T1c sea-level note, correction 12). It stays a parameter. | E1 |
 | T-L14 | The coastline is today's, moved only by the sea-level change. The sea floor is today's too. | The pre-eruption coast is not known, and the harbour has not been found. | E3, E8 |
 | T-L15 | Detail finer than the 40 m data: gullies and spurs on slopes, ledges on cliffs, blocky lava on Pre-Kameni, sand waves under water. | It has zero mean, stays within a few metres, and fades out at the shore, so it does not contradict the data. | `W_BAKEH` |
