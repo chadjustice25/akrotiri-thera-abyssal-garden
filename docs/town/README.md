@@ -228,7 +228,7 @@ Departures from the evidence, or choices where there is none. They are numbered 
 
 The viewer swims, flies and walks (D12). Flying down onto land on purpose (`Q` or `X`, or flying forwards and downwards) puts the viewer on foot: the camera follows the ground, the terraces and the roofs at eye height, and anything higher than a step stops it. `E` or `Space` takes off. Walking out of one's depth becomes swimming, and a swimmer who touches bottom in the shallows walks out. In the air the houses are solid from every side: a wall stops the camera and a roof carries it. On a touch screen: fly down onto the ground to walk, and look well up while moving to take off.
 
-**Tested by Claude on 2026-11-18** in `dev.html`, in headless Chrome on this Mac's GPU, with `tools/town/shot.mjs` pressing the page's own keys and reading the camera's state after each step. Nobody has yet walked it by hand.
+**Tested by Claude on 2026-11-18** in `dev.html`, in headless Chrome on this Mac's GPU, with `tools/town/shot.mjs` pressing the page's own keys and reading the camera's state after each step. Whether Chad walked it by hand in his review is not recorded.
 
 | Step | Keys | What the state showed |
 |---|---|---|
@@ -245,7 +245,9 @@ The touch controls were kept and extended, and **nobody has tried them on a devi
 
 ## 9. What was looked at
 
-**Claude (Fable 5.2) looked at these pictures on 2026-11-18.** They are from `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60`, which PASSed with every view at 60 fps and full resolution, and from extra pictures taken with `tools/town/shot.mjs`. **Chad has not looked at any of them yet.** The nine views are at <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L>.
+**Claude (Fable 5.2) looked at these pictures on 2026-11-18.** They are from `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60`, which PASSed with every view at 60 fps and full resolution, and from extra pictures taken with `tools/town/shot.mjs`. The nine views are at <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L>.
+
+**Chad reviewed the branch later the same day,** before any merge, and said: "That's looking excellent for now." He was given the stills, the page itself and the record to review from; he did not say which he used, and did not report on the views one by one. The table below is Claude's look, not his.
 
 | View | What it shows | What was seen |
 |---|---|---|
