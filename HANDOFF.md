@@ -1,11 +1,11 @@
 # Handoff
 
-As of 2026-11-18, after work order 001 was merged. Only Chad's session edits this file. (On 2026-11-18 Chad asked the session that built work order 001 to do its integration, so that session wrote this version.)
+As of 2026-11-18, after work order 001 was merged and work order 002 was drafted. Only Chad's session edits this file. (On 2026-11-18 Chad asked the session that built work order 001 to do its integration, so that session wrote this version.)
 
 ## Where things stand
 - **The world is now Thera.** `main` holds the island of 1615 BCE (high chronology, D16): land, sea, sky and light, at real scale, in one `index.html` of 132 kB. There is no town, plant, animal or person yet, so the ground is bare. Upstream's underwater garden is gone.
 - **Repository:** <https://github.com/chadjustice25/akrotiri-thera-abyssal-garden>, public, forked from `Noniv/abyssal-garden` (MIT). Remotes are `origin` (the fork) and `upstream` (Noniv).
-- **Not pushed.** Local `main` is ahead of `origin/main` (`abbdf21`) by work order 001 (merge `7651a39`) and the integration commit after it. The branch `task/001-terrain-and-sea` still exists locally.
+- **Not pushed.** Local `main` is ahead of `origin/main` (`abbdf21`) by work order 001 (merge `7651a39`) and the integration commits after it. The branch `task/001-terrain-and-sea` still exists locally.
 - **Work order 001** (`docs/tasks/001-terrain-and-sea.md`) has its Result and Review filled in. The terrain record is `docs/terrain/README.md`: datasets and licences, edits E0–E9 with their claims, liberties T-L1 to T-L17, and how to rebuild the data.
 - **Checks on `main`:** `checks/build.sh` PASSes at 130 kB of the 256 kB budget. `node checks/views.mjs --min-fps 55 --min-scale 60` PASSes with every view at 60 fps and full resolution. The latest pictures are in **Thera Views**, <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L> (version 6).
 - **Who looked:** Chad ran the page on the Mac on 2026-11-18 and said it "looks great and the controls are pretty intuitive". Claude looked at the six stills, the six times of day and the surface crossing. Nobody has tried touch on a device.
@@ -15,16 +15,15 @@ As of 2026-11-18, after work order 001 was merged. Only Chad's session edits thi
 ## Next
 1. **Chad: push** (command below). The fork is public, so the push publishes the island and the data notices.
 2. **Chad: decisions now due.**
-   - **O6, the size budget.** The first real figure is 132 kB, of which about 71 kB is terrain data. The town, plants and people come on top of that.
    - **O4, upstream's funding link.** The menu still shows Noniv's GitHub and Ko-fi buttons. It is due "before the page is shown to anyone", and the push shows it.
    - **The reading of grade A for landscape claims** (T1 check, correction 15): still waiting to become a decision.
-   - **E4's volume measure.** The restored land adds 13.16 km³ measured against today's surface, inside T1#14's 9.1–17.1 km³. Only 4.76 km³ of it stands above the sea. The source's abstract does not say which measure it used; reading the full paper would settle it.
-   - **Licence questions for a lawyer before any release** (T1c licence verdict): whether a heavily edited reconstruction still counts as "Copernicus WorldDEM-30" (the project assumes it does), and whether accepting the licence needs any step beyond downloading.
-3. **Next build: work order 002, the town of Akrotiri.** It is not written yet.
-   - The ground is ready: edit E8 made a terrace at the excavation site (x −135, z 5937 in the world's metres; a rise at 24 m falling to the sea), and key `1` looks at it.
-   - It builds from T2 (plan, buildings, rooms) and T6 (colour), as checked. It should also add walking (D12): flying and swimming are in, and walking waits for ground with buildings to collide with.
-   - The harbour is not located. Two candidates stay open: the embayment south of the site, and Potamos (T1c#16, #17, #34).
-   - Like 001, it runs in a fresh session on Fable 5.2 at effort high (D14). Lint it before a worker sees it.
+   - **E4's volume: the measure is settled, the size is open.** The full paper was read (`docs/research/verification/T1.md`, addendum): the source measures its 9.1–17.1 km³ the way the build does, against today's surface with the sea floor included. The build's 13.16 km³ is inside the range but below the source's preferred 17.1 km³ and its rock-fragment estimate of 14.4 ± 0.8 km³. Raising it means a smaller bay or higher restored ground: Chad's call.
+   - **The two licence questions, without a lawyer** (T1c licence verdict: does an edited reconstruction still count as "Copernicus WorldDEM-30", and does accepting the licence need more than downloading?). The project already takes the safe course on both: it treats the data as covered and carries every notice. Options, cheapest first: ask the licensor in writing (the Copernicus Data Space help centre, which needs a free account); or swap the land data for NASA's NASADEM, which is shared without restriction, by a change to `tools/terrain/fetch.mjs` and a rebuild; or pay for one fixed-fee consultation before any sale. None is needed before the push.
+   - **Work order 002's three decisions** (below).
+3. **Next build: work order 002, the town of Akrotiri** (`docs/tasks/002-town-of-akrotiri.md`, a draft that passes harness lint). It builds the town from outside on the E8 terrace, from the checked T2 claims, and adds walking (D12).
+   - **It waits for Chad to confirm three decisions:** the street plan is drawn for this world as a liberty, because no published plan may be traced; the town covers about 10 ha (the smaller published estimate); and this order builds outsides only, with nobody in them.
+   - Once confirmed: set its status line to open, record the decisions in `docs/DECISIONS.md`, and run it in a fresh session on Fable 5.2 at effort high (D14), in its own worktree.
+   - Buying Palyvou's 2005 book on Akrotiri's architecture would settle most of the order's "to verify" numbers (T2 verification, §4).
 4. **Later orders, noted by 001:** plants (the bare ground is liberty T-L16), the real night sky (T-L12), sound above the water, a cliff form for the restored southern wall, and sharper shadows up close.
 
 ## How to try the page

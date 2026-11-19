@@ -11,7 +11,7 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 
 ## Work order 001 (2026-11-18)
 - **Stage by path, never `git add -A`.** The integrator session and its research agents wrote into the same checkout while the worker built. One `git add -A` swept two of their files into the worker's commit, and it had to be redone. Give a worker its own worktree, or have it add only the paths its order owns.
-- **A work order's Result section sat in a path the order forbade** (`docs/tasks/`), so the worker could only give the Result in its report. Either let a worker fill in the Result of its own order, or say in the order that the Result comes back in the report.
+- **A work order's Result section sat in a path the order forbade** (`docs/tasks/`), so the worker could only give the Result in its report. The harness means it that way: lint refuses an order that owns its own file (`owns-spec`), so that no worker can change its gate. Say in each order that the Result comes back in the final report and the integrator pastes it in.
 - **Keeping every figure as a parameter paid off.** The T1c check landed in the middle of the build, and its corrections went into `tools/terrain/edits.json` without a change to the method.
 - **The build strips comments, so a licence notice in a source file never reaches `index.html`.** Notices that must travel with the page go in the menu text. Copy them character for character from the checked source: the first pass wrote "(c)" for "©" and reworded a sentence.
 - **Tell the range a source gives from the measure behind it.** E4's volume fits T1#14's range by one measure (against today's surface) and misses it by another (above sea level only), and the abstract does not say which it used.

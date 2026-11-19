@@ -1,5 +1,5 @@
 # 001-terrain-and-sea: Thera's land, sea and sky in 1615 BCE
-**Status:** open · **Branch:** `task/001-terrain-and-sea`
+**Status:** merged · **Branch:** `task/001-terrain-and-sea`
 
 ```harness-spec
 {
@@ -7,7 +7,7 @@
  "id": "001-terrain-and-sea",
  "family": "code",
  "task_type": "procedural-world",
- "status": "open",
+ "status": "merged",
  "assignee": {"person": "Chad", "agent": "claude-code", "model": "claude-fable-5-2"},
  "branch": "task/001-terrain-and-sea",
  "owns": [
