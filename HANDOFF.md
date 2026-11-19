@@ -26,6 +26,7 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
   - Edit E4 is to put back more land, as the first step of work order 003 (D29, closes O11).
   - Gemini Neon replaces Argon for Deep Research; reports go to `docs/research/neon/` (D30).
   - Chad confirmed how art is graded: Theran art B, art from elsewhere C (D26).
+  - The world is shown in three cumulative layers (found; what the evidence points to; what is there for the experience), and changing layer fades things in and out without a reload or a pause (D31, closes O12).
 - **Research:** X1, T1, T1b, T1c, T2, T2b and T3–T7 are in `docs/research/claude/`, each checked in `docs/research/verification/`. T1c is applied to the terrain; T2 and T2b to the town.
 - **Two kinds of data in the page are not MIT.**
   - The terrain stays under the Copernicus WorldDEM-30 licence and CC BY 4.0 (EMODnet).
@@ -36,14 +37,16 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
 1. **Chad: start the plant research** (D26). Three lanes go to Gemini Neon (D30) and can run at the same time: T3b (what grew where, and how thickly), T3c (how each plant looked, and its state in late May) and T3d (plants in Aegean art, on Thera and elsewhere).
    - The steps are in `docs/research/RUNBOOK-003-plants.md`. The Research Desk (below) lists the three lanes first, with a Copy button each.
    - When the reports are in, Claude checks each against its sources (`docs/research/verification/T3b.md`, `T3c.md`, `T3d.md`) and then drafts `docs/tasks/003-…`. Nothing is built from a report that has not been checked. The order's first step is to raise the land that edit E4 puts back (D29).
-   - Nobody has run a lane on Neon yet. The runbook says what to do if its settings differ from Argon's.
+   - **Where the lanes stand on 2026-11-19:** T3d is in (`docs/research/neon/T3d_Neon.md`) and its check was started. T3c's first run handed back the prompt and has to be run again. T3b is not in. Chad reports that Deep Research runs fail fairly often.
+   - A second X1 report, from Neon, is also in (`docs/research/neon/X1_Neon.md`). It is being compared with the adopted world clock, which stays decided: anything it turns up is a proposal for Chad.
    - Art never places a plant on the island by itself: Theran art is grade B for Thera, and art from elsewhere is grade C (D26).
 2. **Chad: the touch test.** Nobody has tried the page with fingers. Chad and his husband are to try it on an iPad.
    - The runbook is the **Thera Test Flight** artifact, <https://claude.ai/artifact/PQa2MRqzD4dtzQiUb2DvdE>: twelve missions, three answers each, and a report to copy and paste back. It is private until Chad shares it from its Share menu.
    - **The page must be on the web first.** GitHub Pages is off for the fork. Turning it on is Chad's action (the command is below); the page is then at <https://chadjustice25.github.io/akrotiri-thera-abyssal-garden/>, which is the address the runbook's button opens. `.nojekyll` is in the repository so that Pages serves the files as they are.
    - Read from the code, and not yet tried by anyone: walking on touch is 0.7 of the keyboard's pace; looking up by more than about 34° while on foot takes off; an iPad held upright gets the page turned on its side; and there is no sound above the water yet. The runbook asks about each.
 3. **Chad: decisions and actions due.**
-   - **O12, the three layers.** Chad's idea of 2026-11-19: show the world as what is known, then with careful inference added, then in full. A proposal is in `docs/DECISIONS.md`, with three points for Chad to settle. It has to be decided before work order 003 is written, because each plant needs its layer from the start.
+   - **O13, the layers' names.** Suggested: Found, Inferred, Imagined.
+   - **O14, whether the layers are built first**, as their own work order, while the plant research comes in. Leaning: yes. It would make the layers work order 003 and plants 004.
    - **D21, the Copernicus licence questions.** A fresh draft of the message, not sent, is in `docs/terrain/message-to-copernicus.md`, with where to send it. Chad is looking into it (2026-11-19). Rebuilding the land from NASA's NASADEM stays the fallback.
    - **O8, the excavation and the book.** A draft letter to the Akrotiri Excavations, not sent, is in `docs/town/letter-to-the-excavation.md`. Palyvou 2005 is not in Chad's library and can be bought; the same file says where. Chad decides on the letter this weekend.
    - **O5, the layout for several places.** Left open by Chad until a second place is chosen.

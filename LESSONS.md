@@ -9,6 +9,12 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 - **From Uruk: grade evidence by its distance in time, not only by whether it exists.** State how far each piece of evidence is from the target moment. A text or image made centuries later is grade C, even when it is famous.
 - **From Uruk and unghost: reports carry errors that only a check against the sources catches.** Nothing from a report is adopted until its claim is checked (`docs/research/verification/`).
 
+## Research on Gemini Neon (2026-11-19)
+- **A Deep Research run can hand back your own prompt.** Lane T3c's first "report" was 7 KB: the prompt, under the line "I have all the information to proceed for meta planning", with no link and no table row. Before saving a report, look for links and numbered rows. The Research Desk counts both.
+- **Deep Research runs fail fairly often** (Chad). Plan for a lane to need a second run, and never let a build wait on a single one.
+- **Neon finished the long X1 prompt** (9.5 KB, 12 sections) that was written to test Argon's limit. The plant prompts were kept under 7 KB all the same; the X1 check says whether the long report is sound.
+- **A report belongs in the folder named after the model that wrote it** (`docs/research/neon/`). The first Neon reports were saved in `argon/` because the new folder had not yet been merged into Chad's checkout: merge the instructions before the work they describe is started.
+
 ## Work order 002 (2026-11-18)
 - **A coordinate read by eye off a picture is not data.** The first outlines were typed in from crops of the plan and were wrong by 2–5 m in places, some by a whole grid square. Take geometry from the source by rule (here: the hull of the plan's own walls inside a marked region), and have the tool print what it measured.
 - **A simplified plan gives wall fragments, not buildings.** Turning fragments into buildings is interpretation. Budget for it, and record which edges stand on a drawn wall and which are inferred.

@@ -75,6 +75,7 @@ Tell Claude: **"T3b, T3c and T3d are in `docs/research/neon/`."**
 |---|---|
 | **Neon stalls** or stops partway | Mark the lane **Stalled** on the Desk and open **If it stalls: run it in two parts**. Run each part in its own new chat and save them as the Desk says (`T3ba`, `T3bb`, and so on). |
 | **The chat dropped from Neon to another model** (the fault that stopped the first round under Argon, D13) | Do not save that report as Neon's. Tell Claude which lane, and Claude runs it as a research agent in the session, as lanes T1 to T7 were. |
+| **The "report" is your own prompt, handed back** (it happened to T3c: 7 KB, no links) | That run failed. Start the lane again in a new chat. |
 | **The report is short, or has no links** | Ask once in the same chat: "Please give the full report in the format the prompt asks for, with every table." If it is still thin, treat it as a stall. |
 | **Gemini asks to edit the plan** | Start the research without editing. The prompt already says what is wanted. |
 | **Neon has no Deep Research, or the settings look different** | Stop and tell Claude what the choices are. Do not run a lane as an ordinary chat: the reports need the sources Deep Research opens. |
