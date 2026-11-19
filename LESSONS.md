@@ -12,7 +12,8 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 ## Research on Gemini Neon (2026-11-19)
 - **A Deep Research run can hand back your own prompt.** Lane T3c's first "report" was 7 KB: the prompt, under the line "I have all the information to proceed for meta planning", with no link and no table row. Before saving a report, look for links and numbered rows. The Research Desk counts both.
 - **Deep Research runs fail fairly often** (Chad). Plan for a lane to need a second run, and never let a build wait on a single one.
-- **Neon finished the long X1 prompt** (9.5 KB, 12 sections) that was written to test Argon's limit. The plant prompts were kept under 7 KB all the same; the X1 check says whether the long report is sound.
+- **Neon finished the long X1 prompt** (9.5 KB, 12 sections) that was written to test Argon's limit. It passed on form (all 12 sections, 93 table rows) but was thinner than the Claude agent's report from the same prompt: 65 distinct claims against 91, and "could not verify" for much of the Levant, Cyprus and the calendars. The plant prompts were kept under 7 KB all the same.
+- **A second report from a different researcher is worth having.** No source in Neon's X1 was made up, but it reversed one claim and used one superseded date; and it also turned up two points the first report and its check had passed over (O15).
 - **A report belongs in the folder named after the model that wrote it** (`docs/research/neon/`). The first Neon reports were saved in `argon/` because the new folder had not yet been merged into Chad's checkout: merge the instructions before the work they describe is started.
 
 ## Work order 002 (2026-11-18)
