@@ -26,6 +26,8 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
   - Edit E4 is to put back more land, as the first step of work order 003 (D29, closes O11).
   - Gemini Neon replaces Argon for Deep Research; reports go to `docs/research/neon/` (D30).
   - Chad confirmed how art is graded: Theran art B, art from elsewhere C (D26).
+  - The world's year moves earlier than 1615 BCE, to between about 1630 and 1620 BCE; the exact year is open (D32, O16). **The page and the records still say 1615 until it is chosen.**
+  - The viewer can move the date and time and jump to astronomical events; the sky is to be computed, and what grows is built with its yearly cycle (D33).
   - The world is shown in three cumulative layers (found; what the evidence points to; what is there for the experience), and changing layer fades things in and out without a reload or a pause (D31, closes O12).
 - **Research:** X1, T1, T1b, T1c, T2, T2b and T3–T7 are in `docs/research/claude/`, each checked in `docs/research/verification/`. T1c is applied to the terrain; T2 and T2b to the town.
 - **Two kinds of data in the page are not MIT.**
@@ -37,7 +39,7 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
 1. **Chad: start the plant research** (D26). Three lanes go to Gemini Neon (D30) and can run at the same time: T3b (what grew where, and how thickly), T3c (how each plant looked, and its state in late May) and T3d (plants in Aegean art, on Thera and elsewhere).
    - The steps are in `docs/research/RUNBOOK-003-plants.md`. The Research Desk (below) lists the three lanes first, with a Copy button each.
    - When the reports are in, Claude checks each against its sources (`docs/research/verification/T3b.md`, `T3c.md`, `T3d.md`) and then drafts `docs/tasks/003-…`. Nothing is built from a report that has not been checked. The order's first step is to raise the land that edit E4 puts back (D29).
-   - **Where the lanes stand on 2026-11-19:** T3d is in (`docs/research/neon/T3d_Neon.md`) and checked (`docs/research/verification/T3d.md`): usable with fifteen corrections, no source made up, but 57 of its 153 rows could not be checked because their sources would not open. Its sizes of rooms and friezes are not to be used yet. T3c's first run handed back the prompt and has to be run again. T3b is not in. Chad reports that Deep Research runs fail fairly often.
+   - **Where the lanes stand on 2026-11-19:** T3d is in (`docs/research/neon/T3d_Neon.md`) and checked (`docs/research/verification/T3d.md`): usable with fifteen corrections, no source made up, but 57 of its 153 rows could not be checked because their sources would not open. Its sizes of rooms and friezes are not to be used yet. T3c's first run handed back the prompt and has to be run again, with its prompt as changed on 2026-11-19 (it now asks for each plant's whole year). T3b is not in. Chad reports that Deep Research runs fail fairly often.
    - A second X1 report, from Neon, is also in (`docs/research/neon/X1_Neon.md`). It was compared with the adopted world clock (`docs/research/verification/X1_Neon.md`). They agree on what matters and the clock stays decided, but two points weaken the reason given for 1615 BCE (O15).
    - Art never places a plant on the island by itself: Theran art is grade B for Thera, and art from elsewhere is grade C (D26).
 2. **Chad: the touch test.** Nobody has tried the page with fingers. Chad and his husband are to try it on an iPad.
@@ -45,7 +47,8 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
    - **The page must be on the web first.** GitHub Pages is off for the fork. Turning it on is Chad's action (the command is below); the page is then at <https://chadjustice25.github.io/akrotiri-thera-abyssal-garden/>, which is the address the runbook's button opens. `.nojekyll` is in the repository so that Pages serves the files as they are.
    - Read from the code, and not yet tried by anyone: walking on touch is 0.7 of the keyboard's pace; looking up by more than about 34° while on foot takes off; an iPad held upright gets the page turned on its side; and there is no sound above the water yet. The runbook asks about each.
 3. **Chad: decisions and actions due.**
-   - **O15, the world clock after the second X1 report.** The destructive earthquake may have come months to several years before the eruption, not 20–90 days, and the newest radiocarbon model's 95.4% range reaches back to 1618 BC. Leaning: keep 1615 BCE, correct the reason given for it, and add the newer figures. Nothing in the clock has been changed.
+   - **O16, the exact year.** Suggested: 1628 BCE, the year of the Aniakchak II eruption, which every place shares. Once chosen, one sweep changes `docs/WORLD_CLOCK.md` (with the corrections D32 lists), the page's menu, the records and the prompts for lanes not yet run.
+   - **O17, how far the date can be moved and what moves with it.** Leaning: the sky, light, weather and plants move; the town and its people stay in the world's year.
    - **O13, the layers' names.** Suggested: Found, Inferred, Imagined.
    - **O14, whether the layers are built first**, as their own work order, while the plant research comes in. Leaning: yes. It would make the layers work order 003 and plants 004.
    - **D21, the Copernicus licence questions.** A fresh draft of the message, not sent, is in `docs/terrain/message-to-copernicus.md`, with where to send it. Chad is looking into it (2026-11-19). Rebuilding the land from NASA's NASADEM stays the fallback.
@@ -58,7 +61,7 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
    - **Interiors and wall paintings** (lane T6; image rights, D6). The size budget is the first hard decision here: the page is 166 kB of 256 kB (D11, D17).
    - **Marking and labelling what has been found** (D25).
    - **A second pass on the town**, when the book or the excavation's plan arrives. It would close liberties A-L3, A-L6, A-L7, A-L10 and A-L12, and should add the drain and the cobbles that are sourced and not yet shown (A-L14).
-   - **The real night sky** (liberty T-L12). Chad, 2026-11-18: it is to be corrected the way Beyond the Gates of Uruk's sky is being. That method computes the sky for the date and place (`~/Developer/beyond-gates-uruk/docs/research/2026-10-19-sky-ephemeris.md`); Uruk's work was still in progress when he said this. Thera's one-file law means a star catalogue has to fit inside the page.
+   - **The sky and the calendar** (D33; liberty T-L12): a computed sky, a date and time the viewer can move, seasons, and jumps to eclipses and other events. Chad, 2026-11-18: the sky is to be corrected the way Beyond the Gates of Uruk's is being. That method computes the sky for the date and place (`~/Developer/beyond-gates-uruk/docs/research/2026-10-19-sky-ephemeris.md`); Uruk's work was still in progress when he said this. Thera's one-file law means a star catalogue has to fit inside the page.
    - **Also noted by 001:** sound above the water, and a cliff form for the restored southern wall.
 5. **The town's weaknesses, for whoever works on it next** (`docs/town/README.md` §9):
    - The excavated part looks sparser than the reconstruction round it.

@@ -28,10 +28,10 @@ Added 2026-11-18. **The step-by-step runbook is `RUNBOOK-003-plants.md`**, and t
 | Lane | Prompt | Save the report as | What it settles |
 |---|---|---|---|
 | **T3b** What grew where on Thera, and how thickly | `prompts/T3b-vegetation-cover.md` | `neon/T3b_Neon.md` | Where fields, groves, scrub and bare ground go, and how dense each is |
-| **T3c** How each plant looked: size, form, colour and season | `prompts/T3c-plant-forms-and-seasons.md` | `neon/T3c_Neon.md` | The shape and colour of every plant to be built, as it stands in late May, and which modern plants must not appear |
+| **T3c** How each plant looked: size, form, colour and season | `prompts/T3c-plant-forms-and-seasons.md` | `neon/T3c_Neon.md` | The shape and colour of every plant to be built, through the whole year, and which modern plants must not appear |
 | **T3d** Plants in Aegean art, on Thera and elsewhere | `prompts/T3d-plants-in-aegean-art.md` | `neon/T3d_Neon.md` | What the painters and potters show, and what that can and cannot prove |
 
-They follow lane T3 and its check, share its source rules and report format word for word, and add one line to the grades: a plant shown only in the art of another Aegean place is grade C for Thera. Each is under 7 KB.
+They follow lane T3 and its check, share its source rules and report format word for word, and add one line to the grades: a plant shown only in the art of another Aegean place is grade C for Thera. T3b and T3d are under 7 KB; T3c, changed on 2026-11-19 to ask for the whole year (D33), is 7.3 KB.
 
 ## Steps (Chad), for each lane
 

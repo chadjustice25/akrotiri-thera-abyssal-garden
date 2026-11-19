@@ -11,10 +11,12 @@ Allow about ten minutes of your time to start them, then the wait while Neon wor
 | Lane | It answers | Prompt file | Save the report as |
 |---|---|---|---|
 | **T3b** | What grew where on the island, and how thickly: fields, terraces, groves, scrub, bare ground | `prompts/T3b-vegetation-cover.md` | `neon/T3b_Neon.md` |
-| **T3c** | How each plant looked: size, form, colour, and its state in late May. Also which modern plants must not appear | `prompts/T3c-plant-forms-and-seasons.md` | `neon/T3c_Neon.md` |
+| **T3c** | How each plant looked: size, form, colour, and its state in every season. Also which modern plants must not appear | `prompts/T3c-plant-forms-and-seasons.md` | `neon/T3c_Neon.md` |
 | **T3d** | Plants in Aegean art, on Thera and elsewhere, and how far the painters can be trusted | `prompts/T3d-plants-in-aegean-art.md` | `neon/T3d_Neon.md` |
 
-Each prompt is under 7 KB. Argon stalled on longer ones; whether Neon does is not known.
+T3b and T3d are under 7 KB, the size Argon stalled past. T3c is 7.3 KB: Neon finished the 9.5 KB X1 prompt, so that is taken as safe.
+
+**T3c's prompt changed on 2026-11-19.** Its first run failed, and the world's date can now be moved (D33), so it asks for each plant's whole year, not only late May. Copy it again from the Desk or the file before running it; do not reuse a copy from before.
 
 ## The easy way: the Research Desk (iPad or Mac)
 
