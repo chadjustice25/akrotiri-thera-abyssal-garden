@@ -1,0 +1,95 @@
+{
+  "about": "The town at Akrotiri in 1615 BCE (work order 002): every rule and number the town is built from, each with its claim references (lane#row, used only as corrected in docs/research/verification/) and grade, or a liberty number (A-L…, listed in docs/town/README.md). A later research result changes a number here, not the code. Positions marked Px are pixels on the plan (2,075 x 3,345); all others are [x, z] in metres from 36.405 N, 25.405 E (x east, z south), the terrain's frame.",
+  "credit": {
+    "plan": "Excavated walls of Akrotiri digitised, rescaled, georeferenced and reinterpreted from \"Akrotiri in the Bronze Age, about 1600 B.C.\" (File:Map Akrotiri 1600 BC-en.png) by Maximilian Dörrbecker, Wikimedia Commons, https://commons.wikimedia.org/wiki/File:Map_Akrotiri_1600_BC-en.png, licensed CC BY-SA 2.5 (https://creativecommons.org/licenses/by-sa/2.5/). Dörrbecker drew it from a Thera Foundation web map (2005) and other sources. This derived data is licensed CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).",
+    "position": "The plan is placed on the centre of the modern shelter over the site, measured from OpenStreetMap (way 299988161), © OpenStreetMap contributors, Open Database License (https://www.openstreetmap.org/copyright)."
+  },
+  "plan": {
+    "claims": [
+      "T2b#1",
+      "T2b#2",
+      "T2b#3",
+      "T2b#4",
+      "T2b#5",
+      "T2b#26",
+      "T2b#30",
+      "T2b#31",
+      "T2b#32",
+      "T2b#33"
+    ],
+    "corrections": "T2b verification, corrections 1, 3 and 4",
+    "grade": "each wall: A that it exists, C in its exact line (right to about 1 m within a building, about 5 m across the site)",
+    "wallBoxPx": [
+      134,
+      48,
+      1925,
+      3202
+    ],
+    "pxPerMetreEastWest": 20.4,
+    "pxPerMetreNorthSouth": 22,
+    "pxPerMetreRange": {
+      "eastWest": [20, 20.9],
+      "northSouth": [21.6, 22.4]
+    },
+    "northIsUpWithinDegrees": 3,
+    "centreLatLon": [36.3517, 25.40345],
+    "centreWithinMetres": 10,
+    "centreWorld": [-139, 5914],
+    "note": "The plan has no scale bar and no north arrow: both scales and the north are the T2b check's own measurements. The centre of the box round the drawn walls is put on the area centroid of the shelter roof in OpenStreetMap."
+  },
+  "trace": {
+    "wallColour": [
+      245,
+      211,
+      103
+    ],
+    "legendBelowRight": [1010, 690], "outlinePx": 2,
+    "thinWallPx": 8.4,
+    "simplifyPx": 1.2,
+    "minWallAreaPx": 60,
+    "edgeClosingMetres": 7,
+    "edgeSimplifyMetres": 0.6,
+    "supportToleranceMetres": 0.8,
+    "excavatedIfShareAtLeast": 0.4,
+    "note": "A building counts as excavated (drawn from the plan) when at least this share of its outline lies within the tolerance of a wall the plan draws; otherwise it is reconstructed (a gap filled in by rule). The share of every building is in traced.json and in the record.",
+    "hullSimplifyPx": 5
+  },
+  "buildings": [
+    { "id": "alpha", "regionPx": [[1470, 170], [1770, 170], [1770, 482], [1470, 482]] },
+    { "id": "eta", "regionPx": [[1444, 484], [1775, 484], [1775, 745], [1444, 745]], "addPx": [[1767, 742]] },
+    { "id": "nhol", "regionPx": [[1118, 505], [1440, 505], [1440, 705], [1340, 748], [1118, 714]], "addPx": [[1150, 512], [1120, 712], [1338, 744]] },
+    { "id": "ladies", "regionPx": [[1035, 705], [1410, 760], [1383, 990], [1362, 1050], [1210, 1100], [1035, 1040]] },
+    { "id": "de1", "regionPx": [[1440, 748], [1700, 748], [1700, 903], [1420, 903]], "addPx": [[1695, 752], [1695, 899]] },
+    { "id": "de2", "regionPx": [[1402, 906], [1700, 906], [1700, 1042], [1402, 1042]], "addPx": [[1695, 910], [1695, 1038]] },
+    { "id": "w1", "regionPx": [[820, 1000], [1075, 1068], [1095, 1185], [1055, 1262], [928, 1200], [820, 1135]] },
+    { "id": "w2", "regionPx": [[1132, 1140], [1235, 1102], [1362, 1056], [1298, 1225], [1132, 1162]] },
+    { "id": "west", "regionPx": [[705, 1380], [957, 1216], [1112, 1428], [810, 1603]] },
+    { "id": "anchor", "regionPx": [[598, 1605], [838, 1605], [897, 1740], [897, 1794], [598, 1794]], "addPx": [[602, 1608], [602, 1790]] },
+    { "id": "porch", "outlinePx": [[926, 1706], [972, 1706], [964, 1788], [918, 1788]] },
+    { "id": "delta_w", "regionPx": [[975, 1495], [1128, 1495], [1198, 1560], [1232, 1668], [1150, 1896], [975, 1826]], "addPx": [[990, 1828], [1148, 1891]] },
+    { "id": "delta_n1", "regionPx": [[1124, 1360], [1345, 1388], [1345, 1515], [1198, 1515], [1128, 1495]] },
+    { "id": "delta_n2", "regionPx": [[1198, 1516], [1336, 1516], [1336, 1668], [1232, 1668], [1198, 1560]] },
+    { "id": "delta_c", "regionPx": [[1234, 1670], [1294, 1670], [1290, 1905], [1262, 1946], [1152, 1898]], "addPx": [[1238, 1674], [1291, 1674]] },
+    { "id": "delta_e_n", "regionPx": [[1388, 1535], [1495, 1535], [1495, 1705], [1388, 1705]], "addPx": [[1392, 1545], [1392, 1700]] },
+    { "id": "delta_e", "regionPx": [[1296, 1707], [1495, 1707], [1495, 1875], [1296, 1875]] },
+    { "id": "delta_s", "regionPx": [[930, 1808], [975, 1826], [1150, 1896], [1262, 1946], [1217, 2110], [930, 2110]] },
+    { "id": "xeste5", "regionPx": [[1492, 1340], [1795, 1340], [1805, 1642], [1492, 1632]], "addPx": [[1790, 1345], [1800, 1638]] },
+    { "id": "dhe", "regionPx": [[1685, 1690], [1905, 1690], [1905, 1927], [1685, 1927]], "addPx": [[1900, 1695], [1900, 1905]] },
+    { "id": "xeste2", "regionPx": [[1322, 1962], [1440, 1912], [1935, 1946], [1935, 2205], [1322, 2205]], "addPx": [[1930, 2200], [1440, 2200]] },
+    { "id": "x2s", "regionPx": [[1418, 2207], [1685, 2207], [1685, 2398], [1418, 2398]], "addPx": [[1680, 2210], [1680, 2395]] },
+    { "id": "gamma_n", "regionPx": [[625, 2165], [775, 2165], [775, 2447], [625, 2447]] },
+    { "id": "gamma_s", "regionPx": [[639, 2450], [700, 2450], [795, 2525], [795, 2765], [639, 2765]] },
+    { "id": "beta_n", "regionPx": [[985, 2114], [1057, 2114], [1057, 2261], [985, 2240]] },
+    { "id": "beta_w", "regionPx": [[780, 2240], [983, 2240], [1057, 2262], [1057, 2478], [925, 2512], [780, 2508]] },
+    { "id": "beta_m", "regionPx": [[1059, 2114], [1160, 2114], [1160, 2470], [1059, 2478]] },
+    { "id": "beta_e", "regionPx": [[1162, 2198], [1265, 2198], [1265, 2465], [1162, 2465]], "addPx": [[1165, 2202], [1262, 2202], [1262, 2462]] },
+    { "id": "bs", "regionPx": [[805, 2512], [1063, 2512], [1063, 2684], [805, 2684]], "addPx": [[1060, 2518], [1060, 2680]] },
+    { "id": "xeste3_w", "regionPx": [[120, 2695], [396, 2695], [396, 3000], [120, 3000]] },
+    { "id": "xeste3_e", "regionPx": [[397, 2655], [637, 2655], [637, 3010], [397, 3010]] },
+    { "id": "se_b", "regionPx": [[1266, 2420], [1420, 2425], [1600, 2540], [1600, 2772], [1300, 2668]], "split": { "linePx": [[1492, 2400], [1492, 2800]], "ids": ["se_b1", "se_b2"] } },
+    { "id": "se_a", "regionPx": [[1105, 2585], [1286, 2585], [1298, 2668], [1212, 2864], [1105, 2852]] },
+    { "id": "xeste4", "regionPx": [[1300, 2668], [1812, 2846], [1824, 3010], [1812, 3215], [1680, 3215], [1207, 2882]], "split": { "linePx": [[1575, 2700], [1470, 3150]], "ids": ["xeste4_w", "xeste4_e"] } },
+    { "id": "south", "regionPx": [[1258, 3030], [1300, 3030], [1575, 3150], [1575, 3205], [1258, 3205]], "addPx": [[1265, 3198]] },
+    { "id": "swx", "regionPx": [[925, 2790], [1100, 2856], [1262, 2924], [1262, 3055], [925, 3055]], "split": { "linePx": [[1075, 2780], [1075, 3060]], "ids": ["swx_w", "swx_e"] } }
+  ]
+}

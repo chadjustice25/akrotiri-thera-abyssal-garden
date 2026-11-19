@@ -20,3 +20,6 @@ docs/research/claude/*.txt
 
 # Terrain tools: the downloaded elevation data is fetched again by tools/terrain/fetch.mjs, never committed
 tools/terrain/cache/
+
+# Town tools: the plan is fetched again by tools/town/fetch.mjs, never committed (its outlines are, under CC BY-SA 4.0)
+tools/town/cache/
