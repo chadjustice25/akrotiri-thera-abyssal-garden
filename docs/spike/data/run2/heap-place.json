@@ -1,0 +1,59 @@
+{
+ "page": "dev-place.html",
+ "level": "high",
+ "size": "1600x900",
+ "results": [
+  {
+   "step": null,
+   "run": "spk.set({quiet:1})",
+   "value": 1
+  },
+  {
+   "step": "aim",
+   "run": "spk.place.aim(50000)",
+   "value": {
+    "kept": 50091,
+    "byForm": [
+     0,
+     47,
+     50044
+    ],
+    "triesACell": 3,
+    "chance": 0.7545,
+    "spotsTried": 1769472,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": null,
+   "run": "spk.set({on:1})",
+   "value": 1
+  },
+  {
+   "step": "spike on: before",
+   "heap": 1162112
+  },
+  {
+   "step": "spike on: after a minute of flying",
+   "heap": 1286568
+  },
+  {
+   "step": null,
+   "run": "spk.set({on:0})",
+   "value": 1
+  },
+  {
+   "step": "spike off: before",
+   "heap": 1282544
+  },
+  {
+   "step": "spike off: after a minute of flying",
+   "heap": 1320828
+  }
+ ],
+ "problems": []
+}

@@ -1,0 +1,1031 @@
+{
+ "page": "dev-place.html",
+ "level": "high",
+ "size": "1600x900",
+ "results": [
+  {
+   "step": null,
+   "run": "spk.resTo(1)",
+   "value": "1600x812"
+  },
+  {
+   "step": "info",
+   "run": "spk.place.info",
+   "value": {
+    "levels": 9,
+    "cellsASide": 256,
+    "finestCellMetres": 1,
+    "listCaps": [
+     32768,
+     131072,
+     262144
+    ],
+    "cornersAForm": [
+     60,
+     30,
+     6
+    ],
+    "instanceBytes": 32,
+    "listBytes": 13631488,
+    "dispatch": [
+     32,
+     32,
+     9
+    ]
+   }
+  },
+  {
+   "step": "v1 engine (spike off)",
+   "run": "(spk.set({\"on\":0}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.18,
+    "gpuMed": 8.26,
+    "gpuP95": 8.78,
+    "gpuMax": 9.7,
+    "worstFrame": 17.1,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v1 the pass with nothing kept",
+   "run": "(spk.set({on:1}),spk.place.set(0.00001),(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})())",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.21,
+    "gpuMed": 8.19,
+    "gpuP95": 8.85,
+    "gpuMax": 9.7,
+    "worstFrame": 17.3,
+    "res": "1600x812",
+    "kept": 0,
+    "note": "forms 0/0/0, 1 tries a cell x 0.000"
+   }
+  },
+  {
+   "step": "v1 aim 10000",
+   "run": "spk.place.aim(10000)",
+   "value": {
+    "kept": 10003,
+    "byForm": [
+     0,
+     12,
+     9991
+    ],
+    "triesACell": 1,
+    "chance": 0.4476,
+    "spotsTried": 589824,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v1 10k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.28,
+    "gpuMed": 8.32,
+    "gpuP95": 8.91,
+    "gpuMax": 9.57,
+    "worstFrame": 17,
+    "res": "1600x812",
+    "kept": 10003,
+    "note": "forms 0/12/9991, 1 tries a cell x 0.448"
+   }
+  },
+  {
+   "step": "v1 10k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.19,
+    "gpuMed": 8.13,
+    "gpuP95": 9.04,
+    "gpuMax": 10.03,
+    "worstFrame": 17.3,
+    "res": "1600x812",
+    "kept": 10003,
+    "note": "forms 0/12/9991, 1 tries a cell x 0.448"
+   }
+  },
+  {
+   "step": "v1 aim 50000",
+   "run": "spk.place.aim(50000)",
+   "value": {
+    "kept": 49519,
+    "byForm": [
+     0,
+     46,
+     49473
+    ],
+    "triesACell": 3,
+    "chance": 0.7458,
+    "spotsTried": 1769472,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v1 50k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.48,
+    "gpuMed": 8.32,
+    "gpuP95": 9.44,
+    "gpuMax": 10.22,
+    "worstFrame": 17.2,
+    "res": "1600x812",
+    "kept": 49519,
+    "note": "forms 0/46/49473, 3 tries a cell x 0.746"
+   }
+  },
+  {
+   "step": "v1 50k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.2,
+    "gpuMed": 8.26,
+    "gpuP95": 8.91,
+    "gpuMax": 9.83,
+    "worstFrame": 16.8,
+    "res": "1600x812",
+    "kept": 49519,
+    "note": "forms 0/46/49473, 3 tries a cell x 0.746"
+   }
+  },
+  {
+   "step": "v1 aim 200000",
+   "run": "spk.place.aim(200000)",
+   "value": {
+    "kept": 199916,
+    "byForm": [
+     0,
+     182,
+     199734
+    ],
+    "triesACell": 10,
+    "chance": 0.9037,
+    "spotsTried": 5898240,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v1 200k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 9.77,
+    "gpuMed": 9.7,
+    "gpuP95": 10.16,
+    "gpuMax": 11.34,
+    "worstFrame": 17,
+    "res": "1600x812",
+    "kept": 199916,
+    "note": "forms 0/182/199734, 10 tries a cell x 0.904"
+   }
+  },
+  {
+   "step": "v1 200k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.74,
+    "gpuMed": 8.59,
+    "gpuP95": 9.63,
+    "gpuMax": 10.29,
+    "worstFrame": 17.8,
+    "res": "1600x812",
+    "kept": 199916,
+    "note": "forms 0/182/199734, 10 tries a cell x 0.904"
+   }
+  },
+  {
+   "step": "v1 200k kept, placed but not drawn",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":1});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.93,
+    "gpuMed": 8.85,
+    "gpuP95": 10.03,
+    "gpuMax": 10.55,
+    "worstFrame": 17.6,
+    "res": "1600x812",
+    "kept": 199916,
+    "note": "forms 0/182/199734, 10 tries a cell x 0.904"
+   }
+  },
+  {
+   "step": null,
+   "run": "Object.assign(spk.place,{opaque:0,noDraw:0})",
+   "value": {
+    "K": 10,
+    "dens": 0.9036881441541489,
+    "D": 9.036881441541489,
+    "kept": [
+     0,
+     182,
+     199734
+    ],
+    "opaque": 0,
+    "info": {
+     "levels": 9,
+     "cellsASide": 256,
+     "finestCellMetres": 1,
+     "listCaps": [
+      32768,
+      131072,
+      262144
+     ],
+     "cornersAForm": [
+      60,
+      30,
+      6
+     ],
+     "instanceBytes": 32,
+     "listBytes": 13631488,
+     "dispatch": [
+      32,
+      32,
+      9
+     ]
+    },
+    "build": {},
+    "compute": {},
+    "draw": {},
+    "count": {},
+    "set": {},
+    "aim": {},
+    "more": {},
+    "say": {},
+    "noDraw": 0
+   }
+  },
+  {
+   "step": "v3 engine (spike off)",
+   "run": "(spk.set({\"on\":0}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.62,
+    "gpuMed": 8.59,
+    "gpuP95": 9.44,
+    "gpuMax": 10.22,
+    "worstFrame": 17.7,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v3 the pass with nothing kept",
+   "run": "(spk.set({on:1}),spk.place.set(0.00001),(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})())",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.87,
+    "gpuMed": 8.91,
+    "gpuP95": 10.22,
+    "gpuMax": 10.62,
+    "worstFrame": 17.7,
+    "res": "1600x812",
+    "kept": 0,
+    "note": "forms 0/0/0, 1 tries a cell x 0.000"
+   }
+  },
+  {
+   "step": "v3 aim 10000",
+   "run": "spk.place.aim(10000)",
+   "value": {
+    "kept": 10039,
+    "byForm": [
+     0,
+     0,
+     10039
+    ],
+    "triesACell": 4,
+    "chance": 0.9766,
+    "spotsTried": 2359296,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v3 10k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 9.22,
+    "gpuMed": 9.11,
+    "gpuP95": 10.16,
+    "gpuMax": 10.81,
+    "worstFrame": 17.7,
+    "res": "1600x812",
+    "kept": 10039,
+    "note": "forms 0/0/10039, 4 tries a cell x 0.977"
+   }
+  },
+  {
+   "step": "v3 10k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 9.15,
+    "gpuMed": 9.18,
+    "gpuP95": 10.03,
+    "gpuMax": 11.01,
+    "worstFrame": 17.7,
+    "res": "1600x812",
+    "kept": 10039,
+    "note": "forms 0/0/10039, 4 tries a cell x 0.977"
+   }
+  },
+  {
+   "step": "v3 aim 50000",
+   "run": "spk.place.aim(50000)",
+   "value": {
+    "kept": 49852,
+    "byForm": [
+     0,
+     0,
+     49852
+    ],
+    "triesACell": 20,
+    "chance": 0.9728,
+    "spotsTried": 11796480,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v3 50k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 9.46,
+    "gpuMed": 9.5,
+    "gpuP95": 10.22,
+    "gpuMax": 10.62,
+    "worstFrame": 17.6,
+    "res": "1600x812",
+    "kept": 49852,
+    "note": "forms 0/0/49852, 20 tries a cell x 0.973"
+   }
+  },
+  {
+   "step": "v3 50k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 9.64,
+    "gpuMed": 9.76,
+    "gpuP95": 10.35,
+    "gpuMax": 10.75,
+    "worstFrame": 17.9,
+    "res": "1600x812",
+    "kept": 49852,
+    "note": "forms 0/0/49852, 20 tries a cell x 0.973"
+   }
+  },
+  {
+   "step": "v3 aim 200000",
+   "run": "spk.place.aim(200000)",
+   "value": {
+    "kept": 82213,
+    "byForm": [
+     0,
+     0,
+     82213
+    ],
+    "triesACell": 32,
+    "chance": 1,
+    "spotsTried": 18874368,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v3 200k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 9.77,
+    "gpuMed": 9.83,
+    "gpuP95": 10.35,
+    "gpuMax": 10.88,
+    "worstFrame": 17.7,
+    "res": "1600x812",
+    "kept": 82213,
+    "note": "forms 0/0/82213, 32 tries a cell x 1.000"
+   }
+  },
+  {
+   "step": "v3 200k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 10.08,
+    "gpuMed": 10.03,
+    "gpuP95": 11.14,
+    "gpuMax": 11.8,
+    "worstFrame": 17.8,
+    "res": "1600x812",
+    "kept": 82213,
+    "note": "forms 0/0/82213, 32 tries a cell x 1.000"
+   }
+  },
+  {
+   "step": "v3 200k kept, placed but not drawn",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":1});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 9.87,
+    "gpuMed": 9.83,
+    "gpuP95": 11.27,
+    "gpuMax": 11.8,
+    "worstFrame": 17.8,
+    "res": "1600x812",
+    "kept": 82213,
+    "note": "forms 0/0/82213, 32 tries a cell x 1.000"
+   }
+  },
+  {
+   "step": null,
+   "run": "Object.assign(spk.place,{opaque:0,noDraw:0})",
+   "value": {
+    "K": 32,
+    "dens": 1,
+    "D": 32,
+    "kept": [
+     0,
+     0,
+     82213
+    ],
+    "opaque": 0,
+    "info": {
+     "levels": 9,
+     "cellsASide": 256,
+     "finestCellMetres": 1,
+     "listCaps": [
+      32768,
+      131072,
+      262144
+     ],
+     "cornersAForm": [
+      60,
+      30,
+      6
+     ],
+     "instanceBytes": 32,
+     "listBytes": 13631488,
+     "dispatch": [
+      32,
+      32,
+      9
+     ]
+    },
+    "build": {},
+    "compute": {},
+    "draw": {},
+    "count": {},
+    "set": {},
+    "aim": {},
+    "more": {},
+    "say": {},
+    "noDraw": 0
+   }
+  },
+  {
+   "step": "v9 engine (spike off)",
+   "run": "(spk.set({\"on\":0}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.62,
+    "gpuMed": 7.93,
+    "gpuP95": 8.32,
+    "gpuMax": 9.18,
+    "worstFrame": 17.9,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v9 the pass with nothing kept",
+   "run": "(spk.set({on:1}),spk.place.set(0.00001),(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})())",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.97,
+    "gpuMed": 8.13,
+    "gpuP95": 8.45,
+    "gpuMax": 8.98,
+    "worstFrame": 17.8,
+    "res": "1600x812",
+    "kept": 0,
+    "note": "forms 0/0/0, 1 tries a cell x 0.000"
+   }
+  },
+  {
+   "step": "v9 aim 10000",
+   "run": "spk.place.aim(10000)",
+   "value": {
+    "kept": 9952,
+    "byForm": [
+     24,
+     600,
+     9328
+    ],
+    "triesACell": 1,
+    "chance": 0.2809,
+    "spotsTried": 589824,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v9 10k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.24,
+    "gpuMed": 7.41,
+    "gpuP95": 7.86,
+    "gpuMax": 8.78,
+    "worstFrame": 18,
+    "res": "1600x812",
+    "kept": 9952,
+    "note": "forms 24/600/9328, 1 tries a cell x 0.281"
+   }
+  },
+  {
+   "step": "v9 10k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.01,
+    "gpuMed": 7.21,
+    "gpuP95": 7.73,
+    "gpuMax": 8.65,
+    "worstFrame": 17.8,
+    "res": "1600x812",
+    "kept": 9952,
+    "note": "forms 24/600/9328, 1 tries a cell x 0.281"
+   }
+  },
+  {
+   "step": "v9 aim 50000",
+   "run": "spk.place.aim(50000)",
+   "value": {
+    "kept": 50171,
+    "byForm": [
+     111,
+     3158,
+     46902
+    ],
+    "triesACell": 2,
+    "chance": 0.7057,
+    "spotsTried": 1179648,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v9 50k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.87,
+    "gpuMed": 8.19,
+    "gpuP95": 9.24,
+    "gpuMax": 9.63,
+    "worstFrame": 17.6,
+    "res": "1600x812",
+    "kept": 50171,
+    "note": "forms 111/3158/46902, 2 tries a cell x 0.706"
+   }
+  },
+  {
+   "step": "v9 50k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 182,
+    "fps": 60,
+    "gpu": 7.19,
+    "gpuMed": 7.47,
+    "gpuP95": 8.19,
+    "gpuMax": 8.72,
+    "worstFrame": 17.6,
+    "res": "1600x812",
+    "kept": 50171,
+    "note": "forms 111/3158/46902, 2 tries a cell x 0.706"
+   }
+  },
+  {
+   "step": "v9 aim 200000",
+   "run": "spk.place.aim(200000)",
+   "value": {
+    "kept": 200123,
+    "byForm": [
+     444,
+     12819,
+     186860
+    ],
+    "triesACell": 6,
+    "chance": 0.9377,
+    "spotsTried": 3538944,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v9 200k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 11.04,
+    "gpuMed": 11.27,
+    "gpuP95": 12.39,
+    "gpuMax": 12.78,
+    "worstFrame": 17.4,
+    "res": "1600x812",
+    "kept": 200123,
+    "note": "forms 444/12819/186860, 6 tries a cell x 0.938"
+   }
+  },
+  {
+   "step": "v9 200k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 10.91,
+    "gpuMed": 10.88,
+    "gpuP95": 11.8,
+    "gpuMax": 13.11,
+    "worstFrame": 17.3,
+    "res": "1600x812",
+    "kept": 200123,
+    "note": "forms 444/12819/186860, 6 tries a cell x 0.938"
+   }
+  },
+  {
+   "step": "v9 200k kept, placed but not drawn",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":1});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.13,
+    "gpuMed": 6.88,
+    "gpuP95": 8.72,
+    "gpuMax": 10.81,
+    "worstFrame": 17.3,
+    "res": "1600x812",
+    "kept": 200123,
+    "note": "forms 444/12819/186860, 6 tries a cell x 0.938"
+   }
+  },
+  {
+   "step": null,
+   "run": "Object.assign(spk.place,{opaque:0,noDraw:0})",
+   "value": {
+    "K": 6,
+    "dens": 0.9377232117347933,
+    "D": 5.62633927040876,
+    "kept": [
+     444,
+     12819,
+     186860
+    ],
+    "opaque": 0,
+    "info": {
+     "levels": 9,
+     "cellsASide": 256,
+     "finestCellMetres": 1,
+     "listCaps": [
+      32768,
+      131072,
+      262144
+     ],
+     "cornersAForm": [
+      60,
+      30,
+      6
+     ],
+     "instanceBytes": 32,
+     "listBytes": 13631488,
+     "dispatch": [
+      32,
+      32,
+      9
+     ]
+    },
+    "build": {},
+    "compute": {},
+    "draw": {},
+    "count": {},
+    "set": {},
+    "aim": {},
+    "more": {},
+    "say": {},
+    "noDraw": 0
+   }
+  },
+  {
+   "step": "v7 engine (spike off)",
+   "run": "(spk.set({\"on\":0}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 4.57,
+    "gpuMed": 4.46,
+    "gpuP95": 5.9,
+    "gpuMax": 6.42,
+    "worstFrame": 16.9,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v7 the pass with nothing kept",
+   "run": "(spk.set({on:1}),spk.place.set(0.00001),(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})())",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 4.76,
+    "gpuMed": 4.78,
+    "gpuP95": 5.9,
+    "gpuMax": 6.29,
+    "worstFrame": 16.9,
+    "res": "1600x812",
+    "kept": 0,
+    "note": "forms 0/0/0, 1 tries a cell x 0.000"
+   }
+  },
+  {
+   "step": "v7 aim 10000",
+   "run": "spk.place.aim(10000)",
+   "value": {
+    "kept": 10000,
+    "byForm": [
+     100,
+     1076,
+     8824
+    ],
+    "triesACell": 1,
+    "chance": 0.2766,
+    "spotsTried": 589824,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v7 10k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 4.18,
+    "gpuMed": 4.13,
+    "gpuP95": 5.24,
+    "gpuMax": 5.7,
+    "worstFrame": 17.2,
+    "res": "1600x812",
+    "kept": 10000,
+    "note": "forms 100/1076/8824, 1 tries a cell x 0.277"
+   }
+  },
+  {
+   "step": "v7 10k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 4.03,
+    "gpuMed": 3.87,
+    "gpuP95": 5.18,
+    "gpuMax": 5.44,
+    "worstFrame": 16.8,
+    "res": "1600x812",
+    "kept": 10000,
+    "note": "forms 100/1076/8824, 1 tries a cell x 0.277"
+   }
+  },
+  {
+   "step": "v7 aim 50000",
+   "run": "spk.place.aim(50000)",
+   "value": {
+    "kept": 50029,
+    "byForm": [
+     470,
+     5534,
+     44025
+    ],
+    "triesACell": 2,
+    "chance": 0.6915,
+    "spotsTried": 1179648,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v7 50k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 5.59,
+    "gpuMed": 5.31,
+    "gpuP95": 7.01,
+    "gpuMax": 7.34,
+    "worstFrame": 16.9,
+    "res": "1600x812",
+    "kept": 50029,
+    "note": "forms 470/5534/44025, 2 tries a cell x 0.691"
+   }
+  },
+  {
+   "step": "v7 50k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 5.12,
+    "gpuMed": 5.05,
+    "gpuP95": 6.49,
+    "gpuMax": 6.88,
+    "worstFrame": 17,
+    "res": "1600x812",
+    "kept": 50029,
+    "note": "forms 470/5534/44025, 2 tries a cell x 0.691"
+   }
+  },
+  {
+   "step": "v7 aim 200000",
+   "run": "spk.place.aim(200000)",
+   "value": {
+    "kept": 200893,
+    "byForm": [
+     1837,
+     22341,
+     176715
+    ],
+    "triesACell": 6,
+    "chance": 0.9214,
+    "spotsTried": 3538944,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "v7 200k kept",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 11.69,
+    "gpuMed": 11.67,
+    "gpuP95": 12.85,
+    "gpuMax": 13.3,
+    "worstFrame": 17.1,
+    "res": "1600x812",
+    "kept": 200893,
+    "note": "forms 1837/22341/176715, 6 tries a cell x 0.921"
+   }
+  },
+  {
+   "step": "v7 200k kept, no fade test",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":1,\"noDraw\":0});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 9.93,
+    "gpuMed": 9.9,
+    "gpuP95": 12.12,
+    "gpuMax": 12.98,
+    "worstFrame": 16.9,
+    "res": "1600x812",
+    "kept": 200893,
+    "note": "forms 1837/22341/176715, 6 tries a cell x 0.921"
+   }
+  },
+  {
+   "step": "v7 200k kept, placed but not drawn",
+   "run": "(async()=>{Object.assign(spk.place,{\"opaque\":0,\"noDraw\":1});const m=await spk.meas(3000);const a=await spk.place.count();return {...m,kept:a[0]+a[1]+a[2],note:'forms '+a.join('/')+', '+spk.place.K+' tries a cell x '+spk.place.dens.toFixed(3)}})()",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 5.09,
+    "gpuMed": 4.92,
+    "gpuP95": 6.68,
+    "gpuMax": 6.95,
+    "worstFrame": 16.9,
+    "res": "1600x812",
+    "kept": 200893,
+    "note": "forms 1837/22341/176715, 6 tries a cell x 0.921"
+   }
+  },
+  {
+   "step": null,
+   "run": "Object.assign(spk.place,{opaque:0,noDraw:0})",
+   "value": {
+    "K": 6,
+    "dens": 0.9214219667219853,
+    "D": 5.528531800331912,
+    "kept": [
+     1837,
+     22341,
+     176715
+    ],
+    "opaque": 0,
+    "info": {
+     "levels": 9,
+     "cellsASide": 256,
+     "finestCellMetres": 1,
+     "listCaps": [
+      32768,
+      131072,
+      262144
+     ],
+     "cornersAForm": [
+      60,
+      30,
+      6
+     ],
+     "instanceBytes": 32,
+     "listBytes": 13631488,
+     "dispatch": [
+      32,
+      32,
+      9
+     ]
+    },
+    "build": {},
+    "compute": {},
+    "draw": {},
+    "count": {},
+    "set": {},
+    "aim": {},
+    "more": {},
+    "say": {},
+    "noDraw": 0
+   }
+  }
+ ],
+ "problems": []
+}

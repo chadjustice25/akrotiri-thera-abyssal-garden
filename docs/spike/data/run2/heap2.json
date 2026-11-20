@@ -1,0 +1,63 @@
+{
+ "page": "dev.html",
+ "level": "high",
+ "size": "1600x900",
+ "results": [
+  {
+   "step": null,
+   "run": "spk.set({quiet:1})",
+   "value": 1
+  },
+  {
+   "step": "aim",
+   "run": "spk.place.aim(50000)",
+   "value": {
+    "kept": 50091,
+    "byForm": [
+     0,
+     47,
+     50044
+    ],
+    "triesACell": 3,
+    "chance": 0.7545,
+    "spotsTried": 1769472,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": null,
+   "run": "spk.set({on:1})",
+   "value": 1
+  },
+  {
+   "step": "spike on, first minute: before",
+   "heap": 2079292
+  },
+  {
+   "step": "spike on, first minute: after",
+   "heap": 2209588
+  },
+  {
+   "step": "spike on, second minute: after",
+   "heap": 2209396
+  },
+  {
+   "step": "spike on, third minute: after",
+   "heap": 2219320
+  },
+  {
+   "step": null,
+   "run": "spk.set({on:0})",
+   "value": 1
+  },
+  {
+   "step": "spike off, fourth minute: after",
+   "heap": 2204068
+  }
+ ],
+ "problems": []
+}
