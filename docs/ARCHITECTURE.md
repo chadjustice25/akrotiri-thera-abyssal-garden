@@ -180,3 +180,16 @@ Then the harbour and ships, people and animals, interiors, and labels.
 | 2 | Whether the layers and time are built first, as work order 003 (O14) | Yes, after the measuring spike |
 | 3 | Which iPad is the slowest device the world must run well on | The one used in the touch test, until a slower one matters |
 | 4 | Whether to study Formosa Forest's source and credit what is learned | Yes |
+
+## 10. What this kind of work is called
+
+There is no single name. Four names each cover part of it. They were checked by web search on 2026-11-19, not against the primary texts.
+
+| Name | What it covers | Where it comes from |
+|---|---|---|
+| **Procedural generation** | The technique: the world is worked out by code from rules and seeds, not stored as images and models | General |
+| **The demoscene; size-coding** | The tradition and the discipline of staying small: whole animated worlds with music in tiny programs ("4k" and "64k intros") | [.kkrieger](https://www.guinnessworldrecords.com/world-records/421923-fewest-bytes-for-a-first-person-shooter-fps-videogame), by .theprodukkt (part of the group Farbrausch), won the 96k game competition at Breakpoint in April 2004: a 3D shooter in 97,280 bytes, with its textures and models made by recipe at load |
+| **Single-file, real-time WebGPU** | The delivery: one self-contained HTML page, drawn live on the graphics card, with no engine and nothing to download | Abyssal Garden (97 kB), Voidstruck (299 kB), this project (166 kB) |
+| **Virtual archaeology; procedural modelling; 4D reconstruction** | What this project adds: reconstruction of the past by rule, with its evidence shown, and soon in time as well as space | The [London Charter](https://www.londoncharter.org/) and the [Seville Principles](https://vwhl.luddy.indiana.edu/sevillePrinciples/index.html); [Müller and others, 2006](https://peterwonka.net/Publications/pdfs/2006.VAST.Mueller.Xkipche.pdf), who rebuilt Maya buildings at Xkipché from a shape grammar |
+
+In one line: **a procedural, real-time 4D reconstruction in virtual archaeology, built in the demoscene's single-file tradition.**

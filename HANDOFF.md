@@ -29,6 +29,8 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
   - The world opens in 1628 BCE, not 1615 (D32, D36). The page, the tools and the living records say 1628, and `docs/WORLD_CLOCK.md` carries the corrections from the second X1 report. Decisions, work orders and research files keep the year they were written with.
   - Thera's years run through the end: the damaged town, the eruption and the island it left are shown when the year reaches them (D37, amends D19).
   - The layers are called Found, Inferred and Imagined (D38).
+  - Work goes on as the architecture review proposes: 003 a measuring spike, 004 layers and time, 005 plants (D39).
+  - The project names what it is and the standards of its field, the London Charter and the Seville Principles (D40). **Still to do:** check the historical standard against both, clause by clause.
   - The viewer can move the date and time and jump to astronomical events; the sky is to be computed, and what grows is built with its yearly cycle (D33).
   - The year can be moved as well as the date, so that the world and the sky are seen to change; every thing is to carry the years it stands for (D34).
   - Every Gemini Deep Research prompt ends by asking for the report to be saved to the Google Drive folder `Thera Research` (D35), first tried on the rerun of T3c.

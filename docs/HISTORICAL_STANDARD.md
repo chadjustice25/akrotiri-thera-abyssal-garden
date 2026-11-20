@@ -102,3 +102,20 @@ How the world shows what is known and what is added (D31, D38), and how it moves
 - **The date and the year can be moved.** The world opens in late May of 1628 BCE. Everything that grows carries its yearly cycle. Every thing carries the years it stands for, with a grade for that dating; a thing with no dated beginning or end stands for the whole span.
 - **Thera's years run through the end:** the damaged town, the eruption and the island it left are shown when the year reaches them.
 - **Changing layer, date or year never reloads or pauses the world.** Things fade in and fade out.
+
+## 8. Where this standard sits in the field
+A note, not a rule (D40). It names the standards that virtual archaeology already has, so that this one can be read against them. The facts below were checked by web search on 2026-11-19, not against the primary texts.
+
+- **The London Charter** for the computer-based visualisation of cultural heritage (<https://www.londoncharter.org/>) asks for "intellectual transparency": a reconstruction must let its users see how it was arrived at.
+- **The Seville Principles** (the International Principles of Virtual Archaeology; written in 2011, ratified by ICOMOS in 2017) build on the Charter. Their principles include interdisciplinarity, authenticity, historical rigour and scientific transparency.
+- **Paradata** is the field's word for the record of how interpretive choices were made (the term was proposed by Drew Baker).
+
+How this project answers them:
+
+| The field asks for | Here |
+|---|---|
+| Evidence told apart from conjecture | The grades A, B and C (§3), and the three layers a viewer can switch between (§7) |
+| A record of every interpretive choice (paradata) | The liberties table (§6), `docs/DECISIONS.md`, the claim reference kept with every number, and the check of every research report |
+| Historical rigour | Claims are used only after they are checked against their sources (§4.6) |
+
+**Not yet done:** the standard has not been checked against the Charter or the Principles clause by clause. That audit should come before the project is shown as an example of either.
