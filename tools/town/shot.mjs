@@ -7,6 +7,7 @@
 //        [--steps-file FILE]  the steps from a file      [--json FILE]  also write what every step returned, as JSON
 //        [--device 820x1180]  a touch device of that size (so the menu can be looked at as an iPad or a phone shows it)
 //        [--menu]             save DIR/menu.jpg before diving in      [--nohud]  leave the stats line out of the pictures
+//        [--nokey]            do not press H after diving in (to test the other way of showing the stats line)
 // The steps are a JSON list; each step may have:
 //   name            save a picture DIR/<name>.jpg after the step
 //   key             press this key once, e.g. "Digit7", "KeyL", "KeyT"
@@ -17,6 +18,7 @@
 //   run             JavaScript to run in the page (a promise is waited for); what it returns is printed
 //   heap            collect garbage, then print the size of the JavaScript heap in bytes
 //   png             save the picture as DIR/<name>.png instead, without loss
+//   tap             a CSS selector: touch the middle of that element (with --device)
 //   compare         [a, b]: two pictures saved earlier in this run with png; prints how many pixels differ, and by how much
 //   wait            milliseconds to wait before the picture (default 1200)
 // After every step it prints the camera's state (dev.state() in source/src/dev.js): on foot or not, place, the ground and
@@ -80,16 +82,17 @@ if (state.startsWith('m|')) {
   const spike = await run(`window.spk ? spk.ready : null`); if (spike !== null) console.log(`spike: ${spike} after ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   await run(`document.getElementById('d').click()`); await sleep(400);
   await run(`(()=>{const s=document.createElement('style');s.textContent='#o${flag('nohud') ? ',#i' : ''}{visibility:hidden!important}';document.head.append(s)})()`);
-  await keyEv('keyDown', 'KeyH'); await keyEv('keyUp', 'KeyH');
+  if (!flag('nokey')) { await keyEv('keyDown', 'KeyH'); await keyEv('keyUp', 'KeyH'); }
   for (const st of STEPS) {
     if (st.hour !== undefined) await run(`dev.hour(${st.hour})`);
     if (st.look) await run(st.above ? `dev.look(${st.look[0]},${st.look[1]}+Math.max(dev.hAt(${st.look[0]},${st.look[2]}),0),${st.look.slice(2).join(',')})` : `dev.look(${st.look.join(',')})`);
     if (st.run) { const v = await run(st.run); console.log('  run ->', JSON.stringify(v)); results.push({ step: st.name || st.id || null, run: st.run, value: v }); }
     if (st.heap) { await send('HeapProfiler.collectGarbage'); const u = await send('Runtime.getHeapUsage'); console.log(`  heap -> ${u.usedSize} bytes used`); results.push({ step: st.name || st.id || null, heap: u.usedSize }); }
     if (st.key) { await keyEv('keyDown', st.key); await keyEv('keyUp', st.key); }
+    if (st.tap) { const [x, y] = await run(`(()=>{const b=document.querySelector('${st.tap}').getBoundingClientRect();return [b.x+b.width/2,b.y+b.height/2]})()`); await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] }); await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); }
     if (st.hold) { for (const c of st.hold) await keyEv('keyDown', c); await sleep(st.ms || 1000); for (const c of st.hold) await keyEv('keyUp', c); }
     await sleep(st.wait ?? 1200);
-    const s = await run(`JSON.stringify(dev.state())`), info = await run(`document.getElementById('i').textContent`);
+    const s = await run(`window.dev ? JSON.stringify(dev.state()) : '(the released page)'`), info = await run(`document.getElementById('i').textContent`);
     console.log(`${st.name || '(step)'}: ${s.replace(/(\.\d\d)\d+/g, '$1')}  |  ${info.split('\n')[0]}`);
     if (st.name) { const data = (await send('Page.captureScreenshot', st.png ? { format: 'png' } : { format: 'jpeg', quality: 85 })).data; if (st.png) pngs.set(st.name, data); writeFileSync(path.join(OUT, st.name + (st.png ? '.png' : '.jpg')), Buffer.from(data, 'base64')); }
     if (st.compare) {

@@ -531,13 +531,16 @@ const bShow = $('v').querySelectorAll('button');
 const setShow = (on) => { show = on ? 1 : 0; bShow.forEach((b, j) => { b.className = show === j ? 'on' : ''; }); };
 bShow.forEach((b, i) => { b.onclick = () => setShow(i); });
 setShow(0);
+// the stats line: key H, or the menu's Stats button on a touch screen
+const stat = () => { hud = !hud; hTot = 0; hPer = 1e9; info.textContent = ''; };
+$('y').onclick = stat;
 const key = (e, v) => {
   switch (e.code) {
     case 'KeyW': kf = v; break; case 'KeyS': kb = v; break; case 'KeyA': kl = v; break; case 'KeyD': kr = v; break;
     case 'Space': if (!menu) e.preventDefault(); // up, like E; in the world it must not press the last button clicked
     case 'KeyE': ku = v; break; case 'KeyQ': case 'KeyX': kd = v; break; case 'ShiftLeft': case 'ShiftRight': ks = v; break;
     default: if (v && !e.repeat) {
-      if (e.code === 'KeyH') { hud = !hud; hTot = 0; hPer = 1e9; info.textContent = ''; }
+      if (e.code === 'KeyH') stat();
       else if (e.code === 'KeyM') mute();
       else if (e.code === 'KeyT') setTime((TIMES.findIndex((t) => t[1] === hourTo) + 1) % TIMES.length);
       else if (e.code === 'Escape') ui(true);
