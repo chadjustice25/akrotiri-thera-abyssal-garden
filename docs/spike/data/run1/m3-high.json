@@ -1,0 +1,279 @@
+{
+ "page": "dev-year.html",
+ "level": "high",
+ "size": "1600x900",
+ "results": [
+  {
+   "step": null,
+   "run": "spk.resTo(1)",
+   "value": "1600x812"
+  },
+  {
+   "step": "info",
+   "run": "spk.year.info",
+   "value": {
+    "readFirstAgainMs": 34,
+    "readSecondMs": 31.6,
+    "bakeAndReadBackMs": 117.3,
+    "totalMs": 182.9,
+    "gpuBytes": 139810133,
+    "cpuBytes": 16864596,
+    "mapSide": 4096,
+    "dataTextChars": 41272
+   }
+  },
+  {
+   "step": "v1 engine (spike off)",
+   "run": "(spk.set({\"on\":0,\"swing\":0}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 6.86,
+    "gpuMed": 6.88,
+    "gpuP95": 7.27,
+    "gpuMax": 7.6,
+    "worstFrame": 17.7,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v1 rest at 0 (the island of 1628)",
+   "run": "(spk.set({\"on\":1,\"swing\":0,\"isl\":0}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 6.85,
+    "gpuMed": 6.82,
+    "gpuP95": 7.27,
+    "gpuMax": 7.6,
+    "worstFrame": 17.7,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v1 rest at 1 (the stand-in)",
+   "run": "(spk.set({\"on\":1,\"swing\":0,\"isl\":1}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 6.74,
+    "gpuMed": 6.75,
+    "gpuP95": 7.41,
+    "gpuMax": 7.86,
+    "worstFrame": 17.5,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v1 held at a half",
+   "run": "(spk.set({\"on\":1,\"swing\":0,\"isl\":0.5}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 6.92,
+    "gpuMed": 6.95,
+    "gpuP95": 7.54,
+    "gpuMax": 8.19,
+    "worstFrame": 17.7,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v1 moving",
+   "run": "(spk.set({\"on\":1,\"swing\":4,\"swingIsl\":1,\"layLo\":2,\"layHi\":2}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.16,
+    "gpuMed": 7.14,
+    "gpuP95": 8.19,
+    "gpuMax": 8.85,
+    "worstFrame": 18,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v1 engine again",
+   "run": "(spk.set({\"on\":0,\"swing\":0,\"swingIsl\":0,\"isl\":0}),spk.meas(2000))",
+   "value": {
+    "frames": 121,
+    "fps": 60,
+    "gpu": 7.18,
+    "gpuMed": 7.27,
+    "gpuP95": 7.8,
+    "gpuMax": 8.13,
+    "worstFrame": 17.7,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v2 engine (spike off)",
+   "run": "(spk.set({\"on\":0,\"swing\":0}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.12,
+    "gpuMed": 7.21,
+    "gpuP95": 8,
+    "gpuMax": 9.11,
+    "worstFrame": 17.6,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v2 rest at 0 (the island of 1628)",
+   "run": "(spk.set({\"on\":1,\"swing\":0,\"isl\":0}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.27,
+    "gpuMed": 7.27,
+    "gpuP95": 8.13,
+    "gpuMax": 8.98,
+    "worstFrame": 17.8,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v2 rest at 1 (the stand-in)",
+   "run": "(spk.set({\"on\":1,\"swing\":0,\"isl\":1}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 6.15,
+    "gpuMed": 6.09,
+    "gpuP95": 7.41,
+    "gpuMax": 8.45,
+    "worstFrame": 17.6,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v2 held at a half",
+   "run": "(spk.set({\"on\":1,\"swing\":0,\"isl\":0.5}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 6.78,
+    "gpuMed": 6.68,
+    "gpuP95": 8.32,
+    "gpuMax": 9.24,
+    "worstFrame": 17.7,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v2 moving",
+   "run": "(spk.set({\"on\":1,\"swing\":4,\"swingIsl\":1,\"layLo\":2,\"layHi\":2}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.28,
+    "gpuMed": 7.08,
+    "gpuP95": 8.45,
+    "gpuMax": 9.5,
+    "worstFrame": 17.6,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v2 engine again",
+   "run": "(spk.set({\"on\":0,\"swing\":0,\"swingIsl\":0,\"isl\":0}),spk.meas(2000))",
+   "value": {
+    "frames": 121,
+    "fps": 60,
+    "gpu": 7.54,
+    "gpuMed": 7.47,
+    "gpuP95": 8.91,
+    "gpuMax": 9.9,
+    "worstFrame": 17.3,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v3 engine (spike off)",
+   "run": "(spk.set({\"on\":0,\"swing\":0}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.18,
+    "gpuMed": 7.21,
+    "gpuP95": 8.85,
+    "gpuMax": 9.44,
+    "worstFrame": 17.3,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v3 rest at 0 (the island of 1628)",
+   "run": "(spk.set({\"on\":1,\"swing\":0,\"isl\":0}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8,
+    "gpuMed": 8,
+    "gpuP95": 9.11,
+    "gpuMax": 9.44,
+    "worstFrame": 17.1,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v3 rest at 1 (the stand-in)",
+   "run": "(spk.set({\"on\":1,\"swing\":0,\"isl\":1}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.04,
+    "gpuMed": 8.06,
+    "gpuP95": 9.04,
+    "gpuMax": 9.9,
+    "worstFrame": 17.2,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v3 held at a half",
+   "run": "(spk.set({\"on\":1,\"swing\":0,\"isl\":0.5}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 7.93,
+    "gpuMed": 7.93,
+    "gpuP95": 8.91,
+    "gpuMax": 10.03,
+    "worstFrame": 18.3,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v3 moving",
+   "run": "(spk.set({\"on\":1,\"swing\":4,\"swingIsl\":1,\"layLo\":2,\"layHi\":2}),spk.meas(3000))",
+   "value": {
+    "frames": 181,
+    "fps": 60,
+    "gpu": 8.01,
+    "gpuMed": 8,
+    "gpuP95": 8.98,
+    "gpuMax": 9.37,
+    "worstFrame": 17.4,
+    "res": "1600x812"
+   }
+  },
+  {
+   "step": "v3 engine again",
+   "run": "(spk.set({\"on\":0,\"swing\":0,\"swingIsl\":0,\"isl\":0}),spk.meas(2000))",
+   "value": {
+    "frames": 121,
+    "fps": 60,
+    "gpu": 7.99,
+    "gpuMed": 7.86,
+    "gpuP95": 8.85,
+    "gpuMax": 9.37,
+    "worstFrame": 17.6,
+    "res": "1600x812"
+   }
+  }
+ ],
+ "problems": []
+}

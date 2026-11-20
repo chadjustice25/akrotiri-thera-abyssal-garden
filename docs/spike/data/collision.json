@@ -1,0 +1,137 @@
+{
+ "page": "dev-fade.html",
+ "level": "high",
+ "size": "1600x900",
+ "results": [
+  {
+   "step": "setup",
+   "run": "(()=>{const f=spk.fade;let pick=null;for(let i=1;i<=f.info.buildings&&!pick;i++){if(!f.LAYER[i]||f.TOPV[i]-f.BASE[i]<6||f.DELAY[i]<0.3)continue;const x=f.CEN[i*2],z=f.CEN[i*2+1];for(let a=0;a<16&&!pick;a++){const dx=Math.cos(a*0.3927),dz=Math.sin(a*0.3927);let r=1;while(r<14&&dev.solid(x+dx*r,z+dz*r)>dev.hAt(x+dx*r,z+dz*r)+0.05)r+=0.25;if(r>=14)continue;let free=1;for(let q=r+0.4;q<r+3;q+=0.2)if(dev.solid(x+dx*q,z+dz*q)>dev.hAt(x+dx*q,z+dz*q)+0.05)free=0;if(free)pick={id:i,x,z,dx,dz,r}}}const t=pick;window.__t={...t,top:f.TOPV[t.id],base:f.BASE[t.id],sx:t.x+t.dx*(t.r+2.2),sz:t.z+t.dz*(t.r+2.2)};return window.__t})()",
+   "value": {
+    "id": 57,
+    "x": -120.484375,
+    "z": 5792.90625,
+    "dx": -0.9238763697115762,
+    "dz": -0.3826910679498009,
+    "r": 8.25,
+    "top": 35.655113220214844,
+    "base": 29.104202270507812,
+    "sx": -130.13888306348596,
+    "sz": 5788.907128339924
+   }
+  },
+  {
+   "step": "roof goes: feet every 250 ms",
+   "run": "(async()=>{const t=__t,S=()=>+dev.state().feet.toFixed(2),sl=(ms)=>new Promise(r=>setTimeout(r,ms));spk.set({lay:1,kind:1,wave:0,secs:2.5});dev.look(t.x,t.top+1.5,t.z,t.x+10,t.top+1.5,t.z,1);await sl(700);const a=[S()];spk.layTo=0;for(let i=0;i<14;i++){await sl(250);a.push(S())}return {top:+t.top.toFixed(2),ground:+dev.hAt(t.x,t.z).toFixed(2),feet:a,walk:dev.state().walk}})()",
+   "value": {
+    "top": 35.66,
+    "ground": 29.66,
+    "feet": [
+     35.66,
+     35.37,
+     34.39,
+     34.01,
+     33.15,
+     32.68,
+     31.91,
+     31.34,
+     30.65,
+     29.99,
+     29.67,
+     29.67,
+     29.67,
+     29.67,
+     29.67
+    ],
+    "walk": 1
+   }
+  },
+  {
+   "step": "house comes under the walker: feet every 250 ms",
+   "run": "(async()=>{const t=__t,S=()=>+dev.state().feet.toFixed(2),sl=(ms)=>new Promise(r=>setTimeout(r,ms));const a=[S()];spk.layTo=1;for(let i=0;i<14;i++){await sl(250);a.push(S())}return {feet:a,walk:dev.state().walk}})()",
+   "value": {
+    "feet": [
+     29.67,
+     29.68,
+     30.21,
+     30.86,
+     31.56,
+     32.21,
+     32.87,
+     33.52,
+     34.18,
+     34.83,
+     35.49,
+     35.65,
+     35.65,
+     35.66,
+     35.66
+    ],
+    "walk": 1
+   }
+  },
+  {
+   "step": "start outside, house hidden",
+   "run": "(()=>{const t=__t;spk.set({lay:0});dev.look(t.sx,dev.hAt(t.sx,t.sz)+1.5,t.sz,t.x,dev.hAt(t.sx,t.sz)+1.5,t.z,1);return {from:[+t.sx.toFixed(1),+t.sz.toFixed(1)],to:[+t.x.toFixed(1),+t.z.toFixed(1)],wallAt:+t.r.toFixed(2)}})()",
+   "value": {
+    "from": [
+     -130.1,
+     5788.9
+    ],
+    "to": [
+     -120.5,
+     5792.9
+    ],
+    "wallAt": 8.25
+   }
+  },
+  {
+   "step": "walked 4.5 s at the hidden house",
+   "run": "(()=>{const t=__t,s=dev.state();return {distToCentre:+Math.hypot(s.x-t.x,s.z-t.z).toFixed(2),wallWasAt:+t.r.toFixed(2),feet:+s.feet.toFixed(2),ground:+s.ground.toFixed(2)}})()",
+   "value": {
+    "distToCentre": 3.26,
+    "wallWasAt": 8.25,
+    "feet": 29.7,
+    "ground": 29.69
+   }
+  },
+  {
+   "step": "start outside, house shown",
+   "run": "(()=>{const t=__t;spk.set({lay:1});dev.look(t.sx,dev.hAt(t.sx,t.sz)+1.5,t.sz,t.x,dev.hAt(t.sx,t.sz)+1.5,t.z,1);return 1})()",
+   "value": 1
+  },
+  {
+   "step": "walked 4.5 s at the shown house",
+   "run": "(()=>{const t=__t,s=dev.state();return {distToCentre:+Math.hypot(s.x-t.x,s.z-t.z).toFixed(2),wallWasAt:+t.r.toFixed(2),feet:+s.feet.toFixed(2),ground:+s.ground.toFixed(2)}})()",
+   "value": {
+    "distToCentre": 8.09,
+    "wallWasAt": 8.25,
+    "feet": 29.74,
+    "ground": 29.73
+   }
+  },
+  {
+   "step": "lidded rise, roof goes",
+   "run": "(async()=>{const t=__t,S=()=>+dev.state().feet.toFixed(2),sl=(ms)=>new Promise(r=>setTimeout(r,ms));spk.set({lay:1,kind:4,wave:3,secs:2.5});dev.look(t.x,t.top+1.5,t.z,t.x+10,t.top+1.5,t.z,1);await sl(700);const a=[S()];spk.layTo=0;for(let i=0;i<14;i++){await sl(250);a.push(S())}return {feet:a}})()",
+   "value": {
+    "feet": [
+     35.66,
+     35.66,
+     35.66,
+     35.66,
+     35.66,
+     35.66,
+     35.44,
+     34.63,
+     33.08,
+     31,
+     29.67,
+     29.67,
+     29.67,
+     29.67,
+     29.67
+    ]
+   }
+  }
+ ],
+ "problems": []
+}

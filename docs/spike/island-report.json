@@ -1,0 +1,65 @@
+{
+  "what": "Today's island on the page's grid and datum, as a stand-in for the island after the eruption (work order 003). Not a model of the eruption.",
+  "grid": {
+    "cells": 640,
+    "cellMetres": 40,
+    "coarseFactor": 4
+  },
+  "firstSurface": {
+    "bytes": 54274,
+    "asTextInThePage": 72368,
+    "fineCellsStored": 138208
+  },
+  "packedWhole": {
+    "bytes": 43053,
+    "asTextInThePage": 57404,
+    "fineCellsStored": 98448,
+    "maxErrorMetresOnLand": 4.49,
+    "rmsErrorMetresOnLand": 0.42,
+    "maxErrorMetresUnderwater": 115.92
+  },
+  "packedAsDifference": {
+    "bytes": 30953,
+    "asTextInThePage": 41272,
+    "fineCellsStored": 98048,
+    "maxErrorMetresOnLand": 4.47,
+    "rmsErrorMetresOnLand": 0.41,
+    "maxErrorMetresUnderwater": 111.17,
+    "greatestDistanceFromThePackedWholeGridMetres": 103.25,
+    "pageReaderAgrees": true,
+    "sha256": "0db1b3f020fcf4d845053fa8e26ce35bd9c56afc01a427100e0e9b671a2b86d2"
+  },
+  "differenceSavesBytes": 12100,
+  "differenceIsShareOfWhole": 0.719,
+  "whereTheDifferenceBytesGo": {
+    "coarseGrid": 3430,
+    "rock": 1517,
+    "calderaSide": 9024,
+    "otherLand": 15425,
+    "otherSea": 1551
+  },
+  "fineCellsStoredByRegion": {
+    "calderaSide": 17983,
+    "otherLand": 53155,
+    "otherSea": 26910
+  },
+  "whatIfBytes": {
+    "difference, each cell predicted from the plane through its neighbours' differences": 35168,
+    "difference, predicted from the mean of two neighbours' differences (used)": 30953,
+    "difference, heights stored to 1 m at best (0.5 m today)": 26515,
+    "difference, heights stored to 2 m at best": 21442,
+    "whole, heights stored to 1 m at best": 39166,
+    "whole, heights stored to 2 m at best": 34125,
+    "whole, on a grid of 80 m cells (a quarter of the cells)": 14076
+  },
+  "theTwoSurfaces": {
+    "cells": 409600,
+    "cellsThatDiffer": 365339,
+    "cellsThatDifferOnLandOfEither": 91251,
+    "meanAbsoluteDifferenceMetresWhereTheyDiffer": 47.2,
+    "greatestRiseMetres": 111,
+    "greatestFallMetres": -617.2,
+    "rockCellsThatDiffer": 26976,
+    "landKm2": 96.54
+  }
+}

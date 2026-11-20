@@ -1,0 +1,334 @@
+{
+ "page": "dev-fade.html",
+ "level": "high",
+ "size": "1600x900",
+ "results": [
+  {
+   "step": null,
+   "run": "spk.set({quiet:1,freeze:1})",
+   "value": 1
+  },
+  {
+   "step": null,
+   "run": "spk.resTo(1)",
+   "value": "1600x812"
+  },
+  {
+   "step": "sh-100-control-a",
+   "run": "(spk.set({lay:1,kind:1,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-100-control-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "100% control",
+   "value": {
+    "pixels": 1300800,
+    "differ": 439682,
+    "greatest": 121,
+    "meanOfThoseThatDiffer": 2.84
+   }
+  },
+  {
+   "step": "sh-100-pixel-a",
+   "run": "(spk.set({lay:0.5,kind:0,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-100-pixel-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "100% pixel",
+   "value": {
+    "pixels": 1300800,
+    "differ": 581670,
+    "greatest": 123,
+    "meanOfThoseThatDiffer": 3.15
+   }
+  },
+  {
+   "step": "sh-100-coverage-a",
+   "run": "(spk.set({lay:0.5,kind:1,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-100-coverage-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "100% coverage",
+   "value": {
+    "pixels": 1300800,
+    "differ": 609153,
+    "greatest": 84,
+    "meanOfThoseThatDiffer": 2.69
+   }
+  },
+  {
+   "step": "sh-100-surface-a",
+   "run": "(spk.set({lay:0.5,kind:2,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-100-surface-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "100% surface",
+   "value": {
+    "pixels": 1300800,
+    "differ": 585433,
+    "greatest": 136,
+    "meanOfThoseThatDiffer": 10.01
+   }
+  },
+  {
+   "step": "sh-100-clip-a",
+   "run": "(spk.set({lay:0.5,kind:3,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-100-clip-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "100% clip",
+   "value": {
+    "pixels": 1300800,
+    "differ": 518627,
+    "greatest": 126,
+    "meanOfThoseThatDiffer": 4.33
+   }
+  },
+  {
+   "step": "sh-100-lid-a",
+   "run": "(spk.set({lay:0.5,kind:4,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-100-lid-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "100% lid",
+   "value": {
+    "pixels": 1300800,
+    "differ": 403470,
+    "greatest": 120,
+    "meanOfThoseThatDiffer": 2.67
+   }
+  },
+  {
+   "step": null,
+   "run": "spk.resTo(0.7)",
+   "value": "1120x568"
+  },
+  {
+   "step": "sh-70-control-a",
+   "run": "(spk.set({lay:1,kind:1,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-70-control-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "70% control",
+   "value": {
+    "pixels": 1300800,
+    "differ": 414348,
+    "greatest": 97,
+    "meanOfThoseThatDiffer": 2.57
+   }
+  },
+  {
+   "step": "sh-70-pixel-a",
+   "run": "(spk.set({lay:0.5,kind:0,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-70-pixel-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "70% pixel",
+   "value": {
+    "pixels": 1300800,
+    "differ": 573777,
+    "greatest": 100,
+    "meanOfThoseThatDiffer": 2.31
+   }
+  },
+  {
+   "step": "sh-70-coverage-a",
+   "run": "(spk.set({lay:0.5,kind:1,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-70-coverage-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "70% coverage",
+   "value": {
+    "pixels": 1300800,
+    "differ": 568142,
+    "greatest": 72,
+    "meanOfThoseThatDiffer": 2.01
+   }
+  },
+  {
+   "step": "sh-70-surface-a",
+   "run": "(spk.set({lay:0.5,kind:2,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-70-surface-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "70% surface",
+   "value": {
+    "pixels": 1300800,
+    "differ": 578342,
+    "greatest": 117,
+    "meanOfThoseThatDiffer": 7.24
+   }
+  },
+  {
+   "step": "sh-70-clip-a",
+   "run": "(spk.set({lay:0.5,kind:3,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-70-clip-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "70% clip",
+   "value": {
+    "pixels": 1300800,
+    "differ": 500191,
+    "greatest": 114,
+    "meanOfThoseThatDiffer": 3.3
+   }
+  },
+  {
+   "step": "sh-70-lid-a",
+   "run": "(spk.set({lay:0.5,kind:4,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-70-lid-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "70% lid",
+   "value": {
+    "pixels": 1300800,
+    "differ": 375245,
+    "greatest": 88,
+    "meanOfThoseThatDiffer": 2.39
+   }
+  },
+  {
+   "step": null,
+   "run": "spk.resTo(0.5)",
+   "value": "800x406"
+  },
+  {
+   "step": "sh-50-control-a",
+   "run": "(spk.set({lay:1,kind:1,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-50-control-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "50% control",
+   "value": {
+    "pixels": 1300800,
+    "differ": 389462,
+    "greatest": 83,
+    "meanOfThoseThatDiffer": 2.5
+   }
+  },
+  {
+   "step": "sh-50-pixel-a",
+   "run": "(spk.set({lay:0.5,kind:0,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-50-pixel-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "50% pixel",
+   "value": {
+    "pixels": 1300800,
+    "differ": 549932,
+    "greatest": 72,
+    "meanOfThoseThatDiffer": 1.95
+   }
+  },
+  {
+   "step": "sh-50-coverage-a",
+   "run": "(spk.set({lay:0.5,kind:1,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-50-coverage-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "50% coverage",
+   "value": {
+    "pixels": 1300800,
+    "differ": 538810,
+    "greatest": 52,
+    "meanOfThoseThatDiffer": 1.74
+   }
+  },
+  {
+   "step": "sh-50-surface-a",
+   "run": "(spk.set({lay:0.5,kind:2,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-50-surface-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "50% surface",
+   "value": {
+    "pixels": 1300800,
+    "differ": 550214,
+    "greatest": 97,
+    "meanOfThoseThatDiffer": 5.99
+   }
+  },
+  {
+   "step": "sh-50-clip-a",
+   "run": "(spk.set({lay:0.5,kind:3,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-50-clip-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "50% clip",
+   "value": {
+    "pixels": 1300800,
+    "differ": 473141,
+    "greatest": 96,
+    "meanOfThoseThatDiffer": 2.88
+   }
+  },
+  {
+   "step": "sh-50-lid-a",
+   "run": "(spk.set({lay:0.5,kind:4,wave:0}),dev.look(-30,67.09,5490,-118,6,5900))"
+  },
+  {
+   "step": "sh-50-lid-b",
+   "run": "dev.look(-29.95,67.09,5490,-117.95,6,5900)"
+  },
+  {
+   "step": "50% lid",
+   "value": {
+    "pixels": 1300800,
+    "differ": 350100,
+    "greatest": 71,
+    "meanOfThoseThatDiffer": 2.32
+   }
+  }
+ ],
+ "problems": []
+}

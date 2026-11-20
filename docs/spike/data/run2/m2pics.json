@@ -1,0 +1,177 @@
+{
+ "page": "dev-place.html",
+ "level": "high",
+ "size": "1600x900",
+ "results": [
+  {
+   "step": null,
+   "run": "spk.set({quiet:1,freeze:1,lay:2,yr:1628,day:145,kind:1})",
+   "value": 1
+  },
+  {
+   "step": "m2-v9-50k",
+   "run": "spk.place.aim(50000)",
+   "value": {
+    "kept": 49934,
+    "byForm": [
+     110,
+     3142,
+     46682
+    ],
+    "triesACell": 2,
+    "chance": 0.7025,
+    "spotsTried": 1179648,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "m2-v1-50k",
+   "run": "spk.place.aim(50000)",
+   "value": {
+    "kept": 50054,
+    "byForm": [
+     0,
+     47,
+     50007
+    ],
+    "triesACell": 3,
+    "chance": 0.7539,
+    "spotsTried": 1769472,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "m2-v3-200k",
+   "run": "spk.place.aim(200000)",
+   "value": {
+    "kept": 82213,
+    "byForm": [
+     0,
+     0,
+     82213
+    ],
+    "triesACell": 32,
+    "chance": 1,
+    "spotsTried": 18874368,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "m2-v7-10k",
+   "run": "spk.place.aim(10000)",
+   "value": {
+    "kept": 9940,
+    "byForm": [
+     100,
+     1068,
+     8772
+    ],
+    "triesACell": 1,
+    "chance": 0.2756,
+    "spotsTried": 589824,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "m2-ground-50k",
+   "run": "spk.place.aim(50000)",
+   "value": {
+    "kept": 49553,
+    "byForm": [
+     26,
+     1922,
+     47605
+    ],
+    "triesACell": 2,
+    "chance": 0.5322,
+    "spotsTried": 1179648,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "m2-ground-layer-half-dither",
+   "run": "spk.set({lay:1.5,kind:1})",
+   "value": 1
+  },
+  {
+   "step": "m2-ground-layer-half-rise",
+   "run": "spk.set({lay:1.5,kind:4})",
+   "value": 1
+  },
+  {
+   "step": "m2-ground-layer-inferred",
+   "run": "spk.set({lay:1,kind:1})",
+   "value": 1
+  },
+  {
+   "step": "m2-ground-layer-found",
+   "run": "spk.set({lay:0})",
+   "value": 1
+  },
+  {
+   "step": "m2-ground-year-1560",
+   "run": "spk.set({lay:2,yr:1560})",
+   "value": 1
+  },
+  {
+   "step": "m2-ground-day-300",
+   "run": "spk.set({lay:2,yr:1628,day:300})",
+   "value": 1
+  },
+  {
+   "step": null,
+   "run": "spk.set({day:145})",
+   "value": 1
+  },
+  {
+   "step": "same-a",
+   "run": "spk.place.aim(50000)",
+   "value": {
+    "kept": 50262,
+    "byForm": [
+     111,
+     3165,
+     46986
+    ],
+    "triesACell": 2,
+    "chance": 0.7068,
+    "spotsTried": 1179648,
+    "full": [
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "step": "the same view twice",
+   "value": {
+    "pixels": 1300800,
+    "differ": 4,
+    "greatest": 1,
+    "meanOfThoseThatDiffer": 1
+   }
+  }
+ ],
+ "problems": []
+}
