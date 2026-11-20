@@ -7,6 +7,8 @@
     "build": "node build.mjs",
     "build:readable": "node build.mjs --readable",
     "build:dev": "node build.mjs --dev",
+    "size": "node build.mjs --size",
+    "spike:size": "node build.mjs --spike-size",
     "check": "bash ../checks/build.sh",
     "views": "node ../checks/views.mjs --views 9",
     "terrain": "node ../tools/terrain/build.mjs",

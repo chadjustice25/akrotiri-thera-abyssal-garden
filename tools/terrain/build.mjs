@@ -4,6 +4,10 @@
 // ============================================================================
 //   node tools/terrain/fetch.mjs                  once: downloads the two datasets into tools/terrain/cache/
 //   node tools/terrain/build.mjs [--preview DIR]  writes source/src/terrain-data.js and docs/terrain/build-report.json
+//   node tools/terrain/build.mjs --second         also, for the measuring spike (work order 003): writes today's island on the
+//                                                 same grid and datum as source/src/spike-island.js (development build only) and
+//                                                 its sizes, packed whole and as a difference, as docs/spike/island-report.json.
+//                                                 It changes nothing about the island of 1628 BCE or its data.
 // The output is deterministic: the same inputs give the same bytes. --preview also writes shaded-relief PNGs to look at.
 // The record of every edit, its claims and its liberties is docs/terrain/README.md.
 import { createHash } from 'node:crypto';
@@ -12,7 +16,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readTiff } from './tiff.mjs';
 import { Grid, blur, clamp, distance, distPolyline, fbm, inPoly, mix, relief, sampleGeo, sstep, toLat, toLon, toX, toZ } from './lib.mjs';
-import { encodeTerrain, UNIT } from './codec.mjs';
+import { encodeSecond, encodeTerrain, UNIT } from './codec.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url)), root = path.join(here, '..', '..');
 const E = JSON.parse(readFileSync(path.join(here, 'edits.json'), 'utf8'));
@@ -295,6 +299,78 @@ mkdirSync(path.join(root, 'docs', 'terrain'), { recursive: true });
 writeFileSync(path.join(root, 'docs', 'terrain', 'build-report.json'), JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report, null, 1));
 console.log(`terrain-data.js: ${enc.bytes.length} bytes of data, ${(b64.length / 1024).toFixed(1)} kB as text`);
+
+// ---------------------------------------------------------------- a second surface, for the measuring spike (--second)
+// Today's island (T: the surface this build starts from, in the datum of 1628 BCE) as a STAND-IN for the island after the
+// eruption. It is not a model of the eruption or of any year: it is there to measure what a second island costs.
+if (process.argv.includes('--second')) {
+  // rock for the stand-in: the classes of 1628 BCE, except that the restored land and the bay are gone: today's Kameni
+  // islands are black lava, the rest of the caldera is undivided
+  const rock2 = rock.slice(); for (let k = 0; k < N * N; k++) if (M[k] || bay[k]) rock2[k] = inKameni[k] && T.d[k] > 0 ? 3 : 0;
+  const cost = new Float64Array(N * N), PICK = { mean: 1 }; // (the predictor that packs smallest at the same accuracy; see whatIf below)
+  const whole = encodeTerrain(T.d, rock2, N, CF), base = { q: enc.q, rock }, diff = encodeSecond(T.d, rock2, N, CF, base, { ...PICK, cost });
+  // where the difference's bytes go, and what other ways of storing the second surface would cost (sizes only; none is used)
+  const where = { coarseGrid: cost.coarse / 8, rock: cost.rock / 8, calderaSide: 0, otherLand: 0, otherSea: 0 }, cells = { calderaSide: 0, otherLand: 0, otherSea: 0 };
+  for (let k = 0; k < N * N; k++) if (cost[k]) { const r = M[k] || bay[k] ? 'calderaSide' : h.d[k] > 0 || T.d[k] > 0 ? 'otherLand' : 'otherSea'; where[r] += cost[k] / 8; cells[r]++; }
+  for (const k in where) where[k] = Math.round(where[k]);
+  const zero = { q: new Int32Array(N * N), rock: new Uint8Array(N * N) }, size = (B, o) => encodeSecond(T.d, rock2, N, CF, B, o).bytes.length;
+  const half = new Float32Array(N * N / 4), halfRock = new Uint8Array(N * N / 4);
+  for (let j = 0; j < N / 2; j++) for (let i = 0; i < N / 2; i++) { const k = j * 2 * N + i * 2; half[j * N / 2 + i] = (T.d[k] + T.d[k + 1] + T.d[k + N] + T.d[k + N + 1]) / 4; halfRock[j * N / 2 + i] = rock2[k]; }
+  const whatIf = {
+    'difference, each cell predicted from the plane through its neighbours\' differences': size(base, {}),
+    'difference, predicted from the mean of two neighbours\' differences (used)': size(base, { mean: 1 }),
+    'difference, heights stored to 1 m at best (0.5 m today)': size(base, { mean: 1, minFine: 4 }),
+    'difference, heights stored to 2 m at best': size(base, { mean: 1, minFine: 8 }),
+    'whole, heights stored to 1 m at best': size(zero, { minFine: 4 }),
+    'whole, heights stored to 2 m at best': size(zero, { minFine: 8 }),
+    'whole, on a grid of 80 m cells (a quarter of the cells)': encodeTerrain(half, halfRock, N / 2, CF).bytes.length,
+  };
+  // (the two packings round each height from a different prediction, so they are not the same grid cell for cell; they
+  // follow the same rule for how far a stored height may be from the true one, and the report gives both errors)
+  let apart = 0; for (let k = 0; k < N * N; k++) apart = Math.max(apart, Math.abs(whole.q[k] - diff.q[k]) * UNIT);
+  // the development page's own reader (source/src/spike-year.js) must give back exactly this grid
+  const y = readFileSync(path.join(root, 'source', 'src', 'spike-year.js'), 'utf8'), a = y.indexOf('// <second-decoder>'), b = y.indexOf('// </second-decoder>');
+  if (a < 0 || b < 0) { console.error('source/src/spike-year.js has no second-decoder marks'); process.exit(1); }
+  const page = new Function(y.slice(a, b) + '\nreturn decodeSecond;')()(diff.bytes, base);
+  for (let k = 0; k < N * N; k++) if (page.q[k] !== diff.q[k] || page.rock[k] !== rock2[k]) { console.error('the page\'s reader of the second surface disagrees with the data at cell ' + k); process.exit(1); }
+  let changed = 0, changedLand = 0, sumAbs = 0, maxUp = 0, maxDown = 0, rockChanged = 0, land2 = 0;
+  for (let k = 0; k < N * N; k++) { const d = (diff.q[k] - enc.q[k]) * UNIT; if (d) { changed++; sumAbs += Math.abs(d); if (h.d[k] > 0 || T.d[k] > 0) changedLand++; } if (d > maxUp) maxUp = d; if (d < maxDown) maxDown = d; if (rock2[k] !== rock[k]) rockChanged++; if (T.d[k] > 0) land2++; }
+  const b64w = Buffer.from(whole.bytes).toString('base64'), b64d = Buffer.from(diff.bytes).toString('base64');
+  const rep2 = {
+    what: 'Today\'s island on the page\'s grid and datum, as a stand-in for the island after the eruption (work order 003). Not a model of the eruption.',
+    grid: E.grid, firstSurface: { bytes: enc.bytes.length, asTextInThePage: b64.length, fineCellsStored: enc.fineStored },
+    packedWhole: { bytes: whole.bytes.length, asTextInThePage: b64w.length, fineCellsStored: whole.fineStored, maxErrorMetresOnLand: r2(whole.maxErrLand), rmsErrorMetresOnLand: r2(whole.rmsLand), maxErrorMetresUnderwater: r2(whole.maxErrSea) },
+    packedAsDifference: { bytes: diff.bytes.length, asTextInThePage: b64d.length, fineCellsStored: diff.fineStored, maxErrorMetresOnLand: r2(diff.maxErrLand), rmsErrorMetresOnLand: r2(diff.rmsLand), maxErrorMetresUnderwater: r2(diff.maxErrSea), greatestDistanceFromThePackedWholeGridMetres: r2(apart), pageReaderAgrees: true, sha256: createHash('sha256').update(diff.bytes).digest('hex') },
+    differenceSavesBytes: whole.bytes.length - diff.bytes.length, differenceIsShareOfWhole: r3(diff.bytes.length / whole.bytes.length),
+    whereTheDifferenceBytesGo: where, fineCellsStoredByRegion: cells, whatIfBytes: whatIf,
+    theTwoSurfaces: { cells: N * N, cellsThatDiffer: changed, cellsThatDifferOnLandOfEither: changedLand, meanAbsoluteDifferenceMetresWhereTheyDiffer: r2(sumAbs / Math.max(changed, 1)), greatestRiseMetres: r1(maxUp), greatestFallMetres: r1(maxDown), rockCellsThatDiffer: rockChanged, landKm2: r2(land2 * A / 1e6) },
+  };
+  mkdirSync(path.join(root, 'docs', 'spike'), { recursive: true });
+  writeFileSync(path.join(root, 'docs', 'spike', 'island-report.json'), JSON.stringify(rep2, null, 2) + '\n');
+  writeFileSync(path.join(root, 'source', 'src', 'spike-island.js'),
+    `// GENERATED by tools/terrain/build.mjs --second for the measuring spike (work order 003). ONLY IN dev.html, never in index.html.\n`
+    + `// Today's island on the page's grid and datum, as a STAND-IN for the island after the eruption: it is not a model of the eruption\n`
+    + `// or of any year. It is stored as its difference from the island of 1628 BCE (TERRAIN, terrain-data.js) and cannot be read without it.\n`
+    + `//\n`
+    + `// THIS FILE IS NOT UNDER THE MIT LICENCE of the code around it. It is data derived from the same two datasets as terrain-data.js\n`
+    + `// and stays under their terms. The notices below are the licences' own words, each on one line.\n`
+    + `//\n`
+    + `// Land. Copernicus DEM GLO-30 (COP-DEM-GLO-30-F), Licence for the use of the Copernicus WorldDEM-30, article 6:\n`
+    + `//   produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved\n`
+    + `//   The organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30\n`
+    + `// Anyone who distributes this file or a page built from it, changed or not, must keep that notice and that sentence and bind those\n`
+    + `// they pass it to to the same terms. The use of the data here is not endorsed by the Copernicus programme.\n`
+    + `//\n`
+    + `// Sea floor. EMODnet DTM 2024, EMODnet terms of use; licence text at https://creativecommons.org/licenses/by/4.0/ :\n`
+    + `//   This data product was created by EMODnet ( https://emodnet.ec.europa.eu/en/ ), and is owned by the EU and licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) license.\n`
+    + `//   EMODnet Bathymetry Consortium (2024), EMODnet Digital Bathymetry (DTM 2024), https://doi.org/10.12770/cf51df64-56f9-4a99-b1aa-36b8d7b743a1.\n`
+    + `//   Not to be used for navigation.\n`
+    + `//\n`
+    + `// Both datasets were changed: resampled, joined, moved to the sea level of 1628 BCE, with the surface model's buildings and two summits corrected.\n`
+    + `const TERRAIN2 = '${b64d}';\n`);
+  console.log(JSON.stringify(rep2, null, 1));
+  console.log(`spike-island.js: the second surface is ${whole.bytes.length} bytes packed whole (${(b64w.length / 1024).toFixed(1)} kB as text) and ${diff.bytes.length} bytes as a difference (${(b64d.length / 1024).toFixed(1)} kB as text)`);
+}
 
 // ---------------------------------------------------------------- previews
 if (PREVIEW) {

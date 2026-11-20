@@ -9,13 +9,13 @@ export const UNIT = 0.25;
 const MIN_COARSE = 4, MIN_FINE = 2, SHALLOW = -60; // steps in UNITs; full resolution is kept above -15 m
 
 class Enc {
-  constructor() { this.low = 0; this.range = 0xffffffff; this.cache = 0; this.cacheSize = 1; this.out = []; }
+  constructor() { this.low = 0; this.range = 0xffffffff; this.cache = 0; this.cacheSize = 1; this.out = []; this.bits = 0; } // bits: how much has been written, for reports only
   shift() {
     if (this.low < 0xff000000 || this.low >= 0x100000000) { const carry = this.low >= 0x100000000 ? 1 : 0; let t = this.cache; do { this.out.push((t + carry) & 255); t = 255; } while (--this.cacheSize); this.cache = Math.floor(this.low / 16777216) & 255; }
     this.cacheSize++; this.low = (this.low % 16777216) * 256;
   }
   bit(p, i, b) {
-    const bound = (this.range >>> 11) * p[i];
+    const bound = (this.range >>> 11) * p[i]; this.bits -= Math.log2((b ? 2048 - p[i] : p[i]) / 2048);
     if (!b) { this.range = bound; p[i] += (2048 - p[i]) >> 4; } else { this.low += bound; this.range -= bound; p[i] -= p[i] >> 4; }
     while (this.range < 16777216) { this.range *= 256; this.shift(); }
     return b;
@@ -90,4 +90,71 @@ export function encodeTerrain(heights, rockT, N, CF) {
     if (heights[k] > 0) { nl++; sse += e * e; if (e > maxErrLand) maxErrLand = e; } else if (e > maxErrSea) maxErrSea = e;
   }
   return { bytes, decoded, q: w.q, fineStored, maxErrLand, maxErrSea, rmsLand: Math.sqrt(sse / Math.max(nl, 1)) };
+}
+
+// ---------------------------------------------------------------- a second surface, as a difference from a first
+// Work order 003 (the measuring spike) asks what a second island costs when it is stored as its difference from the island
+// of 1628 BCE. The form is the same as above, with one change: each cell is predicted from the same cell of the first
+// surface plus the difference its neighbours have already shown. The step between storable heights still follows the
+// second surface's own slope and depth, so it is exactly as accurate as the same surface packed whole, and the two sizes
+// can be compared. B is the first surface as a reader gets it back: { q, rock }.
+function walk2(c, N, CF, B, tgt, rockT, o = {}) {
+  const minFine = o.minFine || MIN_FINE, minCoarse = o.minCoarse || MIN_COARSE, cost = o.cost; // o: for the spike's what-if sizes only
+  const tally = (k) => { if (cost) { cost[k] += c.bits - (cost.at || 0); cost.at = c.bits; } };
+  const prob = (n) => new Uint16Array(n).fill(1024), Zp = prob(8), Sp = prob(8), Gp = prob(160), Mp = prob(40), Rp = prob(16);
+  const res = (cx, r) => {
+    if (!c.bit(Zp, cx, r ? 1 : 0)) return 0;
+    const neg = c.bit(Sp, cx, r < 0 ? 1 : 0), v = r < 0 ? -r : r; let n = 0;
+    if (tgt) { n = 31 - Math.clz32(v); for (let i = 0; i < n; i++) c.bit(Gp, cx * 20 + i, 1); c.bit(Gp, cx * 20 + n, 0); } else while (c.bit(Gp, cx * 20 + n)) n++;
+    let m = 1; for (let i = n - 1; i >= 0; i--) m = m * 2 + c.bit(Mp, n * 2 + (i === n - 1 ? 0 : 1), (v >> i) & 1);
+    return neg ? -m : m;
+  };
+  const layer = (a, b, n, mask, minStep, want) => {
+    for (let j = 0, k = 0; j < n; j++) for (let i = 0; i < n; i++, k++) {
+      if (mask && !mask[k]) continue;
+      const L = i ? a[k - 1] : j ? a[k - n] : 0, U = j ? a[k - n] : L, UL = i && j ? a[k - n - 1] : j ? U : L, UR = j && i < n - 1 ? a[k - n + 1] : U;
+      const act = Math.abs(L - UL) + Math.abs(U - UL) + Math.abs(UR - U), p0 = L + U - UL;
+      let step = ((act + 9) / 18) | 0; const deep = p0 < 0 ? (-p0 / 20) | 0 : 0; if (deep > step) step = deep; step = step < minStep ? minStep : step > 255 ? 255 : step;
+      // the differences of the cells already read: left, up, up-left, up-right
+      const dL = i ? a[k - 1] - b[k - 1] : j ? a[k - n] - b[k - n] : 0, dU = j ? a[k - n] - b[k - n] : dL, dUL = i && j ? a[k - n - 1] - b[k - n - 1] : j ? dU : dL, dUR = j && i < n - 1 ? a[k - n + 1] - b[k - n + 1] : dU;
+      const pred = b[k] + (o.mean ? (dL + dU) >> 1 : dL + dU - dUL), cx = Math.min(7, 31 - Math.clz32(1 + (((Math.abs(dL - dUL) + Math.abs(dU - dUL) + Math.abs(dUR - dU)) / step) | 0)));
+      a[k] = pred + res(cx, want ? Math.round((want(k) - pred) / step) : 0) * step;
+      if (mask) tally(k);
+    }
+  };
+  const NC = N / CF, co = new Int32Array(NC * NC), bc = new Int32Array(NC * NC), q = new Int32Array(N * N), rock = new Uint8Array(N * N);
+  for (let J = 0, K = 0; J < NC; J++) for (let I = 0; I < NC; I++, K++) { let s = 0; for (let y = 0; y < CF; y++) for (let x = 0; x < CF; x++) s += B.q[(J * CF + y) * N + I * CF + x]; bc[K] = Math.round(s / (CF * CF)); }
+  layer(co, bc, NC, null, minCoarse, tgt && ((k) => { let s = 0; const I = k % NC, J = (k / NC) | 0; for (let y = 0; y < CF; y++) for (let x = 0; x < CF; x++) s += tgt[(J * CF + y) * N + I * CF + x]; return s / (CF * CF); }));
+  const mask = new Uint8Array(N * N), cAt = (I, J) => co[(J < 0 ? 0 : J >= NC ? NC - 1 : J) * NC + (I < 0 ? 0 : I >= NC ? NC - 1 : I)];
+  for (let j = 0, k = 0; j < N; j++) for (let i = 0; i < N; i++, k++) {
+    const u = 2 * i + 1 - CF, v = 2 * j + 1 - CF, I = Math.floor(u / (2 * CF)), J = Math.floor(v / (2 * CF)), fu = u - I * 2 * CF, fv = v - J * 2 * CF;
+    q[k] = Math.round(((cAt(I, J) * (2 * CF - fu) + cAt(I + 1, J) * fu) * (2 * CF - fv) + (cAt(I, J + 1) * (2 * CF - fu) + cAt(I + 1, J + 1) * fu) * fv) / (4 * CF * CF));
+    const ci = (i / CF) | 0, cj = (j / CF) | 0; let top = -1e9; for (let y = -1; y <= 1; y++) for (let x = -1; x <= 1; x++) top = Math.max(top, cAt(ci + x, cj + y));
+    mask[k] = top > SHALLOW ? 1 : 0;
+  }
+  if (cost) { cost.coarse = c.bits; cost.at = c.bits; }
+  layer(q, B.q, N, mask, minFine, tgt && ((k) => tgt[k]));
+  if (cost) cost.rock = -c.bits;
+  // rock classes: "the same as the first surface's" or a 3-bit class
+  for (let k = 0, was = 0; k < N * N; k++) {
+    const diff = c.bit(Rp, was, rockT ? (rockT[k] !== B.rock[k] ? 1 : 0) : 0); was = diff;
+    if (!diff) { rock[k] = B.rock[k]; continue; }
+    let node = 1; for (let b = 2; b >= 0; b--) node = node * 2 + c.bit(Rp, 4 + node, rockT ? (rockT[k] >> b) & 1 : 0);
+    rock[k] = node - 8;
+  }
+  if (cost) cost.rock += c.bits;
+  return { q, rock, mask };
+}
+export function decodeSecond(bytes, B, o) {
+  const N = bytes[0] * 16, CF = bytes[1], { q, rock } = walk2(new Dec(bytes, 2), N, CF, B, null, null, o);
+  return { N, CF, q, rock };
+}
+export function encodeSecond(heights, rockT, N, CF, B, o) {
+  const tgt = Float64Array.from(heights, (v) => v / UNIT), enc = new Enc(), w = walk2(enc, N, CF, B, tgt, rockT, o), body = enc.end();
+  const bytes = new Uint8Array(body.length + 2); bytes[0] = N / 16; bytes[1] = CF; bytes.set(body, 2);
+  const back = decodeSecond(bytes, B, o && { ...o, cost: null });
+  for (let k = 0; k < N * N; k++) if (back.q[k] !== w.q[k] || back.rock[k] !== rockT[k]) throw new Error('codec: the second surface does not come back as it was written, at cell ' + k);
+  let maxErrLand = 0, maxErrSea = 0, sse = 0, nl = 0, fineStored = 0;
+  for (let k = 0; k < N * N; k++) { fineStored += w.mask[k]; const e = Math.abs(w.q[k] * UNIT - heights[k]); if (heights[k] > 0) { nl++; sse += e * e; if (e > maxErrLand) maxErrLand = e; } else if (e > maxErrSea) maxErrSea = e; }
+  return { bytes, q: w.q, fineStored, maxErrLand, maxErrSea, rmsLand: Math.sqrt(sse / Math.max(nl, 1)) };
 }
