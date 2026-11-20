@@ -9,6 +9,14 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 - **From Uruk: grade evidence by its distance in time, not only by whether it exists.** State how far each piece of evidence is from the target moment. A text or image made centuries later is grade C, even when it is famous.
 - **From Uruk and unghost: reports carry errors that only a check against the sources catches.** Nothing from a report is adopted until its claim is checked (`docs/research/verification/`).
 
+## Work order 003, the measuring spike (2026-11-19)
+- **Measure before the design is fixed.** One short order found that the later island costs twice the estimate, that the town's vertices carry no building number (the review and the order both said they did), and that showing less of the town is not cheaper.
+- **A shader that may discard costs even when it discards nothing.** The GPU loses its own hidden-surface removal. Keep an opaque pipeline for when nothing is fading.
+- **Timings on a Mac in use are good to about a millisecond.** Take the baseline in the same run, run the set more than once, and report the runs that disagree.
+- **A prototype kept in files only the development build includes cannot change the released page**, and the gate proves it. The price is duplicated code, so its size overstates the real feature.
+- **A direct `eval()` in any file stops the minifier shortening names in the whole page.** It inflated the first size readings by 5 kB.
+- **Ask what a thing looks like from every view.** The cheapest fade, the lidded rise, came from seeing that the clipped rise looked hollow from above.
+
 ## The architecture review (2026-11-19)
 - **Check a statement about the engine against the source before it goes into a record.** A first draft of `docs/ARCHITECTURE.md` said the ground was one fixed mesh and proposed nested grids as an improvement. The ground has been nested grids over baked height maps since work order 001. The session was working from its memory of earlier work, not from the code; one `grep` showed the truth.
 - **A project that publishes no source can still teach.** Voidstruck's repository holds only its built page, but its README says how it is made and where each kB goes. Read what the author chose to explain before reaching for the code.

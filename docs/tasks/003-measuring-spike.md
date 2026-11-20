@@ -1,7 +1,7 @@
 # 003-measuring-spike: measure the design for layers and time before it is built
 **Status:** open · **Branch:** `task/003-measuring-spike`
 
-**Ready to run.** It needs no research. Chad asked for the architecture to be looked at before anything more is built (2026-11-19), and approved this spike as the next step ("Let's continue as you suggested", D39).
+**Done on 2026-11-19, and waiting for Chad's review.** The Result is below. The status stays open until he has chosen a way of fading and the Review is written. It needed no research. Chad asked for the architecture to be looked at before anything more is built (2026-11-19), and approved this spike as the next step ("Let's continue as you suggested", D39).
 
 ```harness-spec
 {
@@ -225,7 +225,48 @@ If a prototype cannot be kept out of the released page, or a measurement cannot 
 - Polishing a prototype beyond what its measurement needs.
 
 ## Result
-(Given by the worker in its final report and pasted in by the integrator: which way the prototypes were kept out of the released page; the gate and views outputs; the size of `index.html` and what changed it; for each of the three measurements, the numbers and a verdict; the size-by-part table; the link to Thera Spike 003; what the layers and time order should do differently; and who looked at each picture.)
+By the worker session (Claude Fable 5.2, effort high), 2026-11-19. Branch `task/003-measuring-spike`, three commits, `ee69e82` to `ffdb45a`. The full report is `docs/spike/003-measurements.md`, with every reading as JSON in `docs/spike/data/`. This section was written by the integrator from that report; the worker's final message was not seen.
+
+**How the prototypes were kept out of the released page:** as files that only the development build includes (`spike.js`, `spike-fade.js`, `spike-place.js`, `spike-island.js`, `spike-year.js`, `spike-go.js`). The engine's own files are not changed by them. `index.html` is 169,665 bytes against 169,589 before: 76 bytes more, all of it keeper K2.
+
+**Checks**
+
+| Check | Output |
+|---|---|
+| `checks/build.sh`, run by the integrator on the merged tree | `PASS build: index.html matches a fresh build of source/, 166 kB of a 256 kB budget, nothing loaded at run time` |
+| `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60`, the same | `PASS views: nine viewpoints rendered on apple metal-3 at high detail, 1600x900, world built in 1.1 s, every view at least 55 fps and 60% resolution` |
+| Pictures | Thera Spike 003, <https://claude.ai/artifact/RT8eBH4JC9c7vsxUHJTRbk> |
+
+**Every time below is this Mac's** (Apple M4, while in use for other things), and a difference under about 1 ms is noise. No iPad was measured.
+
+**Measurement 1, a layer of the town fading: the design holds, with changes.**
+- One 12-line visibility function serves every shader stage. At rest, with an opaque pipeline, the fade costs nothing measurable.
+- A fade in motion costs about 1–2 ms in a street and more from above. Most of that is the town's shadow map, which has to be drawn again on every frame of a fade.
+- Five ways of fading were built. A dither on the samples inside a pixel reads as clear glass. A "lidded rise", which presses the houses down flat and lets them grow, is the cheapest (0.1–1.0 ms) and does not shimmer. A dither fixed to the surface shimmers nearly five times as much and should not be used. A wave spreading from the excavated centre costs about half of an all-at-once fade.
+- Showing only Found is not cheaper than showing everything: the bare ground costs more to shade than the houses that covered it.
+- Collision follows: a walker on a fading roof came down with it over 2.5 s.
+- **The town's vertices carry no building number**, which the order and the review both assumed. One has to be added.
+
+**Measurement 2, placing by rule on the GPU: the design holds.**
+- No optional WebGPU feature is needed. Placing is close to free; drawing what is placed is the cost.
+- About 10,000 things are inside the noise; about 50,000 add 0.1–2.2 ms; about 200,000 add 1–6 ms.
+- The same view gives the same picture twice, and JavaScript's memory does not grow over minutes of flying.
+- Not learned: the cost of real foliage, or of shadows for placed things.
+
+**Measurement 3, two islands blended by the year: fast, but larger than estimated.**
+- Blending the two sets of maps is inside the noise, at rest and in motion.
+- The stand-in island costs **41.3 kB of page as a difference**, against the review's 15–25 kB. Stripping the eruption's deposits changed every cell of land, so the difference is not confined to the caldera. At heights to 2 m it is 28.6 kB; on a grid of 80 m cells, 18.8 kB.
+- The second set of maps takes 133 MB of GPU memory on High (37 MB on Medium and Low) and 0.15 s of load.
+
+**The keepers**
+- K1: `cd source && npm run size` prints the page by part. Terrain data is 42.7% of it, engine code 23.6%, shaders 18.5%, town data 8.6%, menu and styles 4.9%, sound 1.7%.
+- K2: a Stats button in the menu on touch devices, 76 bytes.
+
+**The size of the whole plan** moves from about 300–390 kB to about 310–410 kB: the later island goes up and nothing measured comes down.
+
+**What the layers and time order should do differently:** fourteen points, in `docs/spike/003-measurements.md` §9. The chief ones are in `docs/ARCHITECTURE.md` §11.
+
+**Who looked:** Claude, in the worker session, looked at every picture in Thera Spike 003, eleven at full size and the rest on contact sheets. Shimmer was measured, not judged by eye, and nobody has watched a fade in motion. Nobody looked at the nine pictures of the views check. Chad had looked at nothing when this was written.
 
 ## Review
-(Filled in by the integrator: what Chad saw, which fade he chose, and the decisions that follow.)
+(Waiting for Chad, 2026-11-20. To record here: what he saw, in the pictures and in `dev.html`; which way of fading he chose; and the decisions that follow.)

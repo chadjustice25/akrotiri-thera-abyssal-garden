@@ -42,13 +42,12 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
   - Their notices are in the page's menu, `README.md`, the two generated data files and the two records, and must travel with the page.
 
 ## Next
-0. **Chad: start work order 003, the measuring spike** (D39), in a new session. It needs no research and can run while the plant lanes finish.
-   ```sh
-   cd ~/Developer/akrotiri-thera-abyssal-garden
-   claude -n "Akrotiri work order 003: measuring spike (Fable 5.2, high)" --model claude-fable-5-2 --effort high
-   ```
-   Then give it this prompt: "Read AGENTS.md, then carry out work order docs/tasks/003-measuring-spike.md. Work in your own git worktree on a new branch task/003-measuring-spike, as the order says. Commit on that branch as you go; do not push or merge. Publish the spike's pictures to a new private artifact named Thera Spike 003. Report back with the Result in your final message, under the headings the order's Result section names, and say who looked at each picture."
-   - After it: work order 004, layers and time, is written from its numbers; then 005, plants.
+0. **Chad: review work order 003, the measuring spike, and choose the fade** (O19). The spike is done and its report is `docs/spike/003-measurements.md`.
+   - Pictures: Thera Spike 003, <https://claude.ai/artifact/RT8eBH4JC9c7vsxUHJTRbk>.
+   - In motion, which nobody has watched yet: `cd source && npm run build:dev`, open `dev.html`, press `9` for the view over the roofs, then `K` to change layer, `J` to change the way of fading and `N` for the wave.
+   - What it found is in `docs/ARCHITECTURE.md` §11. In short: the design holds; a fade costs 1–2 ms on this Mac; the island after the eruption is about twice the size estimated; and the whole plan is now put at about 310–410 kB.
+   - The page has a **Stats** button in its menu on touch devices, so the frame rate can be read on an iPad. That reading should be taken before work order 004 is written.
+   - Then work order 004, layers and time, is written (O20 says what it would put in the menu), and after it 005, plants.
 1. **Chad: start the plant research** (D26). Three lanes go to Gemini Neon (D30) and can run at the same time: T3b (what grew where, and how thickly), T3c (how each plant looked, and its state in late May) and T3d (plants in Aegean art, on Thera and elsewhere).
    - The steps are in `docs/research/RUNBOOK-003-plants.md`. The Research Desk (below) lists the three lanes first, with a Copy button each.
    - When the reports are in, Claude checks each against its sources (`docs/research/verification/T3b.md`, `T3c.md`, `T3d.md`) and then drafts `docs/tasks/003-…`. Nothing is built from a report that has not been checked. The order's first step is to raise the land that edit E4 puts back (D29).

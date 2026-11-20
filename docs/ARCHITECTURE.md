@@ -1,6 +1,6 @@
 # Architecture: where the engine stands, and what the bigger world needs
 
-A review, written on 2026-11-19 at Chad's request, after the project's scope grew in one day from one moment to a world with layers, seasons and a year the viewer can move. **It proposes; it decides nothing.** The decisions it needs are in §9. Sizes and frame times under "measured" were measured; everything called an estimate is the session's estimate and has to be measured before it is relied on.
+A review, written on 2026-11-19 at Chad's request and corrected on 2026-11-20 from the measurements of work order 003 (§11), after the project's scope grew in one day from one moment to a world with layers, seasons and a year the viewer can move. **It proposes; it decides nothing.** The decisions it needs are in §9. Sizes and frame times under "measured" were measured; everything called an estimate is the session's estimate and has to be measured before it is relied on.
 
 ## 1. What changed
 
@@ -40,7 +40,7 @@ Every thing in the world now carries three tags: its **layer**, the **years** it
 
 1. **Nothing is rebuilt when a tag's control moves.** Whether a thing shows is worked out on the GPU from three numbers: the layer, the year, the day of the year.
 2. **Numerous things are placed by rule, not stored one by one.** A field of barley is a rule and a patch on a map, not ten thousand positions in the page.
-3. **Hidden things cost nothing.** What a layer or a year hides is culled before it is drawn.
+3. **Hidden things cost nothing.** What a layer or a year hides is culled before it is drawn. *Measured:* true of the hidden thing, but the frame does not get cheaper. With the Inferred town hidden, the bare ground costs more to shade than the houses that covered it.
 4. **Fades need no sorting.** Sorting transparent things is slow and fragile.
 5. **Shadows and collision follow what is shown.** A house that has faded away casts no shadow and stops nobody.
 6. **The evidence stays attached.** Each rule and each tag keeps its claim reference in the tools' data, as now. The page carries only numbers.
@@ -50,8 +50,8 @@ Every thing in the world now carries three tags: its **layer**, the **years** it
 ### 4.1 One visibility function
 A thing's visibility is one number from 0 to 1: its layer's fade, times its years' fade, times its season's state. Three values go to every shader: the layer (0 to 2, moving smoothly during a change), the year, and the day of the year.
 
-- **Fixed meshes such as the town** keep one mesh. Each building's tags live in a small table, looked up by the building number its vertices already carry, so tags cost a few bytes a building.
-- **The fade is a dither**, not transparency: a fading thing is drawn through a fine pattern of holes that closes or opens. It needs no sorting, and the shadow pass uses the same pattern, so shadows fade with their owners.
+- **Fixed meshes such as the town** keep one mesh. Each building's tags live in a small table, looked up by a building number, so tags cost a few bytes a building. *Measured:* the vertices carry no such number today, only a one-byte seed that many buildings share. It has to be added, and it fits in the 32 bytes each corner already has.
+- **The fade is a dither**, not transparency: a fading thing is drawn through a fine pattern of holes that closes or opens. It needs no sorting, and the shadow pass uses the same pattern, so shadows fade with their owners. *Measured:* this holds, with three changes. Dither on the samples inside a pixel, where there is multisampling. Draw with an opaque pipeline whenever nothing is fading, because a shader that may discard costs even when it discards nothing. And budget for the town's shadow map being drawn again on every frame of a fade, which is most of what a fade costs. A second way to fade, pressing a building flat and letting it rise, needs no dither at all.
 - **Collision** reads the same table, and a viewer standing on something that fades is lowered gently (D31).
 
 ### 4.2 The GPU places everything numerous
@@ -60,7 +60,7 @@ For plants, and later people and animals, a compute pass runs each frame. It sca
 This is the design of the Formosa Forest fork (§7), which draws a forested island this way. The three tags become three more inputs to the same pass.
 
 ### 4.3 The island through time
-Two whole islands would cost 74 kB each. The island after the eruption is today's island, which is the data the tools already start from. So the page would hold the island of 1628 BCE, as now, and a compact **difference** to the later one, which is smooth and confined to the caldera and the ash blanket. Because the ground is already drawn from baked height maps (§2), the later island is a second set of maps, and the shader blends the two by the year. The eruption itself is an effect, not data.
+Two whole islands would cost 74 kB each. The island after the eruption is today's island, which is the data the tools already start from. So the page would hold the island of 1628 BCE, as now, and a compact **difference** to the later one. *Measured:* the difference is not small. The ash blanket covers the whole island, so every cell of land differs, and a stand-in for the later island costs 41 kB at today's accuracy. It has to be stored more coarsely: 29 kB with heights to 2 m, or 19 kB on a grid of 80 m cells. Because the ground is already drawn from baked height maps (§2), the later island is a second set of maps, and the shader blends the two by the year. The eruption itself is an effect, not data.
 
 ### 4.4 The sky
 An ephemeris inside the page, by the method of Beyond the Gates of Uruk: short series for the Sun, Moon and planets fitted to NASA's ephemeris over the window, a catalogue of bright stars with their own motion, and precession. It is worked out when the date changes, not every frame.
@@ -75,18 +75,20 @@ Each plant species gets a few numbers from lane T3c: when it leafs, flowers, fru
 
 Estimates only, in kB of page, uncompressed.
 
-| Part | Estimate |
-|---|---|
-| The page today | 166 |
-| Layers, dates and years in the engine, with their controls | 8–12 |
-| Plants: forms, rules, land-cover map, seasons | 20–30 |
-| The sky: ephemeris and stars | 15–25 |
-| The island after the eruption, as a difference, and the eruption | 15–25 |
-| The harbour and ships | 10–15 |
-| People and animals | 25–40 |
-| Interiors and wall paintings | 30–60 |
-| Labels and the text of what was found | 10–20 |
-| **Total** | **about 300–390** |
+| Part | First estimate | After work order 003 |
+|---|--:|---|
+| The page today | 166 | **165.7, measured.** Terrain data 70.7; engine code 39.1; shaders 30.7; town data 14.2; menu and styles 8.2; sound 2.8 |
+| Layers, dates and years in the engine, with their controls | 8–12 | Measured in part: the fade is about 5 kB and what the parts share about 9.5 kB, both overstated by how the spike was built. The estimate stands, and its lower half looks likelier |
+| Plants: forms, rules, land-cover map, seasons | 20–30 | The placing pass is **7.8 kB, measured.** The species, the rules and the map are still a guess |
+| The sky: ephemeris and stars | 15–25 | Still a guess |
+| The island after the eruption, and the eruption | 15–25 | **25–47 kB** on a stand-in, depending on how coarsely it is stored, before the eruption itself |
+| The harbour and ships | 10–15 | Still a guess |
+| People and animals | 25–40 | Still a guess |
+| Interiors and wall paintings | 30–60 | Still a guess |
+| Labels and the text of what was found | 10–20 | Still a guess |
+| **Total** | **about 300–390** | **about 310–410** |
+
+There is a second budget the first draft did not have: **GPU memory.** A second island's maps take 133 MB on High and 37 MB on Medium and Low, so they should be made only when the year comes near them.
 
 So one 256 kB page will not hold the whole plan. Three ways to answer that:
 
@@ -98,7 +100,21 @@ There is also room to recover: the terrain data is 45% of the page. A coarser gr
 
 ## 6. Performance
 
-A frame has 16.7 ms at 60 fps. On this Mac the GPU uses 5.6–12.7 ms of it today. New costs, none yet measured: the placement pass, the overdraw of foliage, more shadow casters, and multisampling if it is adopted.
+A frame has 16.7 ms at 60 fps. On this Mac the GPU uses 5.6–12.7 ms of it today.
+
+Measured in work order 003, on this Mac, where a difference under 1 ms is noise:
+
+| | Added to a frame |
+|---|---|
+| A layer at rest | nothing measurable |
+| A layer fading | about 1–2 ms in a street, more from above |
+| Placing things on the GPU, without drawing them | under 0.6 ms for 200,000 kept |
+| Drawing about 10,000 placed things | inside the noise |
+| Drawing about 50,000 | 0.1–2.2 ms |
+| Drawing about 200,000 | 1–6 ms |
+| Two islands blended by the year | inside the noise |
+
+Still not measured: real foliage, shadows for placed things, and anything at all on an iPad.
 
 Rules proposed:
 - No per-frame allocation in JavaScript (kept).
@@ -164,7 +180,7 @@ These are standard methods, described here as they would be built for Thera. Not
 
 ## 8. Order of work proposed
 
-1. **A measuring spike**, before any work order: a dithered fade on the town with a layer value; a placement pass drawing fifty thousand plain instances on the island; two sets of height maps blended by a year value; and the size of the island's difference. Its numbers replace the estimates above.
+1. **A measuring spike** (done: work order 003, §11), before any other work order: a dithered fade on the town with a layer value; a placement pass drawing fifty thousand plain instances on the island; two sets of height maps blended by a year value; and the size of the island's difference. Its numbers replace the estimates above.
 2. **Work order 003, layers and time:** the three tags, the fades, the controls (layer, date, year), the town retagged, shadows and collision following, and the change to edit E4 (D29).
 3. **Work order 004, plants**, placed by the GPU, with seasons.
 4. **The sky and the calendar**, after its own research lane.
@@ -180,6 +196,8 @@ Then the harbour and ships, people and animals, interiors, and labels.
 | 2 | Whether the layers and time are built first, as work order 003 (O14) | Yes, after the measuring spike |
 | 3 | Which iPad is the slowest device the world must run well on | The one used in the touch test, until a slower one matters |
 | 4 | Whether to study Formosa Forest's source and credit what is learned | Yes |
+| 5 | Which way a layer fades (§11) | Chad's choice, from the pictures and from `dev.html` in motion |
+| 6 | How coarsely the later island is stored | Decide when the end of the town is planned: heights to 2 m, or a grid of 80 m cells |
 
 ## 10. What this kind of work is called
 
@@ -193,3 +211,37 @@ There is no single name. Four names each cover part of it. They were checked by 
 | **Virtual archaeology; procedural modelling; 4D reconstruction** | What this project adds: reconstruction of the past by rule, with its evidence shown, and soon in time as well as space | The [London Charter](https://www.londoncharter.org/) and the [Seville Principles](https://vwhl.luddy.indiana.edu/sevillePrinciples/index.html); [Müller and others, 2006](https://peterwonka.net/Publications/pdfs/2006.VAST.Mueller.Xkipche.pdf), who rebuilt Maya buildings at Xkipché from a shape grammar |
 
 In one line: **a procedural, real-time 4D reconstruction in virtual archaeology, built in the demoscene's single-file tradition.**
+
+## 11. What the measuring spike found (work order 003)
+
+The full report is `docs/spike/003-measurements.md`. Its pictures are in the private artifact Thera Spike 003. The prototypes are in the development build and can be run: `cd source && npm run build:dev`, open `dev.html`, and use the keys `K` (layer), `J` (the way of fading), `N` (wave), `Y` (island), `U` and `I` (year), `O` (day), `G` (more shapes) and `P` (spike off and on).
+
+| Part of the design | Verdict |
+|---|---|
+| One visibility function for layer, years and days (§4.1) | Holds |
+| A building's tags in a small table (§4.1) | Holds, once each corner of the town carries its building's number |
+| A fade by dither, with shadows following (§4.1) | Holds, with the three changes noted in §4.1 |
+| Collision follows what is shown (§4.1) | Holds |
+| Hidden things cost nothing (§3) | True of the thing, not of the frame |
+| The GPU places everything numerous (§4.2) | Holds. Placing is nearly free; drawing is the cost |
+| The later island as a compact difference (§4.3) | Does not hold as estimated: 41 kB, not 15–25 |
+| Two islands blended by the year (§4.3) | Holds for speed; costs 133 MB of GPU memory on High |
+| The sky, time as data, seasons (§4.4–4.6) | Not tested |
+
+**Five ways of fading were built**, and the choice among them is Chad's:
+- **Coverage dither:** reads as clear glass. It costs the most, and Low detail cannot use it.
+- **Pixel dither:** a fine diagonal screen shows over whatever is fading.
+- **Surface dither:** coarse, and it shimmers nearly five times as much. Not to be used.
+- **Clipped rise:** the houses show as hollow shells, open at the top.
+- **Lidded rise:** a low solid town growing storey by storey. It is the cheapest and does not shimmer.
+
+Any of them can also **spread as a wave** from the excavated centre, at about half the cost. The paving then appears ahead of its houses unless the town's plan map is made to carry the wave.
+
+**What the next order must do that this review did not foresee:**
+1. Give every corner of the town its building's number.
+2. Keep two pipelines for anything that fades: an opaque one for rest, a discarding one for the frames of a fade.
+3. Make the town's plan map carry the layers, so that paving and street shade fade with their houses.
+4. Decide what happens to a viewer standing where a house appears. The spike lifts them to its roof.
+5. Watch the texture limit: the ground's shader is at 14 of 16.
+6. Lift the ideas from the spike's code, and do not merge that code into the engine: it was written to stay out of it.
+7. Take a reading on an iPad, with the Stats button, before the design is fixed.
