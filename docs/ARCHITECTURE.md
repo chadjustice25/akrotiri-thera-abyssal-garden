@@ -335,7 +335,7 @@ Added on 2026-11-20. Chad: "We need to allow for geo-location if a person is act
 
 **One function, three callers.** Position and standpoints are one feature. One function puts the viewer at a latitude, a longitude and a direction. A standpoint calls it with numbers kept in a link, such as `#at=36.3517,25.4035,180`. The button calls it with the device's own. A headset can call it later. The link also lets the feature be tested from anywhere, with no need to be on Thera, and lets a guide send a visitor to an exact view.
 
-**Rules proposed for it.** They are the integrator's, for Chad to confirm when the order is written.
+**Its rules.** Proposed by the integrator and approved by Chad on 2026-11-20 ("All approved").
 1. The page asks for the position only after a tap, never when it loads. It works in full without it. If the visitor says no, or the device is not on the island, it says so in a line and changes nothing.
 2. The position stays in the page. The page sends nothing and loads nothing at run time, which the gate checks, and it stores nothing. (A phone may itself use a network service to work out where it is. That is the phone's doing, not the page's.)
 3. The page shows how sure the device says it is, and says that the town itself is placed only to within about 10 m.
@@ -343,11 +343,40 @@ Added on 2026-11-20. Chad: "We need to allow for geo-location if a person is act
 
 **What stands in the way.**
 - **Nobody has opened the page on a phone.** Frame rate, heat, battery and a screen in sunlight are all unmeasured. The touch test (`HANDOFF.md`) is the first step.
-- **A signal at the site.** Not known. The page is one file of 170 kB and needs no network once it is open, but nothing yet keeps it on a phone for use without a signal. Doing that needs a second small file, which the one-file law does not allow as it stands (O25).
+- **A signal at the site.** Not known. The page is one file of 170 kB and needs no network once it is open, but nothing yet keeps it on a phone for use without a signal. Chad has decided that it must work without one (D47); how is "Use without a connection" below.
 - **The plan's place on the Earth**, as for augmented reality below. Two or three surveyed points from the excavation would settle it (O8; the draft letter now asks for them).
 - **The site's own wishes.** A tool for use at the site should be shown to the excavation first (O8).
 
 A guess at its size: 1 to 2 kB.
+
+### Use without a connection (D47)
+
+Added on 2026-11-20. Chad: "We will want it to be downloadable for those that may not be online but have enough connection to be able to determine their location to note on the maps."
+
+**What it is.** A visitor opens the page once where they have a connection, at home or at their hotel. After that it opens with no signal at all, and it can still show where they are, because a device finds its position from satellites and not from the network (general knowledge, not tested). The position is shown in two ways: standing in the world, and as a mark on a view from above with a ring as wide as the device's doubt. The second is the integrator's reading of "to note on the maps". On a view from above a doubt of 10 m is honest, where a view from eye height pretends to more.
+
+**Decided on 2026-11-21 (D48): both ways below, with instructions for the Home Screen.** Chad: "I agree, both. We can give instructions for adding to the Home Screen in that case."
+
+**Three ways to keep the page on a device.**
+
+| Way | What the visitor does | Where it works | What it costs |
+|---|---|---|---|
+| **A keeper file** beside the page (a service worker) | Opens the address once. On an iPhone or iPad, also adds it to the Home Screen | Phones, tablets and computers. The page keeps its secure address, so position still works | A second small file, which the one-file law does not allow as it stands. It holds no part of the world |
+| **A plain download** of `index.html` | Saves the file and opens it later | Computers. On a phone a saved page is awkward to open, and it has no secure address, so position is probably refused (the integrator's knowledge, not checked) | Nothing: the page is already one file |
+| **Both** | Either | Everywhere one of them works | The same second file |
+
+The integrator recommended both, and Chad chose both.
+
+**What was read, on 2026-11-20.**
+- A service worker exists for this. Its specification speaks of "allowing the service worker to provide content for documents, even while offline", shows it registered from a file of its own, and marks it for secure pages only (word for word; [W3C Service Workers](https://www.w3.org/TR/service-workers/), the draft of 17 November 2026). That it cannot be written inside the page itself is the integrator's knowledge; the part of the specification that would say so was not reached.
+- **Safari clears what a page has kept** "after seven days of Safari use without user interaction on the site", and names "Service Worker registrations and cache". Pages added to the Home Screen are apart: "We do not expect the first-party in such a web application to have its website data deleted" ([WebKit, 24 March 2020](https://webkit.org/blog/10218/full-third-party-cookie-blocking-and-more/); an old post, and nothing later was looked for). So on an iPhone the visitor should add the page to the Home Screen, or have opened it within the week.
+- **Chrome** "may evict site data at its discretion, for example, when device storage is low", and a page can ask for storage that is not cleared that way ([web.dev](https://web.dev/articles/storage-for-the-web)).
+
+**What it asks.**
+- The world stays whole in `index.html`, and that file runs by itself with no keeper file present. The gate goes on checking that the page loads nothing but the keeper file, and that the keeper file holds no part of the world. Work orders may not change `checks/`, so the order says who changes the gate.
+- The keeper file must fetch the newer page whenever there is a connection, or visitors keep an old world.
+- The page says plainly when it is kept: "Saved for use offline", and on an iPhone how to add it to the Home Screen.
+- A test nobody can do yet: a phone with Wi-Fi and mobile data off, position on. It can be done at home, with a link that stands in for Thera.
 
 ### What it asks of the engine now
 
@@ -370,7 +399,7 @@ These cost little while things are being built and a great deal afterwards. From
 ### Order
 
 1. Keep the six points above in every order, starting with 004.
-2. **Standpoints and the visitor's own position** (D45), as one small order once the layers and the date are in. They serve D42 on the devices people already carry. The page must be on GitHub Pages first, and someone must have opened it on a phone. All but the last test can be done from anywhere with links; the last test needs someone on the island.
+2. **Standpoints, the visitor's own position and use without a connection** (D45, D47), as one small order once the layers and the date are in. They serve D42 on the devices people already carry. The page must be on GitHub Pages first, and someone must have opened it on a phone. All but the last test can be done from anywhere with links; the last test needs someone on the island.
 3. **A measuring spike for a headset**, as work order 003 was for the layers: two eyes in the development build, on a real device, with numbers. Its first question is whether the device's browser shows the page at all without a flag. It can follow work order 004 as soon as a headset is at hand.
 4. **Augmented reality**, after the excavation's survey and the labels.
 

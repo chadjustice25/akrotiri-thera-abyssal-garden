@@ -30,6 +30,16 @@ Every claim that reaches the world gets one grade. For a new place, read "Thera"
 
 **For art** (D26): a plant, animal or thing shown only in the art of another place in the region is grade C for this place.
 
+**For claims about the modern excavation** (D50; when a place was dug, by whom and in what order, which is what the Found layer's order is built from):
+
+| Grade | Meaning for the history of a dig |
+|---|---|
+| **A** | Stated in the excavators' own report of that season or in the excavation's official publications, or shown on a dated plan or photograph they published. |
+| **B** | Stated in a later account by a member of the excavation, or in a peer-reviewed study that cites the reports; or the excavators' own accounts disagree. |
+| **C** | A guidebook, museum label, news report or other second-hand account; or an inference from an undated plan or photograph. |
+
+Chad confirmed this reading on 2026-11-21, to be looked at again as more is learned.
+
 ## 4. Rules
 1. **Evidence first.** A thing a viewer will see or read needs a source, a grade and a claim reference (lane and number, e.g. `T2#14`), once data files exist to hold them.
 2. **Shown is not present.** A plant, animal, object or landscape known only from art is grade B at most for the place, and the world says so where it matters (the monkeys of the Akrotiri paintings are the test case, T3-1).

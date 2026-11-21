@@ -43,6 +43,8 @@ Added 2026-11-20. One lane, in its own chat; it can run beside the plant lanes. 
 
 Its claims are about a modern excavation, not about the Bronze Age. So its grades are read by how close a source stands to the season it describes (A: the excavators' own report of that season; B: a later account by the excavation, or a study that cites the reports; C: second-hand), rule 3 reads "begun is not finished", and Section 3 of its report is two tables of the dig. Everything else is word for word as in the other lanes. That reading of the grades is the integrator's, and Chad confirms or changes it when the report is checked. It is 7.9 kB below its line.
 
+**Also run as a Claude research agent (D13), started on 2026-11-20** when Chad said "let's do the research to discover the order of excavation". That report goes to `claude/T8_Claude.md`, and a separate agent checks it. A Neon run of the same prompt is still worth having, as a second report from a different researcher (`LESSONS.md`).
+
 ## Steps (Chad), for each lane
 
 1. Open the lane's prompt file in any editor and copy everything **below the `---` line**.
