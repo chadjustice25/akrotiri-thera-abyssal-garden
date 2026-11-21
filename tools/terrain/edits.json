@@ -98,13 +98,20 @@
     "claims": ["T1#11", "T1#14", "T1#20", "T1b#51"],
     "grade": "C",
     "liberty": "T-L2",
-    "note": "The southern part of today's caldera, and the south-western gaps between Thera, Aspronisi and Therasia, were land. The restored surface is modelled: a membrane stretched between the surviving land around it, a rim crest and an outer coast, with an inner wall falling to the bay. The rim crest reaches about 260 m (T1b#51, preferred value). The volume added must fall within 9.1-17.1 km3 (T1#14); build.mjs reports it and fails outside that range. The source measures that range as the volume between its restored surface and today's surface, sea floor included (T1 verification, addendum of 2026-11-18, from the full paper), which is how build.mjs measures it. Within the range the source prefers the upper end (17.1 km3, the largest land that fits) and gives a separate estimate of 14.4 +/- 0.8 km3 from the rock fragments in the eruption deposits; the 9.1 km3 end it calls less realistic.",
+    "note": "The southern part of today's caldera, and the south-western gaps between Thera, Aspronisi and Therasia, were land. The restored surface is modelled: a membrane stretched between the surviving land around it, a rim crest and an outer coast, with an inner wall falling to the bay. The rim crest reaches about 260 m (T1b#51, preferred value). The volume added must fall within 9.1-17.1 km3 (T1#14); build.mjs reports it and fails outside that range. The source measures that range as the volume between its restored surface and today's surface, sea floor included (T1 verification, addendum of 2026-11-18, from the full paper), which is how build.mjs measures it. Within the range the source prefers the upper end (17.1 km3, the largest land that fits: its rim at 260 m, the smallest bay, only the cliffs known to predate the eruption left untouched) and gives a separate estimate of 14.4 +/- 0.8 km3 from the rock fragments in the eruption deposits; the 9.1 km3 end it calls less realistic. Work order 004 (D29) raised the volume from 13.16 km3 towards those figures: see fromTheBay, rimCrest, rimMaxMetres and erosion below, and docs/terrain/README.md.",
     "volumeRangeKm3": [9.1, 17.1],
     "sourcePreferredKm3": 17.1,
     "sourceRockFragmentEstimateKm3": [13.6, 15.2],
     "southLand": [[2160, 400], [2800, 400], [3040, 1300], [2900, 2400], [2400, 3400], [1600, 4400], [600, 4960], [-800, 5160], [-2200, 4840], [-3400, 4760], [-4300, 5240], [-5000, 5900], [-6100, 4700], [-6900, 2900], [-7400, 900], [-7700, -1100], [-7300, -1700], [-6900, -1600], [-6000, -1400], [-5100, -1100], [-4240, -200], [-3300, 400], [-1800, 840], [-200, 960], [1200, 840]],
-    "rimCrest": [[2500, 880, 250], [1200, 1380, 255], [-200, 1500, 260], [-1800, 1380, 255], [-3400, 900, 235], [-4500, 260, 205], [-5050, -700, 175]],
-    "southWestCrest": [[-4500, 260, 205], [-5000, 1300, 190], [-5200, 2400, 180], [-4900, 3500, 150], [-4300, 4500, 120]],
+    "fromTheBay": [
+      [[-200, 960], [300, 860], [700, 640], [1050, 330], [1400, 30], [1700, -180], [2000, -300], [2750, -300], [2700, -200], [2600, -100], [2400, 0], [2400, 200], [2500, 300], [2800, 400], [2160, 400], [1200, 840]],
+      [[-5100, -1100], [-4700, -1080], [-4300, -1000], [-3800, -880], [-3350, -620], [-3000, -250], [-2700, 150], [-2350, 500], [-1900, 760], [-1400, 900], [-1800, 840], [-3300, 400], [-4240, -200]]
+    ],
+    "fromTheBayNote": "Work order 004 (D29). Two more pieces of today's caldera are land: its south-east corner below Thera's wall, and its south-west corner below Therasia's southern cape. Each outline is southLand's old north edge and the new shore of the bay. The source's preferred reconstruction has the smallest bay that leaves the cliffs known to predate the eruption untouched (T1#14, addendum). On the Thera side the bay still reaches 1.0 km south of the latitude of Fira, whose harbour wall predates the eruption (T1#19), and ends 2.4 km north of Athinios (T1#20); before, 1.7 km and 1.7 km. The new shore is nowhere nearer to Pre-Kameni (E7, unchanged) than the old shore was at its nearest (709 m, in the middle of the south shore, which did not move): that island's place is what stops the bay from being made smaller still. Where the new land meets Thera's wall and Therasia's cape, the cliff that no longer faces the bay is covered up to its top, as southLand already did further south (those cliffs are fresh, cut by the eruption: T1c#24). The line of the new shore is a liberty (T-L2, T-L3).",
+    "rimCrest": [[2350, 120, 225], [1940, 260, 250], [1700, 430, 260], [1375, 710, 260], [990, 1045, 260], [470, 1325, 260], [-160, 1455, 260], [-1480, 1390, 260], [-2090, 1215, 260], [-2650, 890, 260], [-3080, 480, 258], [-3390, 70, 254], [-3660, -230, 248], [-4050, -440, 232], [-4450, -520, 210], [-5050, -700, 175]],
+    "rimCrestNote": "About 500 m inland of the bay's shore all the way round. 260 m along the restored arc (T1b#51), coming down only to meet the surviving land at each end: Thera's rim, about 195 m here once E3 has stripped it, and Therasia's southern ridge, about 150 m. Before work order 004 it reached 260 m at one point and stood at 205-255 m elsewhere, and the gullies then cut it down to 251 m at most.",
+    "rimMaxMetres": 260,
+    "southWestCrest": [[-4050, -440, 232], [-4500, 260, 212], [-5000, 1300, 190], [-5200, 2400, 180], [-4900, 3500, 150], [-4300, 4500, 120]],
     "outerCoast": [[-4440, 5240], [-5300, 4500], [-5900, 3300], [-6200, 2000], [-6500, 700], [-6900, -600], [-7160, -1440]],
     "wallWidthMetres": 430,
     "wallExponent": 0.55,
@@ -115,7 +122,11 @@
       "rounds": 70,
       "rate": 0.022,
       "creep": 0.12,
-      "routingJitterMetres": 2.5
+      "routingJitterMetres": 2.5,
+      "rimKeepMetres": 240,
+      "giveBack": 1,
+      "giveBackWindowMetres": 320,
+      "note": "Work order 004. The gullies are cut into the smooth restored surface, which is the kind of surface the source's volume is measured on. Cut that way they removed 1.0 km3 of the 14.2 km3 the smooth surface held, and lowered the rim crest by 9 m. giveBack is the share of what they remove that is given back as a broad swell under them (a blur over giveBackWindowMetres), so that ridges stand above the smooth surface and gullies below it; rimKeepMetres is how far from the rim crest the gullies begin, so that the crest keeps its sourced height. Both are liberties (T-L2)."
     }
   },
   "E5": {

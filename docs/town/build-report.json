@@ -66,7 +66,7 @@
     "shareOfOutlineOnDrawnWalls": 0.87,
     "squareMetres": 146,
     "storeys": 2,
-    "groundMetres": 27.1
+    "groundMetres": 27
    },
    {
     "id": "eta",
@@ -75,7 +75,7 @@
     "shareOfOutlineOnDrawnWalls": 0.54,
     "squareMetres": 174,
     "storeys": 2,
-    "groundMetres": 26.5
+    "groundMetres": 26.6
    },
    {
     "id": "nhol",
@@ -93,7 +93,7 @@
     "shareOfOutlineOnDrawnWalls": 0.86,
     "squareMetres": 226,
     "storeys": 3,
-    "groundMetres": 26.4
+    "groundMetres": 26.3
    },
    {
     "id": "de1",
@@ -102,7 +102,7 @@
     "shareOfOutlineOnDrawnWalls": 0.23,
     "squareMetres": 72,
     "storeys": 2,
-    "groundMetres": 26.2
+    "groundMetres": 26.3
    },
    {
     "id": "de2",
@@ -111,7 +111,7 @@
     "shareOfOutlineOnDrawnWalls": 0.25,
     "squareMetres": 77,
     "storeys": 2,
-    "groundMetres": 25.9
+    "groundMetres": 26
    },
    {
     "id": "de3",
@@ -129,7 +129,7 @@
     "shareOfOutlineOnDrawnWalls": 0.86,
     "squareMetres": 82,
     "storeys": 2,
-    "groundMetres": 26.2
+    "groundMetres": 26.1
    },
    {
     "id": "w2",
@@ -138,7 +138,7 @@
     "shareOfOutlineOnDrawnWalls": 0.72,
     "squareMetres": 31,
     "storeys": 2,
-    "groundMetres": 26
+    "groundMetres": 25.9
    },
    {
     "id": "west",
@@ -147,7 +147,7 @@
     "shareOfOutlineOnDrawnWalls": 0.87,
     "squareMetres": 143,
     "storeys": 2,
-    "groundMetres": 25.7
+    "groundMetres": 25.6
    },
    {
     "id": "anchor",
@@ -156,7 +156,7 @@
     "shareOfOutlineOnDrawnWalls": 0.34,
     "squareMetres": 89,
     "storeys": 2,
-    "groundMetres": 25.2
+    "groundMetres": 25.1
    },
    {
     "id": "tw1",
@@ -183,7 +183,7 @@
     "shareOfOutlineOnDrawnWalls": 0.04,
     "squareMetres": 8,
     "storeys": 2,
-    "groundMetres": 25.3
+    "groundMetres": 25.2
    },
    {
     "id": "delta_w",
@@ -192,7 +192,7 @@
     "shareOfOutlineOnDrawnWalls": 0.76,
     "squareMetres": 166,
     "storeys": 2,
-    "groundMetres": 25.4
+    "groundMetres": 25.3
    },
    {
     "id": "delta_n1",
@@ -201,7 +201,7 @@
     "shareOfOutlineOnDrawnWalls": 0.9,
     "squareMetres": 39,
     "storeys": 2,
-    "groundMetres": 25.5
+    "groundMetres": 25.4
    },
    {
     "id": "delta_n2",
@@ -210,7 +210,7 @@
     "shareOfOutlineOnDrawnWalls": 0.84,
     "squareMetres": 38,
     "storeys": 2,
-    "groundMetres": 25.3
+    "groundMetres": 25.2
    },
    {
     "id": "delta_c",
@@ -228,7 +228,7 @@
     "shareOfOutlineOnDrawnWalls": 0.66,
     "squareMetres": 34,
     "storeys": 2,
-    "groundMetres": 25
+    "groundMetres": 25.1
    },
    {
     "id": "delta_e",
@@ -246,7 +246,7 @@
     "shareOfOutlineOnDrawnWalls": 0.97,
     "squareMetres": 72,
     "storeys": 1,
-    "groundMetres": 25.1
+    "groundMetres": 25
    },
    {
     "id": "delta_s",
@@ -255,7 +255,7 @@
     "shareOfOutlineOnDrawnWalls": 0.93,
     "squareMetres": 89,
     "storeys": 2,
-    "groundMetres": 24.9
+    "groundMetres": 24.8
    },
    {
     "id": "xeste5",
@@ -264,7 +264,7 @@
     "shareOfOutlineOnDrawnWalls": 0.29,
     "squareMetres": 178,
     "storeys": 2,
-    "groundMetres": 25
+    "groundMetres": 25.1
    },
    {
     "id": "dhe",
@@ -273,7 +273,7 @@
     "shareOfOutlineOnDrawnWalls": 0.41,
     "squareMetres": 97,
     "storeys": 2,
-    "groundMetres": 24.3
+    "groundMetres": 24.4
    },
    {
     "id": "xeste2",
@@ -309,7 +309,7 @@
     "shareOfOutlineOnDrawnWalls": 0.96,
     "squareMetres": 95,
     "storeys": 2,
-    "groundMetres": 23.8
+    "groundMetres": 23.9
    },
    {
     "id": "beta_n",
@@ -363,7 +363,7 @@
     "shareOfOutlineOnDrawnWalls": 0.97,
     "squareMetres": 142,
     "storeys": 3,
-    "groundMetres": 23
+    "groundMetres": 23.2
    },
    {
     "id": "xeste3_e",
@@ -372,7 +372,7 @@
     "shareOfOutlineOnDrawnWalls": 0.92,
     "squareMetres": 150,
     "storeys": 3,
-    "groundMetres": 23.2
+    "groundMetres": 23.4
    },
    {
     "id": "se_b1",
@@ -449,7 +449,7 @@
   ]
  },
  "ground": {
-  "atXeste3Metres": 23.2,
+  "atXeste3Metres": 23.4,
   "sourcedAtXeste3Metres": 23.1,
   "atTheEastEdgeByXeste2Metres": 23.6,
   "sourcedBasementFloorThereMetres": [

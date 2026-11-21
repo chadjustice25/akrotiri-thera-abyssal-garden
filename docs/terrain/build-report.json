@@ -61,25 +61,30 @@
       "volumeAboveTodaysSeaKm3": 0.167,
       "highestPointRemovedMetres": 120.6
     },
+    "E4": {
+      "volumeAddedKm3": 14.98,
+      "volumeAddedAboveSeaKm3": 6.05,
+      "restoredLandKm2": 47.12,
+      "highestRestoredPointMetres": 260,
+      "allowedRangeKm3": [
+        9.1,
+        17.1
+      ],
+      "rimCrestHighestMetres": 258.6,
+      "rimMaxMetres": 260,
+      "cellsHeldAtTheRimHeight": 495,
+      "wonFromTheBayKm2": 3.11,
+      "volumeOfThatKm3": 0.9
+    },
     "E6": {
       "channelWidthMetres": 280,
       "channelDepthMetres": 3,
       "channelFloorKm2": 0.44
     },
-    "E4": {
-      "volumeAddedKm3": 13.16,
-      "volumeAddedAboveSeaKm3": 4.76,
-      "restoredLandKm2": 44.01,
-      "highestRestoredPointMetres": 259.4,
-      "allowedRangeKm3": [
-        9.1,
-        17.1
-      ]
-    },
     "E5": {
-      "bayKm2": 40.97,
+      "bayKm2": 38.37,
       "depthMetres": 5,
-      "volumeBetweenTodaysFloorAndBayFloorKm3": 9.81
+      "volumeBetweenTodaysFloorAndBayFloorKm3": 9.28
     },
     "E7": {
       "volumeAboveBayFloorKm3": 2.4,
@@ -117,26 +122,26 @@
     }
   },
   "rockClassLandKm2": {
-    "0 undivided volcanic": 103.78,
+    "0 undivided volcanic": 106.12,
     "1 light-grey andesite": 7.8,
-    "2 dark-grey andesite": 11.02,
+    "2 dark-grey andesite": 11.28,
     "3 black glassy andesite": 16.31,
     "4 phyllite and schist": 3.01,
     "5 marble": 3.45
   },
   "island": {
-    "landKm2In1628": 145.37,
+    "landKm2In1628": 147.97,
     "landKm2Today": 90.96,
     "highestPointMetres": 568.2
   },
   "data": {
-    "bytes": 54274,
-    "sha256": "96ef04da7bcf0e0778756907c7f1055a36bdda489394a1d805a72ac05e17da4d",
+    "bytes": 55313,
+    "sha256": "e5334f34b80c91923727e62d49a5ed77baafdc0635d2f73a256651c33be9cd55",
     "heightUnitMetres": 0.25,
-    "fineCellsStored": 138208,
-    "maxErrorMetresOnLand": 3.45,
+    "fineCellsStored": 138240,
+    "maxErrorMetresOnLand": 3.88,
     "rmsErrorMetresOnLand": 0.35,
-    "maxErrorMetresUnderwater": 34.44,
+    "maxErrorMetresUnderwater": 36.44,
     "pageDecoderAgrees": true
   }
 }

@@ -8,6 +8,8 @@
 //                                                 same grid and datum as source/src/spike-island.js (development build only) and
 //                                                 its sizes, packed whole and as a difference, as docs/spike/island-report.json.
 //                                                 It changes nothing about the island of 1628 BCE or its data.
+//   node tools/terrain/build.mjs --edits FILE --dump OUT   for tools/terrain/compare.mjs: builds from another edits file and
+//                                                 writes only OUT, the grid before and after packing. Nothing else is written.
 // The output is deterministic: the same inputs give the same bytes. --preview also writes shaded-relief PNGs to look at.
 // The record of every edit, its claims and its liberties is docs/terrain/README.md.
 import { createHash } from 'node:crypto';
@@ -19,7 +21,8 @@ import { Grid, blur, clamp, distance, distPolyline, fbm, inPoly, mix, relief, sa
 import { encodeSecond, encodeTerrain, UNIT } from './codec.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url)), root = path.join(here, '..', '..');
-const E = JSON.parse(readFileSync(path.join(here, 'edits.json'), 'utf8'));
+const arg = (f) => { const i = process.argv.indexOf(f); return i > 0 ? process.argv[i + 1] : null; }, DUMP = arg('--dump');
+const E = JSON.parse(readFileSync(arg('--edits') ? path.resolve(arg('--edits')) : path.join(here, 'edits.json'), 'utf8'));
 const N = E.grid.cells, CELL = E.grid.cellMetres, CF = E.grid.coarseFactor, A = CELL * CELL;
 const pv = process.argv.indexOf('--preview'), PREVIEW = pv > 0 ? path.resolve(process.argv[pv + 1]) : null;
 const src = (f) => { const p = path.join(here, 'cache', f); if (!existsSync(p)) { console.error(`missing ${p}: run node tools/terrain/fetch.mjs first`); process.exit(3); } return readFileSync(p); };
@@ -87,16 +90,23 @@ Object.keys(E.E9.basement).forEach((name, n) => { const m = mask(E.E9.basement[n
 const inSouth = mask(E.E4.southLand), inBridge = mask(E.E6.bridge), inKameni = mask(E.E2.outline);
 const M = new Uint8Array(N * N), bay = new Uint8Array(N * N); // M: modelled (restored) land and its submarine slope; bay: the bay floor
 for (let k = 0; k < N * N; k++) if (inSouth[k] || inBridge[k]) M[k] = 1;
+// E4.fromTheBay (work order 004): where the restored land reaches further into today's caldera than southLand, with the
+// cliffs that then no longer face the bay. E3 goes on measuring its rim from the caldera as it stood before these outlines
+// (calderaE3), because the deposits it strips lie along today's rim, which does not move when more land is put back.
+const calderaE3 = M.slice(), inWon = new Uint8Array(N * N);
+for (const poly of E.E4.fromTheBay || []) { const m = mask(poly); for (let k = 0; k < N * N; k++) if (m[k] && !M[k]) { M[k] = 1; inWon[k] = 1; if (T.d[k] <= 0.5 || inKameni[k]) calderaE3[k] = 1; } }
+const south = Uint8Array.from(M, (v, k) => (v && !inBridge[k] ? 1 : 0)); // E4's own land; the low ground of E6 keeps the rules it had
 { // the bay: today's caldera water (and the Kameni islands) reached from the seed without crossing restored land
   const seed = Math.round(g0.fi(E.E5.seed[1])) * N + Math.round(g0.fi(E.E5.seed[0])), stack = [seed]; bay[seed] = 1;
   while (stack.length) { const k = stack.pop(); for (const o of [-1, 1, -N, N]) { const q = k + o; if (q < 0 || q >= N * N || bay[q] || M[q] || !(T.d[q] <= 0.5 || inKameni[q])) continue; bay[q] = 1; stack.push(q); } }
   for (let i = 0; i < N; i++) if (bay[i] || bay[(N - 1) * N + i] || bay[i * N] || bay[i * N + N - 1]) { console.error('E5: the bay leaks to the open sea: E4 southLand or E6 bridge does not close the ring'); process.exit(1); }
+  for (let k = 0; k < N * N; k++) if (bay[k]) calderaE3[k] = 1;
 }
 
 // ---------------------------------------------------------------- E3: strip the Minoan deposits (a liberty: no sourced thickness map)
 {
   const p = E.E3, pos = blur(T.d, N, Math.round(p.positionWindowMetres / CELL)), base = blur(Float32Array.from(basement, (v) => (v ? 1 : 0)), N, 3), t = new Float32Array(N * N);
-  const zones = (p.zones || []).map((zn) => ({ ...zn, w: blur(Float32Array.from(mask(zn.outline)), N, 3, 2) })), dRim = near(Uint8Array.from(M, (v, k) => (v || bay[k] ? 1 : 0)));
+  const zones = (p.zones || []).map((zn) => ({ ...zn, w: blur(Float32Array.from(mask(zn.outline)), N, 3, 2) })), dRim = near(calderaE3);
   for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
     const k = j * N + i, v = T.d[k]; if (v <= 0) continue;
     const valley = sstep(p.positionRangeMetres, -p.positionRangeMetres, v - pos[k]); // 1 in valleys, 0.5 on even ground, 0 on ridges
@@ -138,6 +148,9 @@ for (let it = 0, w = 1.94; it < 2500; it++) {
     if (n) P[k] += w * (s / n - P[k]);
   }
 }
+// (the cells of the rim crest itself, as against the south-west crest and E6's saddle: the gullies below leave it standing)
+const rim = new Uint8Array(N * N); { const flat = E.E4.rimCrest.map((q) => [q[0], q[1]]); for (let k = 0; k < N * N; k++) if (crest[k] && south[k] && distPolyline(flat, X(k), Z(k))[0] < E.E4.coastWobbleMetres + 2 * CELL) rim[k] = 1; }
+const dRimCrest = near(rim);
 // the inner wall: within wallWidth of the bay the land falls to the water with a cliff profile
 const dBay = blur(near(bay), N, 1, 2), dKept = near(Uint8Array.from(M, (v, k) => (v || bay[k] ? 0 : 1))), dCrest = near(crest);
 for (let k = 0; k < N * N; k++) if (M[k]) {
@@ -155,6 +168,7 @@ for (let k = 0; k < N * N; k++) if (bay[k]) h.d[k] = -0.4 - (E.E5.depthMetres - 
 // lowered by rate * sqrt(area) * slope, never below the cell it drains to. Kept terrain, the bay and the sea do not change.
 {
   const p = E.E4.erosion, land = []; for (let k = 0; k < N * N; k++) if (M[k] && h.d[k] > 0.6) land.push(k);
+  const smooth = h.d.slice(), keep = (k) => (south[k] && p.rimKeepMetres ? sstep(0, p.rimKeepMetres, dRimCrest[k] * CELL) : 1);
   const rec = new Int32Array(N * N), area = new Float32Array(N * N), O = [-1, 1, -N, N, -N - 1, -N + 1, N - 1, N + 1], OD = [1, 1, 1, 1, Math.SQRT2, Math.SQRT2, Math.SQRT2, Math.SQRT2];
   const jit = new Float32Array(N * N); for (const k of land) jit[k] = p.routingJitterMetres * 2 * (fbm(X(k) / 110, Z(k) / 110, 2, 77) - 0.5);
   for (let it = 0; it < p.rounds; it++) {
@@ -164,11 +178,21 @@ for (let k = 0; k < N * N; k++) if (bay[k]) h.d[k] = -0.4 - (E.E5.depthMetres - 
     for (const k of land) { const o = rec[k]; if (o < 0) { let lo = 1e9; for (let n = 0; n < 8; n++) lo = Math.min(lo, h.d[k + O[n]]); h.d[k] = lo + 0.05; continue; } // a pit: fill it
       const q = k + O[o]; if (M[q] && h.d[q] > 0.6) area[q] += area[k]; }
     for (let n = land.length - 1; n >= 0; n--) { const k = land[n], o = rec[k]; if (o < 0) continue; const q = k + O[o], drop = h.d[k] - h.d[q];
-      h.d[k] -= Math.min(p.rate * Math.sqrt(area[k]) * drop / (OD[o] * CELL) * CELL, drop * 0.6) * sstep(0, 3, dKept[k]); }
+      h.d[k] -= Math.min(p.rate * Math.sqrt(area[k]) * drop / (OD[o] * CELL) * CELL, drop * 0.6) * sstep(0, 3, dKept[k]) * keep(k); }
     // soil creep: a little smoothing, so gully walls are slopes and not steps
     for (const k of land) area[k] = (h.d[k - 1] + h.d[k + 1] + h.d[k - N] + h.d[k + N]) / 4;
     for (const k of land) if (dBay[k] > 1.5 && h.d[k] > 2) h.d[k] = mix(h.d[k], Math.max(area[k], 0.6), p.creep);
   }
+  // The gullies are cut into the smooth restored surface, which is the surface the source measures (T1#14). What they
+  // remove is given back as a broad swell under them, so that the gullied land keeps the volume of the smooth one: ridges
+  // stand a little above it and gullies below. Nothing restored stands above the rim's height (T1b#51).
+  if (p.giveBack) {
+    const cut = new Float32Array(N * N); for (const k of land) if (south[k]) cut[k] = smooth[k] - h.d[k];
+    const swell = blur(cut, N, Math.round(p.giveBackWindowMetres / CELL));
+    for (const k of land) if (south[k]) h.d[k] += p.giveBack * swell[k] * sstep(0, 3, dKept[k]) * sstep(1.5, 8, dBay[k]) * sstep(2, 30, h.d[k]) * keep(k);
+  }
+  let capped = 0; for (const k of land) if (south[k] && h.d[k] > E.E4.rimMaxMetres) { h.d[k] = E.E4.rimMaxMetres; capped++; }
+  report.edits.E4 = { cellsHeldAtTheRimHeight: capped };
 }
 // E6: the channel through the low ground
 {
@@ -178,15 +202,19 @@ for (let k = 0; k < N * N; k++) if (bay[k]) h.d[k] = -0.4 - (E.E5.depthMetres - 
   report.edits.E6 = { channelWidthMetres: p.channelWidthMetres, channelDepthMetres: p.channelDepthMetres, channelFloorKm2: r2(cells * A / 1e6) };
 }
 { // the volumes of E4 (with the low ground of E6) and E5, measured against today's surface in the same datum
-  let add = 0, above = 0, area = 0, top = 0, bayArea = 0, bayFill = 0, landIn = 0;
+  let add = 0, above = 0, area = 0, top = 0, bayArea = 0, bayFill = 0, landIn = 0, won = 0, wonVol = 0, rimTop = 0;
   for (let k = 0; k < N * N; k++) {
+    if (rim[k]) rimTop = Math.max(rimTop, h.d[k]);
+    if (inWon[k]) { won++; wonVol += h.d[k] - T.d[k]; }
     if (M[k]) { const d = h.d[k] - T.d[k]; add += d; if (h.d[k] > 0) { area++; above += h.d[k] - Math.max(T.d[k], 0); if (h.d[k] > top) top = h.d[k]; } }
     if (bay[k]) { bayArea++; bayFill += h.d[k] - T.d[k]; }
   }
   const v = add * A / 1e9, [lo, hi] = E.E4.volumeRangeKm3;
-  report.edits.E4 = { volumeAddedKm3: r2(v), volumeAddedAboveSeaKm3: r2(above * A / 1e9), restoredLandKm2: r2(area * A / 1e6), highestRestoredPointMetres: r1(top), allowedRangeKm3: [lo, hi] };
+  report.edits.E4 = { volumeAddedKm3: r2(v), volumeAddedAboveSeaKm3: r2(above * A / 1e9), restoredLandKm2: r2(area * A / 1e6), highestRestoredPointMetres: r1(top), allowedRangeKm3: [lo, hi],
+    rimCrestHighestMetres: r1(rimTop), rimMaxMetres: E.E4.rimMaxMetres, ...report.edits.E4, wonFromTheBayKm2: r2(won * A / 1e6), volumeOfThatKm3: r2(wonVol * A / 1e9) };
   report.edits.E5 = { bayKm2: r2(bayArea * A / 1e6), depthMetres: E.E5.depthMetres, volumeBetweenTodaysFloorAndBayFloorKm3: r2(bayFill * A / 1e9) };
   if (v < lo || v > hi) { console.error(`E4 adds ${v.toFixed(2)} km3, outside ${lo}-${hi} km3 (T1#14): change edits.json`); process.exit(1); }
+  if (top > E.E4.rimMaxMetres + 0.01) { console.error(`E4: restored land reaches ${top.toFixed(1)} m, above the ${E.E4.rimMaxMetres} m rim (T1b#51)`); process.exit(1); }
 }
 
 // ---------------------------------------------------------------- E7: Pre-Kameni (a modern label)
@@ -272,6 +300,10 @@ report.data = { bytes: enc.bytes.length, sha256: createHash('sha256').update(enc
   const page = new Function(w.slice(a, b) + '\nreturn decodeTerrain;')()(enc.bytes);
   for (let k = 0; k < N * N; k++) if (page.q[k] !== enc.q[k] || page.rock[k] !== rock[k]) { console.error('the page\'s terrain decoder disagrees with the data at cell ' + k); process.exit(1); }
   report.data.pageDecoderAgrees = true;
+}
+if (DUMP) { // the model's heights (float32), the heights as packed (int32, in UNITs) and the rock classes, for compare.mjs
+  writeFileSync(path.resolve(DUMP), Buffer.concat([Buffer.from(h.d.buffer), Buffer.from(enc.q.buffer), Buffer.from(rock.buffer)]));
+  console.log(`${DUMP}: E4 adds ${report.edits.E4.volumeAddedKm3} km3; ${enc.bytes.length} bytes of data`); process.exit(0);
 }
 const b64 = Buffer.from(enc.bytes).toString('base64');
 writeFileSync(path.join(root, 'source', 'src', 'terrain-data.js'),
