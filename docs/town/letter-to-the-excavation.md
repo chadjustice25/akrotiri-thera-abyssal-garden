@@ -7,7 +7,7 @@ Drafted on 2026-11-18 after work order 002, when Chad asked whether data could b
 Chad: "I would love to create this and get feedback from the archaeologists involved for potential inclusion as a resource for people enjoying the island and history." So the letter is no longer only a request. Before it is sent:
 
 - **Have something to show.** The page on the web (GitHub Pages), with the three layers and the Found layer appearing in the order of the dig. That needs work order 004 and lane T8, checked.
-- **Attach the order of the dig as a table for correction.** It is the one thing they can correct at a glance, and it is their own history. The table comes from lane T8's check.
+- **Attach the order of the dig as a table for correction.** It is the one thing they can correct at a glance, and it is their own history. The table is §2 of `docs/research/verification/T8.md`, checked on 2026-11-21. Ask in particular about what it could not date: the House of the Anchor, the "South Building" and Xeste 5.
 - **Check who directs the excavation today,** and address the letter to them. The draft below names Professor Doumas because lane T2b found that he has directed it since 1974; lane T8 asks who directs it now.
 - **Claim nothing.** The page says nothing of approval, support or a link with the excavation, the Archaeological Society or the Ministry until one is given in writing.
 - **Rewrite the draft below then.** It is the text of 2026-11-18 with one question added, and it does not yet ask for their view of the work.
@@ -18,7 +18,7 @@ Chad agreed to this on 2026-11-20 ("All agreed"). **Chad sends the letter himsel
 
 | Body | What it can say | Where to find it |
 |---|---|---|
-| **The excavation**: the Akrotiri excavations of the Archaeological Society at Athens. Search results of 2018 to 2020 name Professor Emeritus Christos Doumas as director; lane T8 asks who directs it today | Whether the reconstruction is right, and whether its plan may be used | The Society's own website. No address for the excavation itself was found |
+| **The excavation**: the Akrotiri excavations of the Archaeological Society at Athens. Professor Emeritus Christos Doumas has directed it since the 1975 season and is named as director in the Society's report for 2020 (T8 check, §10). Who directs it today could not be settled: the Society's reports for 2023 to 2025 would not open | Whether the reconstruction is right, and whether its plan may be used | The Society's own website. No address for the excavation itself was found |
 | **The Ephorate of Antiquities of the Cyclades**, the Ministry of Culture's service for the islands. A search result says it oversees the site | What is offered to visitors at the site, which is the "inclusion as a resource" of D46 | Its contact page: <https://cyclades.culture.gov.gr/en/contact/> |
 
 Write to the excavation first. The Ephorate will want to know what the excavators think of it (the integrator's judgement).
