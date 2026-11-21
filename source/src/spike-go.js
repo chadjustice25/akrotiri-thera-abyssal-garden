@@ -60,8 +60,8 @@
     m[44] = fx; m[45] = fy; m[46] = fz; m[47] = NEAR;
     m[57] = RAYS; m[58] = show; m[59] = F[HSEA];
     m[80] = F[LAY]; m[81] = F[YEAR]; m[82] = F[DAY]; m[83] = WAVE; m[84] = TONE[0]; m[85] = TONE[1]; m[86] = TONE[2]; m[87] = fading;
-    const moved = shadowAt !== F[HOUR];
-    if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); shadowAt = F[HOUR]; }
+    const moved = shadowAt !== F[HOUR] || shDay !== F[DAY];
+    if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); shadowAt = F[HOUR]; shDay = F[DAY]; }
     // a shadow map is drawn again only while its owners change: the town's while a layer fades, the island's while the blend moves it
     // (the town belongs to the first island: it is not drawn while the second is blended in)
     const townOn = SPK.isl <= 0, townSh = moved || townOn !== (tIsl <= 0) || shLay !== m[80] || shYear !== m[81], islMoved = moved || tIsl !== SPK.isl;

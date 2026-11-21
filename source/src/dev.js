@@ -4,7 +4,7 @@
 //   F    fly the camera along the scripted path (FLY in main.js), one minute through the whole world
 //   B    the same flight as a benchmark: the resolution stays fixed, every frame is timed, the result is shown at the end
 //   F, B or 1-9 during a flight stop it
-//   dev.look(x, y, z, tx, ty, tz), dev.hour(h), dev.F: for scripts that take pictures (y is an absolute height)
+//   dev.look(x, y, z, tx, ty, tz), dev.hour(h), dev.day(d, now), dev.F: for scripts that take pictures (y is an absolute height)
 //   dev.layer(n, now), dev.year(y), dev.pick(choice, option): the layer, the year and the chooser, for scripts;
 //   dev.at(0.4) holds the layer part of the way through a change, for a still picture of a fade
 //   dev.hold(1) keeps the resolution full, so that a slower state shows as more milliseconds and not as fewer pixels;
@@ -90,6 +90,6 @@
       }
     } else if (/Digit[1-9]/.test(e.code)) stop();
   });
-  window.dev = { look: lookAt, hour: (h) => { hourTo = F[HOUR] = h; }, F, hAt, solid, pick, year: setYear, time, change, hold: (on) => { held = on; pix = DW * DH; resize(); return `${W}x${H}`; }, layer: (n, now) => { setLayer(n); if (now) { F[LAY] = n; showAll(); } return n; }, at: (v) => { layTo = F[LAY] = v; showAll(); return v; },
-    state: () => ({ walk, show, x: F[CX], y: F[CY], z: F[CZ], feet: F[FEET], sea: F[HSEA], ground: hAt(F[CX], F[CZ]), top: tAt(F[CX], F[CZ]), layer: +F[LAY].toFixed(3), fading, year: F[YEAR], building: ((i, j) => (i < 0 || j < 0 || i >= TGW || j >= TGH ? 0 : TGRID[j * TGW + i]))(floor((F[CX] - TGX) / TCELL), floor((F[CZ] - TGZ) / TCELL)), inside: ghost }) };
+  window.dev = { look: lookAt, hour: (h) => { hourTo = F[HOUR] = h; }, F, hAt, solid, pick, year: setYear, day: (d, now) => { setDay(d); if (now) { const w = hourTo === hourOf(tIdx, F[DAY]); F[DAY] = dayTo; if (w) hourTo = F[HOUR] = hourOf(tIdx, dayTo); } return $('z').textContent; }, time, change, hold: (on) => { held = on; pix = DW * DH; resize(); return `${W}x${H}`; }, layer: (n, now) => { setLayer(n); if (now) { F[LAY] = n; showAll(); } return n; }, at: (v) => { layTo = F[LAY] = v; showAll(); return v; },
+    state: () => ({ walk, show, x: F[CX], y: F[CY], z: F[CZ], feet: F[FEET], sea: F[HSEA], ground: hAt(F[CX], F[CZ]), top: tAt(F[CX], F[CZ]), layer: +F[LAY].toFixed(3), fading, year: F[YEAR], day: +F[DAY].toFixed(2), hour: +F[HOUR].toFixed(3), building: ((i, j) => (i < 0 || j < 0 || i >= TGW || j >= TGH ? 0 : TGRID[j * TGW + i]))(floor((F[CX] - TGX) / TCELL), floor((F[CZ] - TGZ) / TCELL)), inside: ghost }) };
 }

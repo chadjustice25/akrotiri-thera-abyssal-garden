@@ -56,18 +56,38 @@ function decodeTerrain(b) {
 // </terrain-decoder>
 
 // ---------------------------------------------------------------- the sun
-// Thera is at 36.4 N. The day is a liberty (docs/terrain/README.md, T-L9): late May, given as the sun's ecliptic longitude
-// of 65 degrees, with the tilt of the Earth's axis as it was around 1628 BCE (23.89 degrees, from Laskar's 1986 series).
+// Thera is at 36.4 N. The Earth's axis is tilted as it was around 1628 BCE (23.89 degrees, from Laskar's 1986 series).
 // Time is local solar time: the sun is due south at 12.
-const LAT = 36.4 * PI / 180, DECL = asin(sin(23.89 * PI / 180) * sin(65 * PI / 180));
-// direction to the sun at `hour` into out[0..2]; returns its height above the horizon in radians
-function sunAt(hour, out) {
-  const H = (hour - 12) * PI / 12, sa = sin(LAT) * sin(DECL) + cos(LAT) * cos(DECL) * cos(H);
-  out[0] = -cos(DECL) * sin(H); out[1] = sa; out[2] = -(cos(LAT) * sin(DECL) - sin(LAT) * cos(DECL) * cos(H)); // east, up, south
+// THE DAY OF THE YEAR is counted from the spring equinox, 0 to 365, and the viewer can move it (D33; docs/layers/README.md).
+// The sun goes round its yearly path at an even pace here: a liberty (L-L4) that the sky order ends. The world opens in
+// late May, DAY0 (the sun 65 degrees along its path: T-L9, as before the date could be moved).
+const LAT = 36.4 * PI / 180, TILT = 23.89 * PI / 180, DAY0 = 65 * 365 / 360;
+// how far north of the equator the sun stands on a day (its declination, in radians)
+const declAt = (day) => asin(sin(TILT) * sin(TAU * day / 365));
+// direction to the sun at `hour` on a day whose declination is dc, into out[0..2]; returns its height above the horizon in radians
+function sunAt(hour, dc, out) {
+  const H = (hour - 12) * PI / 12, sa = sin(LAT) * sin(dc) + cos(LAT) * cos(dc) * cos(H);
+  out[0] = -cos(dc) * sin(H); out[1] = sa; out[2] = -(cos(LAT) * sin(dc) - sin(LAT) * cos(dc) * cos(H)); // east, up, south
   return asin(sa);
 }
-// the moments the T key and the menu step through: name, solar hour
+// the hours after noon at which the sun stands `alt` radians above the horizon on such a day (0 if it never climbs so
+// high, 12 if it never sinks so low)
+const hoursTo = (alt, dc) => acos(clamp((sin(alt) - sin(LAT) * sin(dc)) / (cos(LAT) * cos(dc)), -1, 1)) * 12 / PI;
+// The moments the T key and the menu step through: name, and the solar hour it had in late May, when these were fixed
+// hours. THE NAMED MOMENTS FOLLOW THE SUN: Dawn, Golden and Dusk are the hours at which the sun stands as high as it did
+// at those hours in late May (1.6 degrees up, 8.6 up, 4.0 down), so each has the same light all year; Afternoon keeps its
+// share of the time from noon to sunset; Noon and Night are 12 and 23.5.
 const TIMES = [['Dawn', 5.02], ['Noon', 12], ['Afternoon', 15.7], ['Golden', 18.35], ['Dusk', 19.5], ['Night', 23.5]];
+{
+  const d = declAt(DAY0), V = [0, 0, 0], set = hoursTo(0, d);
+  for (const t of TIMES) t[2] = sunAt(t[1], d, V);  // the sun's height at that hour in late May
+  TIMES[2][2] = (TIMES[2][1] - 12) / set;           // Afternoon: its share of the afternoon
+}
+// the solar hour of named moment i on a day (per frame while the date moves: no allocations)
+function hourOf(i, day) {
+  const t = TIMES[i], d = declAt(day);
+  return i === 1 || i === 5 ? t[1] : i === 2 ? 12 + t[2] * hoursTo(0, d) : i ? 12 + hoursTo(t[2], d) : 12 - hoursTo(t[2], d);
+}
 // How fresh the breeze is through the day, 0 calm to 1 breezy: calm mornings and a north wind that builds in the afternoon,
 // the daily pattern of today's summer Etesians carried back (T1#50, grade C; T-L10).
 const WIND = [0.12, 0.1, 0.1, 0.12, 0.3, 0.55, 0.85, 0.6, 0.25, 0.12]; // every 2.4 h from midnight

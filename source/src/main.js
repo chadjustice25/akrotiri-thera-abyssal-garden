@@ -192,7 +192,7 @@ const TB = buildTown(hAt), vbTown = buf(TB.v, BU.VERTEX), ibTown = buf(TB.ix, BU
 // The choices put to Chad (docs/layers/README.md, "The choices"), as built: TONE, the plain tone of what has no sourced
 // colour; CROSS, the seconds the wave takes to cross the town; LIFT, 1 if a viewer standing where a house appears is
 // lifted to its roof, 0 if the house is not solid for them until they have walked out of it.
-let TONE = [0.31, 0.3, 0.275], CROSS = 5, LIFT = 1, layTo = 1, yearTo = 1628, fading = 0, ghost = 0;
+let TONE = [0.31, 0.3, 0.275], CROSS = 5, LIFT = 1, layTo = 1, yearTo = 1628, dayTo = DAY0, fading = 0, ghost = 0;
 const WAVE = 3, SHOWN = new Float32Array(NTB), LAY = 25, YEAR = 26, DAY = 27;
 // how far each building is shown, 0 to 1: the same sum as vis() in the shaders, worked out again only when a number has moved
 function showAll() {
@@ -231,7 +231,7 @@ const NSPECK = 6000 >> LV, ibSpecks = buf(Float32Array.from({ length: NSPECK * 4
 // per-frame float state lives in one preallocated array, so the frame loop allocates no heap numbers
 const F = new Float64Array(40), P6 = new Float64Array(6), V3 = new Float64Array(3);
 const CX = 0, CY = 1, CZ = 2, YAW = 3, PIT = 4, FX = 5, FY = 6, FZ = 7, RX = 8, RZ = 9, UX = 10, UY = 11, UZ = 12, VX = 13, VY = 14, VZ = 15, TIME = 16, FLT = 17, LAST = 18, GPU = 19, HUDT = 20, SPL = 21, HOUR = 22, HSEA = 23, FEET = 24;
-F[LAY] = layTo; F[YEAR] = yearTo; F[DAY] = 66; showAll(); // (day 66 after the spring equinox: late May)
+F[LAY] = layTo; F[YEAR] = yearTo; F[DAY] = dayTo; showAll();
 // a height given above the ground (or the sea), or a depth below the surface, as an absolute height
 const lift = (p) => { p[1] = p[1] < 0 ? p[1] : max(hAt(p[0], p[2]), 0) + p[1]; };
 for (const p of POSES) lift(p);
@@ -300,13 +300,14 @@ function flyAt() {
   F[CY] = max(F[CY], solid(F[CX], F[CZ]) + 1);
 }
 
-// ---------------------------------------------------------------- the sun, the time of day
-// The hour moves towards hourTo (always forwards, as the sun does). While it moves, and whenever the sun has moved
-// since the shadow map was drawn, the map is drawn again from the new direction.
-let hourTo = TIMES[2][1], shadowAt = -1, shLay = -1, shYear = 0, expo = 1, wet = 0; // wet: 0 in the air to 1 under water, following the camera with a short delay, as eyes do
+// ---------------------------------------------------------------- the sun, the time of day and the day of the year
+// The hour moves towards hourTo (always forwards, as the sun does), and the day towards dayTo (the short way round the
+// year). While either moves, and whenever the sun has moved since the shadow map was drawn, the map is drawn again from
+// the new direction. Only the sun follows the date: the wind, the haze and the sea do not, and the ground is bare all year.
+let hourTo = TIMES[2][1], tIdx = 2, shadowAt = -1, shDay = -1, shLay = -1, shYear = 0, expo = 1, wet = 0; // wet: 0 in the air to 1 under water, following the camera with a short delay, as eyes do
 F[HOUR] = hourTo;
 function setSun() {
-  const el = sunAt(F[HOUR], V3);
+  const el = sunAt(F[HOUR], declAt(F[DAY]), V3);
   UB[48] = V3[0]; UB[49] = V3[1]; UB[50] = V3[2]; UB[51] = windAt(F[HOUR]);
   sunLight(el, V3); UB[60] = V3[0]; UB[61] = V3[1]; UB[62] = V3[2];
   const deg = el * 180 / PI, nt = sstep(-3, -11, deg);
@@ -424,8 +425,8 @@ function render() {
   m[44] = fx; m[45] = fy; m[46] = fz; m[47] = NEAR;
   m[57] = RAYS; m[58] = show; m[59] = F[HSEA];
   m[80] = F[LAY]; m[81] = F[YEAR]; m[82] = F[DAY]; m[83] = WAVE; m[84] = TONE[0]; m[85] = TONE[1]; m[86] = TONE[2]; m[87] = fading;
-  const moved = shadowAt !== F[HOUR];
-  if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); shadowAt = F[HOUR]; }
+  const moved = shadowAt !== F[HOUR] || shDay !== F[DAY];
+  if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); shadowAt = F[HOUR]; shDay = F[DAY]; }
   // the town's shadow map is drawn again while its owners change: when the sun moves, and on every frame of a fade
   const townSh = moved || shLay !== m[80] || shYear !== m[81];
   if (townSh) { shLay = UBT[80] = m[80]; shYear = UBT[81] = m[81]; UBT[83] = WAVE; Q.writeBuffer(uboT, 0, UBT); }
@@ -506,6 +507,13 @@ function frame(now) {
   }
   // (with LIFT 0: a viewer standing where a house is appearing is inside it, and it is not solid for them until they leave)
   if (!LIFT) { const i = floor((F[CX] - TGX) / TCELL), j = floor((F[CZ] - TGZ) / TCELL), id = i < 0 || j < 0 || i >= TGW || j >= TGH ? 0 : TGRID[j * TGW + i]; if (id && SHOWN[id] < 1 && layTo > F[LAY]) ghost = id; else if (id !== ghost) ghost = 0; } else ghost = 0;
+  // The day glides to the one chosen, the short way round the year. A named moment follows the sun: if the hour is at
+  // one (or on its way to one), it stays with it as the day moves, so Golden stays golden from midsummer to midwinter.
+  if (F[DAY] !== dayTo) {
+    const was = hourOf(tIdx, F[DAY]), gap = ((dayTo - F[DAY]) % 365 + 547.5) % 365 - 182.5, st = max(abs(gap) * 2.5, 25) * dt;
+    F[DAY] = st >= abs(gap) ? dayTo : (F[DAY] + (gap < 0 ? -st : st) + 365) % 365;
+    if (hourTo === was) { const h = hourOf(tIdx, F[DAY]); if (F[HOUR] === hourTo) F[HOUR] = h; hourTo = h; }
+  }
   // the hour glides to the chosen moment, forwards through the day
   if (F[HOUR] !== hourTo) { const gap = (hourTo - F[HOUR] + 24) % 24, st = max(gap * 2.2, 1.5) * dt; F[HOUR] = st >= gap ? hourTo : (F[HOUR] + st) % 24; }
   {
@@ -571,7 +579,7 @@ render = () => { F[HSEA] = seaAt(F[CX], F[CZ], F[TIME], max(-hAt(F[CX], F[CZ]), 
 
 // ---------------------------------------------------------------- input
 const bTime = $('t').querySelectorAll('button');
-const setTime = (i) => { hourTo = TIMES[i][1]; bTime.forEach((b, j) => { b.className = i === j ? 'on' : ''; }); };
+const setTime = (i) => { tIdx = i; hourTo = hourOf(i, F[DAY]); bTime.forEach((b, j) => { b.className = i === j ? 'on' : ''; }); };
 bTime.forEach((b, i) => { b.onclick = () => setTime(i); });
 setTime(2);
 // the edge of the excavated walls, drawn on the ground on request (key L, or the menu): beyond it the town is reconstruction
@@ -586,6 +594,17 @@ const setLayer = (i) => { layTo = i; bLay.forEach((b, j) => { b.className = i ==
 bLay.forEach((b, i) => { b.onclick = () => setLayer(i); });
 setLayer(1);
 const setYear = (y) => { yearTo = y; };
+// The date: a day of the year, counted from the spring equinox and named as today's calendar names that time of year.
+// These are seasonal dates, not dates in any calendar of the time. setDay() is the one way in, for the menu's slider, its
+// four marks (the equinoxes and the solstices) and the [ and ] keys.
+const sDay = $('f'), ML = [31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 31, 28];
+const setDay = (d) => {
+  dayTo = ((d % 365) + 365) % 365; let n = round(dayTo) % 365 + 19, m = 0; while (n >= ML[m]) n -= ML[m++];
+  sDay.value = round(dayTo) % 365; $('z').textContent = (n + 1) + ' ' + 'MarAprMayJunJulAugSepOctNovDecJanFeb'.substr(m * 3, 3);
+};
+sDay.oninput = () => setDay(+sDay.value);
+$('n').querySelectorAll('button').forEach((b, i) => { b.onclick = () => setDay(round(i * 91.25)); });
+setDay(dayTo);
 // the stats line: key H, or the menu's Stats button on a touch screen
 const stat = () => { hud = !hud; hTot = 0; hPer = 1e9; info.textContent = ''; };
 $('y').onclick = stat;
@@ -594,10 +613,12 @@ const key = (e, v) => {
     case 'KeyW': kf = v; break; case 'KeyS': kb = v; break; case 'KeyA': kl = v; break; case 'KeyD': kr = v; break;
     case 'Space': if (!menu) e.preventDefault(); // up, like E; in the world it must not press the last button clicked
     case 'KeyE': ku = v; break; case 'KeyQ': case 'KeyX': kd = v; break; case 'ShiftLeft': case 'ShiftRight': ks = v; break;
+    // the date, a week back or on (held down, it keeps going)
+    case 'BracketLeft': if (v) setDay(round(dayTo) - 7); break; case 'BracketRight': if (v) setDay(round(dayTo) + 7); break;
     default: if (v && !e.repeat) {
       if (e.code === 'KeyH') stat();
       else if (e.code === 'KeyM') mute();
-      else if (e.code === 'KeyT') setTime((TIMES.findIndex((t) => t[1] === hourTo) + 1) % TIMES.length);
+      else if (e.code === 'KeyT') setTime((tIdx + 1) % TIMES.length);
       else if (e.code === 'Escape') ui(true);
       else if (e.code === 'KeyL') setShow(!show);
       else if (e.code === 'KeyK') setLayer(layTo ? 0 : 1);

@@ -63,9 +63,20 @@ In the page a building's layer is one bit of its data (`exc`), and the table bel
 
 **Collision follows what is shown.** A hidden building is not there. One that is part shown stands part of its height: a viewer on its roof is let down as it goes, and one standing where it comes is lifted with it (choice 3 below).
 
-**The controls are functions**: `setLayer(n)` and `setYear(y)` in `main.js`. The menu's row and the `K` key call the first; nothing in the released page calls the second.
+**The controls are functions**: `setLayer(n)`, `setDay(d)` and `setYear(y)` in `main.js`. The menu's rows and the keys call the first two; nothing in the released page calls the third. Another kind of input (a link, a headset's controller) can call them the same way.
 
 **The year** has its plumbing and no control (O20). Every building's row stands for the whole span, so nothing changes with the year. In the development build only, four buildings are given years by dice and the `U` and `I` keys move the year, to show that it works: they fade out and in as the year passes their dates.
+
+## 3a. The date
+
+**A day of the year the viewer can move** (D33): the menu's Date row is a slider that a finger can drag, with the date it stands at and four marks to jump to, the two equinoxes and the two solstices; the `[` and `]` keys step a week back and on, and keep going while held.
+
+- **Which calendar.** The day is counted from the spring equinox, 0 to 364, and named as today's calendar names that time of year: day 0 is "20 Mar", and the world opens on "25 May" (the sun 65° along its yearly path, as before the date could be moved: T-L9). **These are seasonal dates, not dates in any calendar of the time.** The page shows no Julian date and names no ancient month; the menu's notes say so. The computed calendar belongs to the sky order.
+- **The sun follows the day**: its height at noon and the length of the day, with the tilt the engine already used (23.89°, T-L9), in local solar time. At Thera's latitude the day runs from 9.5 hours at the winter solstice to 14.5 at the summer one.
+- **The named moments follow the sun.** Dawn, Golden and Dusk were fixed solar hours, set for late May. Each is now the hour at which the sun stands as high as it did at that hour in late May: 1.6° up for Dawn, 8.6° up for Golden, 4.0° below the horizon for Dusk. So each has the same light all year, and in late May each is the hour it was (5.02, 18.35, 19.5). Afternoon keeps its share of the time from noon to sunset (15.7 in late May, 14.5 at midwinter). Noon and Night stay at 12 and 23.5. If the hour is at a named moment when the date moves, it stays with that moment.
+- **The date glides**, the short way round the year, and the shadow maps are drawn again while it does, as they are when the hour moves.
+- **Only the sun follows the date.** The wind (T-L10), the haze (T-L11) and the sea do not, and the ground is bare all year (T-L16). No winter is invented: no rain, no cloud, no green. The day of the year reaches every shader with the layer and the year, and the visibility function takes a thing's days, so that what grows can follow it when plants come (work order 005).
+- **The year** is beside it in the same block, with no control (§3).
 
 ## 4. Liberties
 
@@ -75,6 +86,7 @@ New with this order. The integrator enters them in `docs/HISTORICAL_STANDARD.md`
 |---|---|---|---|
 | L-L1 | **The excavated buildings stand whole in the Found layer**: full height, with roofs, parapets and every opening the town's rules give them. | The height each wall survives to is not published (O8), so what was found cannot be told from what was restored above it. Found is "what was dug up, where it was found" in plan, not in elevation. | every excavated building |
 | L-L2 | **The wave.** A change of layer spreads outward from the excavated centre by distance, the town first and then the land. | A way of showing, chosen by Chad (D41). It is not the order in which the site was dug (D44 will replace it with that order, once lane T8 is checked) and not a claim about how the town was built. | `tools/town/town.json` (`layers.wave`); `turn()` in `shaders.js` |
+| L-L4 | **The sun goes round its yearly path at an even pace**, counted from the spring equinox. | The true pace is uneven (the Earth's orbit is not a circle), so the true sun is ahead of or behind this one: by today's orbit by up to about four days, at the autumn equinox. The orbit of 1628 BCE differed again. The sky order computes the sun's place for the date and ends this liberty. | `declAt()` in `world.js` |
 | L-L3 | **The plain tone**, and that paved ground is drawn a fifth darker in it. | A tone has to be chosen; none is evidence. The darker paving keeps a sourced thing (flagstones, T2#11) visible without its unsourced look. | `TONE` in `main.js` |
 
 ## 5. Flat-screen effects (D43)

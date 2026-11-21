@@ -1,7 +1,7 @@
 // ============================================================================
 // math helpers
 // ============================================================================
-const { sin, cos, sqrt, min, max, abs, floor, PI, pow, atan2, hypot, exp, round, log2, asin } = Math;
+const { sin, cos, sqrt, min, max, abs, floor, PI, pow, atan2, hypot, exp, round, log2, asin, acos } = Math;
 const TAU = PI * 2;
 let _seed = 20261110;
 const rnd = () => {
