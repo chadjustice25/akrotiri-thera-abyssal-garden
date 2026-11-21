@@ -9,6 +9,13 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 - **From Uruk: grade evidence by its distance in time, not only by whether it exists.** State how far each piece of evidence is from the target moment. A text or image made centuries later is grade C, even when it is famous.
 - **From Uruk and unghost: reports carry errors that only a check against the sources catches.** Nothing from a report is adopted until its claim is checked (`docs/research/verification/`).
 
+## The opening page, and working with Chad at a distance (2026-11-21)
+- **Say back what will be built before building from a short answer.** Chad wrote "All three are great and use them." The integrator took it as its own three recommended picks and built one look. He meant the three looks. One line, "I will build X: say so if you meant Y", sent before the work and not after it, would have saved a round.
+- **Ask the worker session, do not guess.** Asked directly, the 004 session said in one message what was built, what waited on Chad, and that the dig's order needs more than new data. The integrator had told Chad the opposite the day before.
+- **A second order can be stacked on a first that is not merged yet.** Work order 006 started from 004's branch and took that branch in again when it moved, so neither waited for the other. It worked because 006 changed no file 004 was still changing.
+- **When Chad is away from the Mac, his `main` cannot be moved for him.** It is checked out there. A branch that already contains GitHub's `main` can be pushed straight to it, and his copy catches up with `git pull`. Each such push needs his word, and the record says which words.
+- **Design the look as variables from the start.** Three looks cost 902 bytes because every colour on the page already came from one small set of names.
+
 ## Planning for headsets (2026-11-20)
 - **A search's summary is not the maker's page.** The first check of headset browsers said none could draw WebGPU in WebXR without flags. Apple had shipped it eleven months earlier, and Meta listed it a week before the check. Both were found the same day by reading WebKit's post and Meta's release list. A fact about what a product can do goes into a plan only from the maker's own page, with the date it was read, and anything seen only in a summary is marked as that.
 - **A recommendation to buy something says what was checked, what was not, and that nothing was tried.** The headset table in `docs/ARCHITECTURE.md` §12 marks each price and claim that way.
