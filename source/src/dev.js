@@ -18,7 +18,7 @@
 //           year's plumbing works, DATED below gives four buildings years of their own HERE ONLY. They are dice, not evidence.
 {
   const CH = [
-    { name: 'The plain tone of Found', key: 'Z', code: 'KeyZ', at: 0, opts: [['Plaster', 'a warm off-white, as an unpainted model', [0.31, 0.3, 0.275]], ['Clay', 'a pale earth, nearer the ground\'s own tones', [0.25, 0.215, 0.17]], ['Grey', 'a neutral grey, as in a drawing of evidence', [0.21, 0.21, 0.21]]], set: (o) => { TONE = o[2]; } },
+    { name: 'The plain tones of Found', key: 'Z', code: 'KeyZ', at: 0, opts: [['Plaster on stone', 'white buildings on land a third deeper, a warm grey', [0.2, 0.193, 0.176], [0.33, 0.32, 0.295]], ['Plaster on card', 'white buildings on a dark neutral ground, as a model on its board', [0.16, 0.158, 0.15], [0.33, 0.32, 0.295]], ['Plaster on slate', 'white buildings on blue-grey land, as in a drawing', [0.14, 0.16, 0.19], [0.32, 0.32, 0.31]]], set: (o) => { TONE = o[2]; TONEB = o[3] || o[2]; } },
     { name: 'The wave crosses the town in', key: 'V', code: 'KeyV', at: 1, opts: [['3 seconds', 'brisk', 3], ['5 seconds', 'unhurried', 5], ['10 seconds', 'slow enough to follow house by house', 10]], set: (o) => { CROSS = o[2]; } },
     { name: 'A viewer standing where a house appears', key: 'C', code: 'KeyC', at: 0, opts: [['is lifted to its roof', 'never inside a wall', 1], ['is left inside it', 'its walls are not solid for them until they walk out', 0]], set: (o) => { LIFT = o[2]; } },
   ], BUILT = CH.map((c) => c.at);
@@ -91,6 +91,6 @@
       }
     } else if (/Digit[1-9]/.test(e.code)) stop();
   });
-  window.dev = { look: lookAt, hour: (h) => { hourTo = F[HOUR] = h; }, F, hAt, solid, pick, year: setYear, day: (d, now) => { setDay(d); if (now) { const w = hourTo === hourOf(tIdx, F[DAY]); F[DAY] = dayTo; if (w) hourTo = F[HOUR] = hourOf(tIdx, dayTo); } return $('z').textContent; }, time, change, hold: (on) => { held = on; pix = DW * DH; resize(); return `${W}x${H}`; }, layer: (n, now) => { setLayer(n); if (now) { F[LAY] = n; showAll(); } return n; }, at: (v) => { layTo = F[LAY] = v; showAll(); return v; },
+  window.dev = { look: lookAt, hour: (h) => { hourTo = F[HOUR] = h; }, F, hAt, solid, pick, tone: (land, bld) => { TONE = land; TONEB = bld || land; return 1; }, year: setYear, day: (d, now) => { setDay(d); if (now) { const w = hourTo === hourOf(tIdx, F[DAY]); F[DAY] = dayTo; if (w) hourTo = F[HOUR] = hourOf(tIdx, dayTo); } return $('z').textContent; }, time, change, hold: (on) => { held = on; pix = DW * DH; resize(); return `${W}x${H}`; }, layer: (n, now) => { setLayer(n); if (now) { F[LAY] = n; showAll(); } return n; }, at: (v) => { layTo = F[LAY] = v; showAll(); return v; },
     state: () => ({ walk, show, x: F[CX], y: F[CY], z: F[CZ], feet: F[FEET], sea: F[HSEA], ground: hAt(F[CX], F[CZ]), top: tAt(F[CX], F[CZ]), layer: +F[LAY].toFixed(3), fading, year: F[YEAR], day: +F[DAY].toFixed(2), hour: +F[HOUR].toFixed(3), building: ((i, j) => (i < 0 || j < 0 || i >= TGW || j >= TGH ? 0 : TGRID[j * TGW + i]))(floor((F[CX] - TGX) / TCELL), floor((F[CZ] - TGZ) / TCELL)), inside: ghost }) };
 }

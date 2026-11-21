@@ -22,8 +22,8 @@ Three layers, each adding to the one before (D31). Their names and lines are Cha
 
 - **The world opens in Inferred**, which is the world as it was before this order.
 - **Imagined holds nothing yet.** Its button is in the menu, greyed and marked "to come", and the `K` key passes it by. The engine carries the value 2 all the same, and the page was run in it: it draws what Inferred draws.
-- **Plain** is one unpainted tone, the convention of a plaster model. It replaces every colour that is a liberty: rock, soil, sand, the sea floor seen through the water, walls, roofs, timber, stone. The patterns that go with those colours go too: joints, courses, render, the sheen of lava and of wet shingle. Light, shadow, haze, the sky's reflection and the ground's fine relief stay, so the form still reads. The light the ground throws back onto walls takes the plain tone as well.
-- **Paving in Found.** That the rebuilt streets were paved with flagstones is sourced (T2#11); the look of the flagstones is not (A-L2, A-L14). So in Found the paved ground has the plain tone, a fifth darker, with no joints: enough to tell a street from the open ground.
+- **Plain** is unpainted: the convention of a plaster model on its base. Since Chad's first look (2026-11-21) there are two plain tones, one for buildings and a deeper one for the land and the sea floor (§6); the order had asked for one. They replace every colour that is a liberty: rock, soil, sand, the sea floor seen through the water, walls, roofs, timber, stone. The patterns that go with those colours go too: joints, courses, render, the sheen of lava and of wet shingle. Light, shadow, haze, the sky's reflection and the ground's fine relief stay, so the form still reads. The light the ground throws back onto walls takes the plain tone as well.
+- **Paving in Found.** That the rebuilt streets were paved with flagstones is sourced (T2#11); the look of the flagstones is not (A-L2, A-L14). So in Found the paved ground has the land's plain tone, a fifth darker, with no joints: enough to tell a street from the open ground.
 - **The edge of the excavated walls** (key `L`) works in every layer.
 - **The sea, the sky and the weather** are conditions of seeing, not things, and are in every layer.
 
@@ -87,7 +87,7 @@ New with this order. The integrator enters them in `docs/HISTORICAL_STANDARD.md`
 | L-L1 | **The excavated buildings stand whole in the Found layer**: full height, with roofs, parapets and every opening the town's rules give them. | The height each wall survives to is not published (O8), so what was found cannot be told from what was restored above it. Found is "what was dug up, where it was found" in plan, not in elevation. | every excavated building |
 | L-L2 | **The wave.** A change of layer spreads outward from the excavated centre by distance, the town first and then the land. | A way of showing, chosen by Chad (D41). It is not the order in which the site was dug (D44 will replace it with that order, once lane T8 is checked) and not a claim about how the town was built. | `tools/town/town.json` (`layers.wave`); `turn()` in `shaders.js` |
 | L-L4 | **The sun goes round its yearly path at an even pace**, counted from the spring equinox. | The true pace is uneven (the Earth's orbit is not a circle), so the true sun is ahead of or behind this one: by today's orbit by up to about four days, at the autumn equinox. The orbit of 1628 BCE differed again. The sky order computes the sun's place for the date and ends this liberty. | `declAt()` in `world.js` |
-| L-L3 | **The plain tone**, and that paved ground is drawn a fifth darker in it. | A tone has to be chosen; none is evidence. The darker paving keeps a sourced thing (flagstones, T2#11) visible without its unsourced look. | `TONE` in `main.js` |
+| L-L3 | **The plain tones**: one for buildings, a deeper one for the land and the sea floor, and paved ground a fifth darker than the land. | Tones have to be chosen; none is evidence. Two, because one pale tone over land and sea floor washed out the water (Chad, 2026-11-21). The darker paving keeps a sourced thing (flagstones, T2#11) visible without its unsourced look. | `TONE`, `TONEB` in `main.js` |
 
 ## 5. Flat-screen effects (D43)
 
@@ -106,13 +106,15 @@ Three choices are Chad's (work order 004, "Choices for Chad"). They are on one p
 
 | Choice | Options | Built | Where |
 |---|---|---|---|
-| 1. The plain tone of Found | Plaster, a warm off-white; Clay, a pale earth; Grey, a neutral grey | Plaster | `TONE` in `main.js` |
+| 1. The plain tones of Found | Plaster buildings on stone (a warm grey land, a third deeper than Plaster); on card (a darker neutral); or on slate (a blue-grey) | Plaster on stone | `TONE` (land and sea floor), `TONEB` (buildings) in `main.js` |
 | 2. How long the wave takes to cross the town | 3, 5 or 10 seconds (the whole change, to the far end of the island: 5.0, 8.3 or 16.7 s; timed at 5.3, 8.7 and 17.0 s with its last shadow map) | 5 seconds | `CROSS` |
 | 3. A viewer standing where a house appears | lifted to its roof; or left inside it, the house not solid for them until they walk out | lifted | `LIFT` |
 
+**Choice 1 was put twice.** The first three options were single tones: Plaster (a warm off-white), Clay (a pale earth) and Grey. Chad set all three aside on 2026-11-21: "I like the Plaster but that makes the water and land looked washed out and my husband likes the Clay but it's so much like the regular ground." The three options in the table answer that: the buildings keep Plaster, and the land and sea floor get a deeper tone of their own, so the shallows are not milky and the ground is not a colour the regular ground has. Nine candidates were looked at from the air, from over the coast and from high above the island; a green-grey was dropped because it reads as plants, and terracotta buildings because they read as painted. Choices 2 and 3 are not answered yet.
+
 In `dev.html` (`cd source && npm run build:dev`) a panel at the foot of the screen names each choice and the option in force, in words; a click on a line, or the key shown beside it (`Z`, `V`, `C`), goes to the next option.
 
-What each option costs, as far as it could be measured: the three tones and the two rules for a viewer make **no measurable difference** (the tone is three numbers in a uniform block; the rule is one comparison in JavaScript). The three durations were timed once, from over the roofs (view 9) on High: the 3-second wave averaged 9.3 ms of GPU time a frame against 7.0 ms for 5 seconds and 6.8 ms for 10, with the page at rest at 6.1 to 7.9 ms. A brisk wave has more houses part shown at once; between 5 and 10 seconds there is no measurable difference.
+What each option costs, as far as it could be measured: the tones and the two rules for a viewer make **no measurable difference** (a tone is three numbers in a uniform block; the rule is one comparison in JavaScript). The three durations were timed once, from over the roofs (view 9) on High: the 3-second wave averaged 9.3 ms of GPU time a frame against 7.0 ms for 5 seconds and 6.8 ms for 10, with the page at rest at 6.1 to 7.9 ms. A brisk wave has more houses part shown at once; between 5 and 10 seconds there is no measurable difference.
 
 ## 7. Measurements
 
@@ -224,8 +226,9 @@ The heap after a forced collection, at view 9 on High, with the layer changed ev
 | After Part A, the land | 171,049 | 99.0 kB | +1,384: terrain data (the larger island packs 1,039 bytes larger) |
 | After Part B, the layers | 176,908 | 101.5 kB | +5,859: engine code 2,696; shaders 1,674; menu and styles 861; town data 651 (the turns) |
 | After Part C, the date | 178,726 | 102.3 kB | +1,818: engine code 976; menu and styles 842 |
+| After the second set of tones (a tone for buildings beside the land's) | 178,790 | 102.3 kB | +64 |
 
-**The three parts add 9,061 bytes** (the order's limit before stopping to report: 20 kB). The page is 174.5 kB of the 256 kB budget.
+**The three parts add 9,061 bytes, and the second tone 64 more** (the order's limit before stopping to report: 20 kB). The page is 174.6 kB of the 256 kB budget.
 
 ### Load
 
@@ -253,7 +256,7 @@ Time frozen, resolution held, the engine's own frame, each of the nine views sav
 | The menu with a finger (emulated, iPad lying and phone upright) | A tap on the slider's middle gave "18 Sep"; a tap on "Winter solstice" gave "19 Dec"; a tap on Found lit it and changed the line |
 | The development build | `dev.html` shows the chooser's panel; with `P` the placing and second-island prototypes of work order 003 run, and follow the layer and the year |
 
-**Claude (Fable 5.2) looked at**, on 2026-11-21: the nine views of the views check, as a sheet (they are in Thera Views, version 13); Found at rest from views 8 and 9 and from the air; the fade held part way from above, from the north edge and in Telchines Street, on High, Medium and Low; the island from view 3 part way through a change; the three tones; midwinter noon and golden hour in the square; the menu at a desktop's size and at an iPad's and a phone's, lying and upright (the upright iPad's picture was not opened); and the eleven pictures of the chooser.
+**Claude (Fable 5.2) looked at**, on 2026-11-21: the nine views of the views check, as a sheet (they are in Thera Views, version 13); Found at rest from views 8 and 9 and from the air; the fade held part way from above, from the north edge and in Telchines Street, on High, Medium and Low; the island from view 3 part way through a change; the first three tones, and then nine candidates for the second set from the air, the coast and high above; midwinter noon and golden hour in the square; the menu at a desktop's size and at an iPad's and a phone's, lying and upright (the upright iPad's picture was not opened); and the pictures of the chooser, eleven at first and twelve after choice 1 was put again.
 
 Seen and worth knowing:
 - **The dither shows, as chosen.** A fading house is drawn through a fine screen. At a low share and from far off, the leading edge of the wave is a sprinkle of dots (view 9 on Medium, a tenth of the way).
@@ -261,7 +264,7 @@ Seen and worth knowing:
 - **In Found the shaded side of a building is dark**, and its windows are hard to see there: with one tone, only light tells surfaces apart.
 - **The menu is taller.** On a desktop window of 1600 × 813 the key list ends at the foot of the window and the notes are below it, reached by scrolling; on an iPad lying down everything fits; on a phone it scrolls, as it did. Nothing was shrunk. If it is to fit a desktop window again without scrolling, the candidate to leave is the row of four marks under the date slider.
 
-**Nobody has watched a change of layer, or the date gliding, in motion**: every look above is at stills, and the timings say only how long frames took. **Chad has looked at nothing yet.** Nobody has tried touch on a device: the slider on a phone held upright sits in a page turned on its side, and worked only under emulation.
+**Nobody has watched a change of layer, or the date gliding, in motion**: every look above is at stills, and the timings say only how long frames took. **Chad has looked at the chooser's first page, in stills** (2026-11-21), and set aside its three tones; he has not yet seen a change in motion. Nobody has tried touch on a device: the slider on a phone held upright sits in a page turned on its side, and worked only under emulation.
 
 ## 9. Known gaps
 

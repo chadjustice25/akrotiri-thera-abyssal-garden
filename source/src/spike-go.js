@@ -59,7 +59,7 @@
     m[40] = ux; m[41] = uy; m[42] = uz; m[43] = TANH;
     m[44] = fx; m[45] = fy; m[46] = fz; m[47] = NEAR;
     m[57] = RAYS; m[58] = show; m[59] = F[HSEA];
-    m[80] = F[LAY]; m[81] = F[YEAR]; m[82] = F[DAY]; m[83] = WAVE; m[84] = TONE[0]; m[85] = TONE[1]; m[86] = TONE[2]; m[87] = fading;
+    m[80] = F[LAY]; m[81] = F[YEAR]; m[82] = F[DAY]; m[83] = WAVE; m[84] = TONE[0]; m[85] = TONE[1]; m[86] = TONE[2]; m[87] = fading; m[88] = TONEB[0]; m[89] = TONEB[1]; m[90] = TONEB[2];
     const moved = shadowAt !== F[HOUR] || shDay !== F[DAY];
     if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); shadowAt = F[HOUR]; shDay = F[DAY]; }
     // a shadow map is drawn again only while its owners change: the town's while a layer fades, the island's while the blend moves it

@@ -52,8 +52,8 @@ const tSky = tex(SKYW, SKYH, HDR, RT);
 const TMM = log2(TMAPN) + 1, tTownSh = tex(TSH, TSH, 'depth16unorm', RT), tTown = tex(TMAPN, TMAPN, 'rgba8unorm', RT | TU.COPY_DST, TMM), tTown2 = tex(TMAPN, TMAPN, 'rgba8unorm', RT | TU.COPY_DST, TMM);
 
 // the per-frame block (struct G in shaders.js): one for the scene, one each for drawing the island's and the town's shadow map
-const UB = new Float32Array(88), UBS = new Float32Array(88), UBT = new Float32Array(88);
-const ubo = device.createBuffer({ size: 352, usage: BU.UNIFORM | BU.COPY_DST }), uboS = device.createBuffer({ size: 352, usage: BU.UNIFORM | BU.COPY_DST }), uboT = device.createBuffer({ size: 352, usage: BU.UNIFORM | BU.COPY_DST });
+const UB = new Float32Array(92), UBS = new Float32Array(92), UBT = new Float32Array(92);
+const ubo = device.createBuffer({ size: 368, usage: BU.UNIFORM | BU.COPY_DST }), uboS = device.createBuffer({ size: 368, usage: BU.UNIFORM | BU.COPY_DST }), uboT = device.createBuffer({ size: 368, usage: BU.UNIFORM | BU.COPY_DST });
 // the table of the town's buildings (struct TB): a row each, its layer, its turn in the wave, the first and last year it stands for
 const TBU = new Float32Array(2048), uboTab = device.createBuffer({ size: 8192, usage: BU.UNIFORM | BU.COPY_DST });
 const WT = new Float32Array(4), uboW = device.createBuffer({ size: 16, usage: BU.UNIFORM | BU.COPY_DST });
@@ -189,10 +189,11 @@ const TB = buildTown(hAt), vbTown = buf(TB.v, BU.VERTEX), ibTown = buf(TB.ix, BU
 // ---------------------------------------------------------------- the layers, the year and the day (docs/layers/README.md)
 // The three numbers every thing is shown by: the layer (0 Found, 1 Inferred, 2 Imagined), the year BCE and the day of the
 // year, counted from the spring equinox. Each glides to the value it was set to; nothing is rebuilt and nothing waits.
-// The choices put to Chad (docs/layers/README.md, "The choices"), as built: TONE, the plain tone of what has no sourced
-// colour; CROSS, the seconds the wave takes to cross the town; LIFT, 1 if a viewer standing where a house appears is
-// lifted to its roof, 0 if the house is not solid for them until they have walked out of it.
-let TONE = [0.31, 0.3, 0.275], CROSS = 5, LIFT = 1, layTo = 1, yearTo = 1628, dayTo = DAY0, fading = 0, ghost = 0;
+// The choices put to Chad (docs/layers/README.md, "The choices"), as built: TONE and TONEB, the plain tones of the land
+// (with the sea floor) and of buildings, where a colour has no source; CROSS, the seconds the wave takes to cross the
+// town; LIFT, 1 if a viewer standing where a house appears is lifted to its roof, 0 if the house is not solid for them
+// until they have walked out of it.
+let TONE = [0.2, 0.193, 0.176], TONEB = [0.33, 0.32, 0.295], CROSS = 5, LIFT = 1, layTo = 1, yearTo = 1628, dayTo = DAY0, fading = 0, ghost = 0;
 const WAVE = 3, SHOWN = new Float32Array(NTB), LAY = 25, YEAR = 26, DAY = 27;
 // how far each building is shown, 0 to 1: the same sum as vis() in the shaders, worked out again only when a number has moved
 function showAll() {
@@ -424,7 +425,7 @@ function render() {
   m[40] = ux; m[41] = uy; m[42] = uz; m[43] = TANH;
   m[44] = fx; m[45] = fy; m[46] = fz; m[47] = NEAR;
   m[57] = RAYS; m[58] = show; m[59] = F[HSEA];
-  m[80] = F[LAY]; m[81] = F[YEAR]; m[82] = F[DAY]; m[83] = WAVE; m[84] = TONE[0]; m[85] = TONE[1]; m[86] = TONE[2]; m[87] = fading;
+  m[80] = F[LAY]; m[81] = F[YEAR]; m[82] = F[DAY]; m[83] = WAVE; m[84] = TONE[0]; m[85] = TONE[1]; m[86] = TONE[2]; m[87] = fading; m[88] = TONEB[0]; m[89] = TONEB[1]; m[90] = TONEB[2];
   const moved = shadowAt !== F[HOUR] || shDay !== F[DAY];
   if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); shadowAt = F[HOUR]; shDay = F[DAY]; }
   // the town's shadow map is drawn again while its owners change: when the sun moves, and on every frame of a fade

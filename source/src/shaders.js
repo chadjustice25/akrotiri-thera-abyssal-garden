@@ -130,9 +130,9 @@ const WK = array<vec3f, 10>(vec3f(1., 2., 1.), vec3f(-2., 1., .9), vec3f(3., 1.,
 // camera; sunc = sunlight at sea level (w: 1 at night); cam.w = time in seconds; ly = THE THREE NUMBERS EVERY THING IS
 // SHOWN BY (docs/layers/README.md): the layer (0 Found, 1 Inferred, 2 Imagined, moving smoothly during a change), the
 // year BCE, the day of the year counted from the spring equinox, and w: how sharply a change of layer spreads as a wave;
-// pt = the plain tone of what has no sourced colour (w: 1 for the frames of a fade).
+// pt = the plain tone of the land where its colour has no source (w: 1 for the frames of a fade); pb = the plain tone of buildings.
 const S_G = /*wgsl*/`
-struct G { vp: mat4x4f, sm: mat4x4f, cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, sun: vec4f, res: vec4f, mis: vec4f, sunc: vec4f, tm: mat4x4f, ly: vec4f, pt: vec4f };
+struct G { vp: mat4x4f, sm: mat4x4f, cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, sun: vec4f, res: vec4f, mis: vec4f, sunc: vec4f, tm: mat4x4f, ly: vec4f, pt: vec4f, pb: vec4f };
 const TAU = 6.2831853;
 const LOW = ${LV > 1};
 const DOM = ${DOM}.;
@@ -653,7 +653,7 @@ fn shade(i: TO) -> vec4f {
   }
   // The layers: no colour or material above is sourced, so in the Found layer what was found stands in the plain tone,
   // whole (a liberty: its upper storeys, roofs and openings were not all found). Its colours come with the wave.
-  alb = mix(g.pt.rgb, alb, i.fd.y); gloss *= i.fd.y;
+  alb = mix(g.pb.rgb, alb, i.fd.y); gloss *= i.fd.y;
   // with the edge of the evidence shown, what is reconstruction is drawn plain and pale
   let recon = g.mis.z * select(1., 0., (i.m.z & 4u) != 0u);
   alb = mix(alb, vec3f(.4, .41, .45), recon * .85);
