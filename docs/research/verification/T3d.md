@@ -1,5 +1,7 @@
 Verification of lane T3d (docs/research/neon/T3d_Neon.md, written by Gemini Neon Deep Research), by a separate Claude verification agent on 2026-11-19 (D13).
 
+**Amended on 2026-11-21 by the checks of T3b and T3c** (note added by the integrator). Both read the abstract of Mavromati 2021 (*Quaternary International* 593: 71–84), which this check could not open. It lists fig (*Ficus carica*) and oak among the construction timbers of Xeste 3 and the House of the Ladies. So the fig row of the plants table and row 48 below ("no fig wood") no longer hold: fig is grade A as building timber, and oak wood is attested in the standing buildings of the last town. `T3b.md` and `T3c.md` have the rows and the grades. The rest of this check stands.
+
 Every cited URL was requested during this run, first with a plain download and then, where refused, through a second fetcher. PDFs were read as text with `pdftotext`; two scanned PDFs with no text layer (Foster 1988, Bietak and Höflmayer 2007) were read as page images. Numbers in brackets, such as [50], are the report's own "Works cited" numbers. Sources are paraphrased; short quoted phrases are under 15 words.
 
 ## Verdict
