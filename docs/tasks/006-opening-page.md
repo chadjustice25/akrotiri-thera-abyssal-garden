@@ -1,5 +1,5 @@
 # 006-opening-page: the opening page as the entrance to a heritage site
-**Status:** open · **Branch:** `task/006-opening-page`
+**Status:** merged · **Branch:** `task/006-opening-page`
 
 Written on 2026-11-21 by the integrator, after Chad asked for it (D53) and picked the design (D54). It needs no research. It is numbered 006 because 005 is kept for plants (D39); it runs before 005.
 
@@ -11,7 +11,7 @@ Written on 2026-11-21 by the integrator, after Chad asked for it (D53) and picke
  "id": "006-opening-page",
  "family": "code",
  "task_type": "procedural-world",
- "status": "open",
+ "status": "merged",
  "assignee": {"person": "Chad", "agent": "claude-code", "model": "claude-fable-5-2"},
  "branch": "task/006-opening-page",
  "owns": [
@@ -71,7 +71,19 @@ The page a visitor first sees looks like the entrance to an archaeological herit
 | D31, D38 | The three layers and their one-line meanings |
 | D34, D36, D37 | The world opens in 1628 BCE on the high chronology. The year cannot be moved yet |
 
-## What to build
+## Read first
+- `AGENTS.md`, `HANDOFF.md`, `LESSONS.md`, `docs/DECISIONS.md` and `docs/HISTORICAL_STANDARD.md`.
+- `docs/research/verification/T6.md`: the wall-painters' materials, and that no painted surface has a measured colour.
+- `source/template.html` and `source/src/main.js`: the page and the script that reads it. `source/build.mjs`: how the two become `index.html`.
+- `checks/build.sh` and `checks/views.mjs`: what they read from the page. You may not change either.
+
+## You may change
+- `index.html` (rebuilt from the source folder, never edited by hand)
+- `source/template.html` (the opening page's markup and styles)
+- `source/src/main.js` (only what the opening page needs)
+- `docs/opening-page/` (new: the record)
+
+## Build
 
 1. **A panel down the left side**, like lime plaster: pale, with near-black lettering. The world stays sharp and undimmed beside it, so the place itself is seen before anything is pressed. On a narrow or short screen the panel takes the whole width and scrolls.
 2. **What it says first, in this order:** a line naming the kind of thing this is; the title; the year, with one line saying what is shown; one or two sentences that invite the visitor in and say how the work is grounded; the three layers, each with its one-line meaning; then the button.
@@ -86,19 +98,19 @@ The page a visitor first sees looks like the entrance to an archaeological herit
 
 Write `docs/opening-page/README.md`: what changed and why, what each part of the page says and the decision or claim behind it, the liberty of the colours, the fonts asked for and what a device without them shows, the size before and after, and who looked at what.
 
-## Done when
-- `checks/build.sh` prints PASS.
-- `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60` prints PASS, and its pictures are published to Thera Views.
-- A picture of the opening page itself, at a computer's size and at a phone's size held sideways, has been looked at by the builder, and both are published where Chad can see them.
-- The page is under 256 kB, and the record gives its size before and after.
-- Every control has been pressed once by script or by hand and does what it did before. The record says which, and how.
-- `docs/opening-page/README.md` is complete, and everything is committed on `task/006-opening-page`. Nothing is merged into `main`.
-- The Result below is filled in. Never report a visual pass nobody saw: say who looked at what (`AGENTS.md` §6).
-
 ## Known gaps
 - **No phone and no iPad.** The builder sees the page only in Chrome on a Mac, at sizes it sets.
 - **The fonts differ by device.** The page asks for fonts that Apple devices and Windows carry, and falls back to the device's own.
 - **Chad has not seen the built page.** His pick was made from a mock-up, of which only one combination had been looked at.
+
+## Done when
+- `checks/build.sh` prints PASS.
+- `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60` prints PASS, and its pictures are published to Thera Views.
+- A picture of the opening page itself (`node tools/town/shot.mjs --page index.html --menu`), at a computer's size and at a phone's size held sideways, has been looked at by the builder, and both are published where Chad can see them.
+- The page is under 256 kB (`wc -c index.html`), and the record gives its size before and after.
+- Every control has been pressed once by script (`node tools/town/shot.mjs --page dev.html --steps-file …`) or by hand and does what it did before. The record says which, and how.
+- `docs/opening-page/README.md` is complete, and everything is committed on `task/006-opening-page`. Nothing is merged into `main`.
+- The Result below is filled in. Never report a visual pass nobody saw: say who looked at what (`AGENTS.md` §6).
 
 ## Out of scope
 - Any change to the world, its controls' behaviour, or the menu button inside the world.
@@ -110,7 +122,7 @@ Write `docs/opening-page/README.md`: what changed and why, what each part of the
 
 Built on 2026-11-21 by the integrator's session on Claude Fable 5.2, as one commit on `task/006-opening-page` (`986a66d`). The record is `docs/opening-page/README.md`.
 
-**What was built.** All eight points of "What to build". A panel like lime plaster down the left side with the world sharp beside it; the title, the year and two sentences first; the three layers with their lines beside their buttons; the button "Enter 1628 BCE"; every control; the notice behind "About, sources and licences", carried over byte for byte; the wording on the period as asked. On a phone or a small window the panel takes the whole window and scrolls.
+**What was built.** All eight points of "Build". A panel like lime plaster down the left side with the world sharp beside it; the title, the year and two sentences first; the three layers with their lines beside their buttons; the button "Enter 1628 BCE"; every control; the notice behind "About, sources and licences", carried over byte for byte; the wording on the period as asked. On a phone or a small window the panel takes the whole window and scrolls.
 
 **What changed in the code.** Only `source/template.html` (markup and CSS) and the rebuilt `index.html`. `source/src/main.js` is unchanged, though the order allowed it.
 

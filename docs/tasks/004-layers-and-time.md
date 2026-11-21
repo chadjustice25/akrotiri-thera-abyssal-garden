@@ -1,5 +1,5 @@
 # 004-layers-and-time: the three layers, a date the viewer can move, and more land in the ring
-**Status:** open · **Branch:** `task/004-layers-and-time`
+**Status:** merged · **Branch:** `task/004-layers-and-time`
 
 Written on 2026-11-20 by the integrator, after work order 003 measured the design and Chad chose the way a layer fades (D41). It needs no research. Two questions about it are still open, O20 and O21: the order is written to their leanings, which are marked **(leaning)** below, and Chad may change them before he starts the session.
 
@@ -9,7 +9,7 @@ Written on 2026-11-20 by the integrator, after work order 003 measured the desig
  "id": "004-layers-and-time",
  "family": "code",
  "task_type": "procedural-world",
- "status": "open",
+ "status": "merged",
  "assignee": {"person": "Chad", "agent": "claude-code", "model": "claude-fable-5-2"},
  "branch": "task/004-layers-and-time",
  "owns": [
