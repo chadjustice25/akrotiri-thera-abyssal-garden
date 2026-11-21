@@ -107,7 +107,31 @@ Write `docs/opening-page/README.md`: what changed and why, what each part of the
 - Any change to `checks/`.
 
 ## Result
-(To be filled in by the builder.)
+
+Built on 2026-11-21 by the integrator's session on Claude Fable 5.2, as one commit on `task/006-opening-page` (`986a66d`). The record is `docs/opening-page/README.md`.
+
+**What was built.** All eight points of "What to build". A panel like lime plaster down the left side with the world sharp beside it; the title, the year and two sentences first; the three layers with their lines beside their buttons; the button "Enter 1628 BCE"; every control; the notice behind "About, sources and licences", carried over byte for byte; the wording on the period as asked. On a phone or a small window the panel takes the whole window and scrolls.
+
+**What changed in the code.** Only `source/template.html` (markup and CSS) and the rebuilt `index.html`. `source/src/main.js` is unchanged, though the order allowed it.
+
+**Done when, item by item.**
+- `checks/build.sh`: PASS, 176 kB of 256 kB.
+- `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60`: PASS. **Not republished to Thera Views:** the page there already holds work order 004's nine pictures of the same world (two of the nine files are byte for byte the same as this run's; the others differ by a few bytes, from the moving sea). This order does not change the world.
+- Pictures of the opening page at a computer's, an iPad's and a phone's size are on the Thera Intro Designs page, <https://claude.ai/artifact/T5i6P4GfDjMta9RPjRsd9r> (version 2). The builder looked at them.
+- Size: 178,790 bytes before, 180,220 after, 1,430 added.
+- Every control was pressed by script and read back; the table is in the record.
+- The record is complete and everything is committed on the branch. Nothing is merged into `main`.
+
+**Three things done beyond the order's words,** each to make the design work:
+- the stats line moves to the far corner, on a dark ground, while the opening page is shown, because its pale lettering could not be read over the panel;
+- the switch "Edge of the excavated walls" is labelled "Excavated edge", as the key list already had it, and the first loading message reads "Opening…";
+- a small label over the world, "A reconstruction · 1628 BCE", so that a picture of it is not taken for a photograph.
+
+**One liberty**, written into the standard as P-L1: the page's colours are named for the wall-painters' materials, and their tones are chosen by eye.
+
+**Who looked.** Claude looked at five pictures of the built page. **Chad has not seen it built**; he picked from a mock-up. Nobody has seen it on a real phone or iPad, in Safari, on Windows or on Android, or watched the panel slide away.
+
+**To merge.** After work order 004, because this branch contains it.
 
 ## Review
 (To be filled in after Chad has looked.)

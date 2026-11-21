@@ -102,6 +102,12 @@ Departures from the evidence, made for the experience. One row each; nothing is 
 | A-L14 | Paving is drawn wherever houses stand close. The covered drain, the houses' drains and the cobbles of one side street are not shown. | Flagstones are sourced for the rebuilt streets (T2#11). The drain (T2#12, T2#13) and the cobbles (T2#60) are sourced and wait for a later order. | streets and squares | work order 002 |
 | A-L15 | The forms of the few things added: the pithos's profile, the benches, the horns, the light-well, the West House's upper room, the porch. | Their existence is sourced; their sizes and shapes are not. | named buildings | work order 002 |
 
+**The opening page's liberty** (work order 006, recorded 2026-11-21). The record is `docs/opening-page/README.md`.
+
+| # | Liberty | Why | Where | Decision |
+|---|---|---|---|---|
+| P-L1 | The opening page's colours are named for the wall-painters' materials found at Akrotiri (the white of lime plaster, carbon black, red ochre, Egyptian blue: T6 check #3, #4, #5, #12, #14), and their tones on screen are chosen by eye. | No painted surface at Akrotiri has a measured colour. The page is not part of the world, and it copies no motif from a wall painting. | the opening page | D53, D54; work order 006 |
+
 ## 7. Layers, dates and years
 How the world shows what is known and what is added (D31, D38), and how it moves in time (D33, D34, D36, D37).
 - **Three layers, each adding to the one before.**
