@@ -2,6 +2,27 @@
 
 Drafted on 2026-11-18 after work order 002, when Chad asked whether data could be requested from the excavation itself. **Nothing has been sent.** Whether to send it is open question O8 in `docs/DECISIONS.md`. D22 and the T2b check already name this as the remedy for the gap in the plan's chain of rights (`docs/research/verification/T2b.md`, §4 and §6).
 
+## Since 2026-11-20: a letter that also asks for their view (D46)
+
+Chad: "I would love to create this and get feedback from the archaeologists involved for potential inclusion as a resource for people enjoying the island and history." So the letter is no longer only a request. Before it is sent:
+
+- **Have something to show.** The page on the web (GitHub Pages), with the three layers and the Found layer appearing in the order of the dig. That needs work order 004 and lane T8, checked.
+- **Attach the order of the dig as a table for correction.** It is the one thing they can correct at a glance, and it is their own history. The table comes from lane T8's check.
+- **Check who directs the excavation today,** and address the letter to them. The draft below names Professor Doumas because lane T2b found that he has directed it since 1974; lane T8 asks who directs it now.
+- **Claim nothing.** The page says nothing of approval, support or a link with the excavation, the Archaeological Society or the Ministry until one is given in writing.
+- **Rewrite the draft below then.** It is the text of 2026-11-18 with one question added, and it does not yet ask for their view of the work.
+
+Chad agreed to this on 2026-11-20 ("All agreed"). **Chad sends the letter himself, in his own name.** No session sends it.
+
+**Who it goes to.** Two bodies, for two different things. This is the integrator's understanding from search results on 2026-11-20. None of the pages was opened, so check each before writing.
+
+| Body | What it can say | Where to find it |
+|---|---|---|
+| **The excavation**: the Akrotiri excavations of the Archaeological Society at Athens. Search results of 2018 to 2020 name Professor Emeritus Christos Doumas as director; lane T8 asks who directs it today | Whether the reconstruction is right, and whether its plan may be used | The Society's own website. No address for the excavation itself was found |
+| **The Ephorate of Antiquities of the Cyclades**, the Ministry of Culture's service for the islands. A search result says it oversees the site | What is offered to visitors at the site, which is the "inclusion as a resource" of D46 | Its contact page: <https://cyclades.culture.gov.gr/en/contact/> |
+
+Write to the excavation first. The Ephorate will want to know what the excavators think of it (the integrator's judgement).
+
 ## Who to ask, and what each answer would close
 
 The liberty numbers are those of `docs/town/README.md` §6.
@@ -15,7 +36,7 @@ The liberty numbers are those of `docs/town/README.md` §6.
 | The West House timber records | TiMMA, hosted by the French School at Athens; its data need the director's agreement (T2#108) | the "axes to verify" marks on the door and window |
 | The terms for consulting the laser scan of 2013 | the excavation, the Ephorate of Antiquities of the Cyclades, or the University of Vienna, where the data were deposited (T2#103) | measured wall heights, as a check on all of the above |
 | The map coordinates of two or three fixed points of the plan, in any stated system (added 2026-11-20) | the excavation | the plan's place on the Earth, now good to about 10 m (D22). A visitor's position (D45) and augmented reality (D43) cannot be trusted inside the town without it |
-| Whether a tool for visitors' own phones is welcome at the site, and whether phones get a signal under the shelter (added 2026-11-20) | the excavation | how D45 is built, and O25 |
+| Whether a tool for visitors' own phones is welcome at the site, and whether phones get a signal under the shelter (added 2026-11-20) | the excavation | how D45 is built, and how much use without a connection (D47, D48) matters at the site |
 
 Nothing they hold is likely to close A-L1, the town beyond the dig: no one has measured its edge.
 
