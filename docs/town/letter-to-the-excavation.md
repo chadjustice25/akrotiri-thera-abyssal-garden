@@ -12,6 +12,17 @@ Chad: "I would love to create this and get feedback from the archaeologists invo
 - **Claim nothing.** The page says nothing of approval, support or a link with the excavation, the Archaeological Society or the Ministry until one is given in writing.
 - **Rewrite the draft below then.** It is the text of 2026-11-18 with one question added, and it does not yet ask for their view of the work.
 
+Chad agreed to this on 2026-11-20 ("All agreed"). **Chad sends the letter himself, in his own name.** No session sends it.
+
+**Who it goes to.** Two bodies, for two different things. This is the integrator's understanding from search results on 2026-11-20. None of the pages was opened, so check each before writing.
+
+| Body | What it can say | Where to find it |
+|---|---|---|
+| **The excavation**: the Akrotiri excavations of the Archaeological Society at Athens. Search results of 2018 to 2020 name Professor Emeritus Christos Doumas as director; lane T8 asks who directs it today | Whether the reconstruction is right, and whether its plan may be used | The Society's own website. No address for the excavation itself was found |
+| **The Ephorate of Antiquities of the Cyclades**, the Ministry of Culture's service for the islands. A search result says it oversees the site | What is offered to visitors at the site, which is the "inclusion as a resource" of D46 | Its contact page: <https://cyclades.culture.gov.gr/en/contact/> |
+
+Write to the excavation first. The Ephorate will want to know what the excavators think of it (the integrator's judgement).
+
 ## Who to ask, and what each answer would close
 
 The liberty numbers are those of `docs/town/README.md` §6.
