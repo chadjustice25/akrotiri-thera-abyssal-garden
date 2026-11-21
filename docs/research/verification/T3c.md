@@ -1,5 +1,11 @@
 Verification of lane T3c (docs/research/neon/T3c_Neon.md, written by Gemini Neon Deep Research), by a separate Claude verification agent on 2026-11-21 (D13).
 
+**Amended on 2026-11-21 by the check of the Claude report, `T3c_Claude.md`** (note added by the integrator). That check read Sarpaki 1987's Table 1.24 again as a page image at 400 dpi and found two misreadings below, in the row for assumption T3c-1 and in Gaps:
+- *Lathyrus clymenum* is sown from October to January and harvested in May to June. "Or in March" and a harvest "in May" belong to the row above it in the table, millet.
+- Only pea is harvested in April. The row for *L. cicera* is blank, so it has no month.
+
+`T3c_Claude.md` §3, corrections 1 and 2, has the readings. The rest of this check stands.
+
 **The report answers an older version of its prompt.** It follows the text of `docs/research/prompts/T3c-plant-forms-and-seasons.md` as it stood before commit ac827fa (D32, D33): one moment, late May of 1615 BCE, topic C "Late May", five assumptions and no Delivery section. It does not answer the current prompt's topic C ("Through the year": each plant month by month, sowing and harvest, budburst and leaf fall) or its assumption T3c-4 (bare months and green ground). The report ends without a `DRIVE:` line. Its Section 4 labels T3c-4 and T3c-5 are the current prompt's T3c-5 and T3c-6; this check uses the current numbering.
 
 Every cited URL was requested during this run, with a plain download first and then, where refused, a second fetcher. PDFs were read as text with `pdftotext`. One rotated scanned table (Sarpaki 1987, Table 1.24) was read as a page image. Numbers in brackets, such as [28], are the report's own "Works cited" numbers. Sources are paraphrased; short quoted phrases are under 15 words. The verdicts are: **checked** (the source says it), **checked in part**, **wrong**, **could not check**. A grade change is shown as "A → B".
