@@ -1,6 +1,6 @@
 # Handoff
 
-As of 2026-11-20, after work order 003 (the measuring spike) was merged and pushed, Chad chose the way a layer fades (D41), work order 004 (layers and time) was written, merged and pushed, and Chad decided that Found is to appear in the order of the dig (D44). Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
+As of 2026-11-20, after work order 003 (the measuring spike) was merged and pushed, Chad chose the way a layer fades (D41), work order 004 (layers and time) was written, merged and pushed, and Chad decided that Found is to appear in the order of the dig (D44) and that the page is to use a visitor's own position on the island (D45). Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
 
 ## Where things stand
 - **The world is Thera with its town.** `main` holds the island of 1628 BCE (high chronology, D36; the year was 1615 until 2026-11-19) and the town at Akrotiri from the outside, in one `index.html` of 166 kB. There is no plant, animal, person, interior, harbour or ship yet: the ground is bare and the town is empty.
@@ -11,7 +11,7 @@ As of 2026-11-20, after work order 003 (the measuring spike) was merged and push
   - The viewer can now walk (D12): coming down onto land puts them on foot, walls stop them, `E` or `Space` takes off, and walking out of their depth becomes swimming.
   - The terrace under it (terrain edit E8) was reshaped into the sourced north–south ridge.
 - **Repository:** <https://github.com/chadjustice25/akrotiri-thera-abyssal-garden>, public, forked from `Noniv/abyssal-garden` (MIT). Remotes are `origin` (the fork) and `upstream` (Noniv).
-- **Pushed.** Chad last pushed `main` on 2026-11-20, at `c1c9149`: work order 003, the text of work order 004, and the plan for augmented and virtual use. The public fork shows the island, the town, every notice, and a Stats button in the menu on touch devices. `git log --oneline origin/main..main` lists anything committed since.
+- **Pushed.** Chad last pushed `main` on 2026-11-20, at `8626804`: work order 003, the text of work order 004, the plan for augmented and virtual use, and research lane T8 with D44. The public fork shows the island, the town, every notice, and a Stats button in the menu on touch devices. `git log --oneline origin/main..main` lists anything committed since.
 - **Work order 003** (`docs/tasks/003-measuring-spike.md`) is merged, with its Result and Review. Its report is `docs/spike/003-measurements.md`, and what it changed in the design is in `docs/ARCHITECTURE.md` §11. Its prototypes run in the development build only.
 - **Work order 002** (`docs/tasks/002-town-of-akrotiri.md`) has its Result and Review filled in. Its liberties A-L1 to A-L15 are in `docs/HISTORICAL_STANDARD.md` §6.
 - **Checks on `main`:** `checks/build.sh` PASSes at 166 kB of the 256 kB budget. `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60` PASSes with every view at 60 fps and full resolution. **The views check now needs `--views 9`**; `cd source && npm run views` passes it. The latest pictures are in **Thera Views**, <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L> (version 11).
@@ -44,6 +44,11 @@ As of 2026-11-20, after work order 003 (the measuring spike) was merged and push
   - Found is to appear in the order the site was excavated, once research lane T8 is in and checked (D44, closes O22). Chad: "It would be lovely and give people at the dig a way to see how it looks over time."
   - Chad has no headset and means to get one. He asked which would best suit what is coming to market. The integrator's opinion is a Meta Quest 3; the reasons, the other devices and what was and was not checked are in `docs/ARCHITECTURE.md` §12, "Which headset" (O23). The purchase is his.
   - **A correction.** The first check of headset browsers, earlier that day, said none could show a WebGPU page without experimental flags. Apple's and Meta's own pages say otherwise: Safari on the Vision Pro since December 2025, and Quest Browser 156 since 13 November 2026 (perhaps still behind a flag). `docs/ARCHITECTURE.md` §12 and D43 carry the correction. Nobody has tried a device.
+  - The page is to be able to use a visitor's own position on the island (D45). Chad: "We need to allow for geo-location if a person is actually on the island with a cell phone or mobile device so it is even more impressively a part of the exploration experience."
+    - It is planned with standpoints, as one function that puts the viewer at a latitude, a longitude and a direction (`docs/ARCHITECTURE.md` §12, "The visitor's own position"). Nothing is built.
+    - Its limits: a phone's position is probably poor under the shelter's roof, and the town is placed only to within about 10 m (D22). So in the open it can show the landscape of 1628 BCE where the visitor stands, and at the dig it cannot say which street they are in.
+    - It needs the page on a secure address (GitHub Pages, still off) and running on phones (nobody has opened it on one).
+    - The draft letter to the excavation gained two asks: coordinates of two or three fixed points of the plan, and whether such a tool is welcome and phones get a signal at the site.
 - **Research:** X1, T1, T1b, T1c, T2, T2b and T3–T7 are in `docs/research/claude/`, each checked in `docs/research/verification/`. T1c is applied to the terrain; T2 and T2b to the town.
 - **Two kinds of data in the page are not MIT.**
   - The terrain stays under the Copernicus WorldDEM-30 licence and CC BY 4.0 (EMODnet).
@@ -53,6 +58,7 @@ As of 2026-11-20, after work order 003 (the measuring spike) was merged and push
 ## Next
 0. **Chad: start the session for work order 004, and say yes or no to O20 and O21.** The order is `docs/tasks/004-layers-and-time.md`: more land in the ring (edit E4, D29), the three layers with their fade (D41), and a date that moves the sun by season. It runs on Claude Fable 5.2 at effort high in its own worktree (D14, D39).
    - The order is merged and pushed, and its worktree exists: `~/Developer/akrotiri-thera-004` on `task/004-layers-and-time`, with no commit of its own on 2026-11-20. Whether its session has been started is not known to the integrator's session.
+   - That worktree is at `c1c9149`, behind `main`. Bring it up to date before the session starts: `git merge main` inside it (under Commands, below). Nothing merged since then changes the order or the engine.
    - O20 and O21 have not been answered in words. The order is written to their leanings, so starting it as it stands accepts them.
    - The order still calls the order of the excavation an open question (O22). D44 has settled it. The order needs no change, since it already keeps each building's turn in the wave as data; the integrator corrects the wording when the Result comes in.
    - **O20, the menu:** the order builds a layer control and a date control, and gives the year its plumbing with no control.
@@ -69,6 +75,8 @@ As of 2026-11-20, after work order 003 (the measuring spike) was merged and push
    - Art never places a plant on the island by itself: Theran art is grade B for Thera, and art from elsewhere is grade C (D26).
    - **A fourth lane, T8, the history of the excavation (D44),** was written on 2026-11-20: `docs/research/prompts/T8-excavation-history.md`, 7.9 kB below its line. It is on the Research Desk under "Now: the history of the dig", with a two-part fallback, and can run beside the plant lanes. Its report goes to `docs/research/neon/T8_Neon.md` and is checked in `docs/research/verification/T8.md` before anything is built from it. It asks which building, street and square was uncovered when, about the shelters and the visitor route, and when the best-known finds came to light, which the labels (D25) will also need. The Desk was republished with it (version 7); nobody has looked at that version.
 2. **Chad: the touch test.** Nobody has tried the page with fingers. Chad and his husband are to try it on an iPad.
+   - **On a phone as well, since D45.** The visitor's position is for phones, and nobody has opened the page on one. Note the Stats button's reading, and whether the phone grows hot.
+   - GitHub Pages is now needed twice over: for this test, and because a browser gives a position only to a page on a secure address.
    - The runbook is the **Thera Test Flight** artifact, <https://claude.ai/artifact/PQa2MRqzD4dtzQiUb2DvdE>: twelve missions, three answers each, and a report to copy and paste back. It is private until Chad shares it from its Share menu.
    - **The page must be on the web first.** GitHub Pages is off for the fork. Turning it on is Chad's action (the command is below); the page is then at <https://chadjustice25.github.io/akrotiri-thera-abyssal-garden/>, which is the address the runbook's button opens. `.nojekyll` is in the repository so that Pages serves the files as they are.
    - Read from the code, and not yet tried by anyone: walking on touch is 0.7 of the keyboard's pace; looking up by more than about 34° while on foot takes off; an iPad held upright gets the page turned on its side; and there is no sound above the water yet. The runbook asks about each.
@@ -79,13 +87,15 @@ As of 2026-11-20, after work order 003 (the measuring spike) was merged and push
    - **O5, the layout for several places.** Left open by Chad until a second place is chosen.
    - **O23, augmented and virtual use.** Which headset Chad buys, and which use comes first. The integrator's opinion is a Meta Quest 3, and standpoints first. Once a headset is at hand, a measuring spike for it can follow work order 004.
    - **O24, how the dig's history is shown.** Only as the order in which Found appears, or also as years of the dig the viewer can move through. Decide when the T8 report has been checked.
+   - **O25, use at the site without a signal** (D45). Keeping the page on a phone for use offline needs a second small file, which the one-file law does not allow as it stands. Wait until it is known whether phones get a signal at the site.
+   - **The rules proposed for the visitor's position** (`docs/ARCHITECTURE.md` §12): asked only after a tap, never sent or stored, the page works without it, and it says how sure it is. Chad confirms them when the order is written.
    - **Still open from the T1c check:** no thickness map of the eruption deposits could be opened (liberty T-L1), and the Mavro Rachidi cores, the best local test of the sea level (T-L13), are not yet dated.
 4. **Later orders, in the order suggested on 2026-11-18** (none is planned yet):
    - **The harbour, the old shore and ships.** It needs research first. The one published sketch of the old shore (T2b#61) disagrees with the terrain's coast (T-L14); `docs/town/README.md` §3 records it.
    - **People and animals** (lanes T4 and T3).
    - **Interiors and wall paintings** (lane T6; image rights, D6). The size budget is the first hard decision here: the page is 166 kB of 256 kB (D11, D17).
    - **Marking and labelling what has been found** (D25). Since D42 this is central: it is how a viewer finds out how each thing is known. Consider moving it up the order.
-   - **Standpoints, a headset, augmented reality** (D43; `docs/ARCHITECTURE.md` §12), in that order. Checked on 2026-11-20 at the makers' pages: Safari on the Vision Pro and Meta's Quest Browser 156 are both listed as drawing WebGPU in WebXR, and Safari on iPad and iPhone has no WebXR. Standpoints need neither. Before the headset spike, check those pages again.
+   - **Standpoints with the visitor's own position, a headset, augmented reality** (D43, D45; `docs/ARCHITECTURE.md` §12), in that order. The first is one small order and can be written as soon as work order 004 is in. Checked on 2026-11-20 at the makers' pages: Safari on the Vision Pro and Meta's Quest Browser 156 are both listed as drawing WebGPU in WebXR, and Safari on iPad and iPhone has no WebXR. Standpoints need neither. Before the headset spike, check those pages again.
    - **A second pass on the town**, when the book or the excavation's plan arrives. It would close liberties A-L3, A-L6, A-L7, A-L10 and A-L12, and should add the drain and the cobbles that are sourced and not yet shown (A-L14).
    - **The sky and the calendar** (D33, D34; liberty T-L12): a computed sky, a date, time and year the viewer can move, seasons, and jumps to eclipses and other events. It needs its own research lane first: eclipses visible from Thera in the window, how uncertain they are that far back, and the Venus observations of Ammisaduqa's reign. Chad, 2026-11-18: the sky is to be corrected the way Beyond the Gates of Uruk's is being. That method computes the sky for the date and place (`~/Developer/beyond-gates-uruk/docs/research/2026-10-19-sky-ephemeris.md`); Uruk's work was still in progress when he said this. Thera's one-file law means a star catalogue has to fit inside the page.
    - **Also noted by 001:** sound above the water, and a cliff form for the restored southern wall.
@@ -119,6 +129,10 @@ git log --oneline origin/main..main   # what a push will publish (the fork is pu
 git push origin main
 git branch -d task/001-terrain-and-sea task/002-town-of-akrotiri   # optional: both are merged
 git worktree remove ../akrotiri-thera-002                          # optional; add --force if it refuses over the downloaded caches
+
+# Before starting the session for work order 004: bring its worktree up to date with main.
+cd ~/Developer/akrotiri-thera-004
+git merge main
 
 # To put the page on the web for the touch test (it publishes the repository's files as a website):
 gh api -X POST repos/chadjustice25/akrotiri-thera-abyssal-garden/pages -f 'source[branch]=main' -f 'source[path]=/'

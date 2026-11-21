@@ -271,6 +271,8 @@ Added on 2026-11-20. Chad: "One of the top goals of this project is to help citi
 
 The layers suit augmented reality: on site, Found is what the visitor sees with their own eyes, and Inferred and Imagined are what the device adds.
 
+**Added the same day (D45): the visitor's own position.** Chad asked that a phone on the island can put the viewer where its owner stands. It belongs with standpoints, since both put the viewer at a real place. It is planned in "The visitor's own position" below.
+
 ### What browsers can do today
 
 - **The page draws with WebGPU, and WebXR was made for WebGL.** WebXR is the browser's interface to headsets and augmented reality. The part that joins it to WebGPU is still a draft ([WebXR/WebGPU Binding](https://immersive-web.github.io/WebXR-WebGPU-Binding/)), but two headsets' browsers now carry it.
@@ -304,6 +306,49 @@ Chad asked on 2026-11-20, having none: which one to buy, so that it suits the au
 
 No headset suits the dig itself: the on-site use is a tablet or phone at a standpoint.
 
+### The visitor's own position (D45)
+
+Added on 2026-11-20. Chad: "We need to allow for geo-location if a person is actually on the island with a cell phone or mobile device so it is even more impressively a part of the exploration experience."
+
+**What it is.** A visitor on Thera opens the page on a phone or tablet and taps a button. The view goes to the spot where they stand, as it was in 1628 BCE, at eye height. It follows them as they walk and turns as they turn the device. **Nothing is built, and nobody has opened the page on a phone.**
+
+**What a phone's browser gives.** Read on 2026-11-20. The two W3C pages came back partly word for word and partly as a tool's summary, and each line says which.
+
+| Need | What gives it | Read where |
+|---|---|---|
+| Where the device is | The Geolocation interface: latitude, longitude, and how sure the device is, in metres. It "requires express permission from an end-user", and a page not served securely is refused (both word for word). Its `heading` is the direction of travel, not the way the device points (summary only) | [W3C Geolocation](https://www.w3.org/TR/geolocation/), the draft of 18 November 2026 |
+| Which way it points | The device orientation event, on secure pages only. The page asks with `requestPermission()`, which needs a tap the first time; the draft marks that method "at risk". Where the readings are absolute, the compass heading is 360° less `alpha` (all word for word). iPhones have given the heading in a field of their own, `webkitCompassHeading` (the integrator's knowledge, not checked) | [W3C Device Orientation](https://www.w3.org/TR/orientation-event/), the draft of 18 November 2026 |
+| Drawing the world | WebGPU "is now shipping in Safari 26.0 for macOS, iOS, iPadOS, and visionOS". In Chrome it is "enabled by default in Chrome 121 on devices running Android 12 and greater powered by Qualcomm and ARM GPUs" | [WebKit, 15 September 2025](https://webkit.org/blog/17333/webkit-features-in-safari-26-0/); [Chrome's notes](https://developer.chrome.com/blog/new-in-webgpu-121) |
+| A secure address | GitHub Pages sites on `github.io` "are served over HTTPS automatically". Pages is still off for the fork, and turning it on is Chad's action | [GitHub's documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https) |
+
+**What the world already has.** Its true place (D42). A position becomes a place in the world by two multiplications: x = (longitude − 25.405) × 89,706 and z = (36.405 − latitude) × 110,966, in metres (`tools/terrain/lib.mjs`). The centre of the shelter, 36.3517° N 25.40345° E, comes out at x −139, z 5,914, where the town stands.
+
+**What it can show, and how far to trust it.**
+
+| Where the visitor stands | What the page can show | The limit |
+|---|---|---|
+| In the open, anywhere on the island | The same spot in 1628 BCE: a slope, a shore, open water, or land that is gone | A phone in the open is usually right to within 5 to 10 m (general knowledge, not measured here). That is enough for the landscape |
+| At the dig, outside the shelter | That they are at the town, with the town round them | The town is placed only to within about 10 m (D22), so the page cannot say which street they are in |
+| Inside the shelter | Probably not their place | Under a roof a phone's position is usually poor (general knowledge, not checked at this site). Here the visitor picks a standpoint on the route, and the compass still turns the view |
+
+**Today's ground is not the ground of 1628.** The eruption buried the land under ash, 15 m deep on average in this model (liberty T-L1), and it broke down the ring of land round the bay. So the page takes from the device only where the visitor is, never how high. It sets them on the ground of 1628, or above the water where there was sea. A visitor on a boat in today's caldera may find land under them. That is the point: it is what the eruption did. Where the model's ground is a liberty, the page must not present it as measured.
+
+**One function, three callers.** Position and standpoints are one feature. One function puts the viewer at a latitude, a longitude and a direction. A standpoint calls it with numbers kept in a link, such as `#at=36.3517,25.4035,180`. The button calls it with the device's own. A headset can call it later. The link also lets the feature be tested from anywhere, with no need to be on Thera, and lets a guide send a visitor to an exact view.
+
+**Rules proposed for it.** They are the integrator's, for Chad to confirm when the order is written.
+1. The page asks for the position only after a tap, never when it loads. It works in full without it. If the visitor says no, or the device is not on the island, it says so in a line and changes nothing.
+2. The position stays in the page. The page sends nothing and loads nothing at run time, which the gate checks, and it stores nothing. (A phone may itself use a network service to work out where it is. That is the phone's doing, not the page's.)
+3. The page shows how sure the device says it is, and says that the town itself is placed only to within about 10 m.
+4. The page makes no claim from position alone that the placing cannot bear: not "you are standing in the West House".
+
+**What stands in the way.**
+- **Nobody has opened the page on a phone.** Frame rate, heat, battery and a screen in sunlight are all unmeasured. The touch test (`HANDOFF.md`) is the first step.
+- **A signal at the site.** Not known. The page is one file of 170 kB and needs no network once it is open, but nothing yet keeps it on a phone for use without a signal. Doing that needs a second small file, which the one-file law does not allow as it stands (O25).
+- **The plan's place on the Earth**, as for augmented reality below. Two or three surveyed points from the excavation would settle it (O8; the draft letter now asks for them).
+- **The site's own wishes.** A tool for use at the site should be shown to the excavation first (O8).
+
+A guess at its size: 1 to 2 kB.
+
 ### What it asks of the engine now
 
 These cost little while things are being built and a great deal afterwards. From work order 004 on, every order keeps them.
@@ -325,7 +370,7 @@ These cost little while things are being built and a great deal afterwards. From
 ### Order
 
 1. Keep the six points above in every order, starting with 004.
-2. **Standpoints**, as a small order once the layers and the date are in. They serve D42 on the devices people already carry.
+2. **Standpoints and the visitor's own position** (D45), as one small order once the layers and the date are in. They serve D42 on the devices people already carry. The page must be on GitHub Pages first, and someone must have opened it on a phone. All but the last test can be done from anywhere with links; the last test needs someone on the island.
 3. **A measuring spike for a headset**, as work order 003 was for the layers: two eyes in the development build, on a real device, with numbers. Its first question is whether the device's browser shows the page at all without a flag. It can follow work order 004 as soon as a headset is at hand.
 4. **Augmented reality**, after the excavation's survey and the labels.
 

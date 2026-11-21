@@ -14,6 +14,8 @@ The liberty numbers are those of `docs/town/README.md` §6.
 | Whether the outer rubble walls were plastered, and in what colour | the same | part of A-L2 |
 | The West House timber records | TiMMA, hosted by the French School at Athens; its data need the director's agreement (T2#108) | the "axes to verify" marks on the door and window |
 | The terms for consulting the laser scan of 2013 | the excavation, the Ephorate of Antiquities of the Cyclades, or the University of Vienna, where the data were deposited (T2#103) | measured wall heights, as a check on all of the above |
+| The map coordinates of two or three fixed points of the plan, in any stated system (added 2026-11-20) | the excavation | the plan's place on the Earth, now good to about 10 m (D22). A visitor's position (D45) and augmented reality (D43) cannot be trusted inside the town without it |
+| Whether a tool for visitors' own phones is welcome at the site, and whether phones get a signal under the shelter (added 2026-11-20) | the excavation | how D45 is built, and O25 |
 
 Nothing they hold is likely to close A-L1, the town beyond the dig: no one has measured its edge.
 
@@ -41,6 +43,9 @@ A claim from the book enters the data only after it is checked against the page 
 > 1. For permission to derive building outlines and street lines from the excavation's general plan (as printed in *Prehistoric Thera*, 2016, pp. 21 and 23), with full credit, for this non-commercial use; and for a scaled copy, if one can be shared.
 > 2. Whether these are published anywhere, or could be told to me: storey heights; the widths of streets and squares and their levels; parapet heights; and whether the outer rubble walls were plastered, and in what colour.
 > 3. On what terms the 2013 laser-scan data may be consulted.
+> 4. For the map coordinates of two or three fixed points on the plan, in any stated system, so that the reconstruction sits in its true place.
+>
+> The reconstruction is meant to be of use to people visiting the site. On a visitor's own phone it could show the place where they stand as it was before the eruption. I would be glad to know whether that would be welcome, whether phones get a signal under the shelter, and any wishes you have about its use at the site.
 >
 > I would credit the excavation as you direct, and send you the reconstruction for comment before its next release. I understand that any use for profit would need the Ministry's permission; none is planned.
 >
