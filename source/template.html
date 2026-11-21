@@ -29,17 +29,25 @@ body:not(.g) canvas { transform: translateX(21%); }
 .l canvas { opacity: 0; }
 
 /* The opening page (work order 006, D53, D54): a panel like lime plaster down the left side. Its colours are named for
-   the wall-painters' materials found at Akrotiri (plaster white, carbon black, Egyptian blue, red ochre); the tones are
+   the wall-painters' materials found at Akrotiri (plaster white, carbon black, Egyptian blue, red and yellow ochre); the tones are
    chosen by eye, because no painted surface there has a measured colour (docs/opening-page/README.md).
    #m covers the whole window, so a click on the scene beside the panel does nothing, as before. */
 #m {
   --d: Optima, Candara, "Gill Sans", "Segoe UI", system-ui, sans-serif;
-  position: absolute; inset: 0; color: #1b1a17; transition: opacity .6s, visibility .6s;
+  /* the look (D55): ground, lettering, soft lettering, what is chosen and its lettering, its hover, the year, lines,
+     a button's hover, and links. Plaster is the first of three; the class on <html> picks one (setLook in main.js) */
+  --bg: #ecebe5; --fg: #1b1a17; --so: #55524b; --ac: #1d4b9e; --af: #ecebe5; --ah: #163b7e; --dt: #8a2b20; --ln: #1b1a1740; --hv: #1d4b9e24; --lk: #1d4b9e;
+  position: absolute; inset: 0; color: var(--fg); transition: opacity .6s, visibility .6s;
 }
+/* dark: a dark glass over the world, with yellow ochre for what is chosen. The world stays where it is behind it */
+.k1 #m { --bg: #0c1116d9; --fg: #ecebe5; --so: #c2c5c2; --ac: #c4932b; --af: #0c1116; --ah: #dba93a; --dt: #c4932b; --ln: #ecebe54d; --hv: #c4932b33; --lk: #dfb657; }
+.k1 body:not(.g) canvas { transform: none; }
+/* red ochre: a deep red wall with pale lettering */
+.k2 #m { --bg: #8a2b20; --fg: #ecebe5; --so: #ecd9d2; --ac: #ecebe5; --af: #8a2b20; --ah: #fff; --dt: #f0cf85; --ln: #ecebe559; --hv: #ecebe526; --lk: #f0cf85; }
 .g #m { opacity: 0; visibility: hidden; }
 #pl {
   box-sizing: border-box; display: grid; align-content: start; gap: 1.1em; width: 42%; min-width: 27em; max-width: 100%; height: 100%;
-  padding: 1.8em 2.4em 2.2em; overflow: hidden auto; background: #ecebe5; box-shadow: 0 0 3em #0009;
+  padding: 1.8em 2.4em 2.2em; overflow: hidden auto; background: var(--bg); box-shadow: 0 0 3em #0009;
   /* the lettering follows the panel's width, so that a tall window does not make it outgrow its column */
   font: 400 min(1em, 1.16vw)/1.45 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif; transition: transform .6s;
 }
@@ -58,22 +66,22 @@ body:not(.g) canvas { transform: translateX(21%); }
 
 /* what this is: a line for the kind of thing, the title, the year, and two sentences */
 p { margin: 0; }
-#ey, #pl span, summary, #s, #w { font: 600 .7em/1.3 var(--d); letter-spacing: .17em; text-transform: uppercase; color: #55524b; }
+#ey, #pl span, summary, #s, #w { font: 600 .7em/1.3 var(--d); letter-spacing: .17em; text-transform: uppercase; color: var(--so); }
 h1 { margin: -.1em 0 0; font: 500 4.1em/.95 var(--d); letter-spacing: .1em; text-transform: uppercase; }
-#u { display: flex; flex-wrap: wrap; align-items: baseline; gap: .1em .8em; margin-top: -.5em; padding-top: .65em; border-top: 2px solid #8a2b20; font-style: italic; font-size: 1.08em; }
-#u b { font: 600 1.6em/1 var(--d); letter-spacing: .06em; color: #8a2b20; white-space: nowrap; }
+#u { display: flex; flex-wrap: wrap; align-items: baseline; gap: .1em .8em; margin-top: -.5em; padding-top: .65em; border-top: 2px solid var(--dt); font-style: italic; font-size: 1.08em; }
+#u b { font: 600 1.6em/1 var(--d); letter-spacing: .06em; color: var(--dt); white-space: nowrap; }
 #in { font-size: 1.15em; line-height: 1.4; text-wrap: pretty; }
-#pe { margin-top: -.6em; font-size: .92em; color: #55524b; }
+#pe { margin-top: -.6em; font-size: .92em; color: var(--so); }
 
 /* the loading bar and the controls share one grid cell, so nothing jumps when they swap */
 #a { display: grid; }
 #a > * { grid-area: 1/1; transition: opacity .8s, visibility .8s; }
 .m #l, .l #g { opacity: 0; visibility: hidden; }
-#p { height: .3em; margin: .6em 0 .9em; overflow: hidden; background: #1b1a1726; }
-#b { display: block; height: 100%; background: #1d4b9e; transform: scaleX(0); transform-origin: 0; will-change: transform; }
+#p { height: .3em; margin: .6em 0 .9em; overflow: hidden; background: var(--ln); }
+#b { display: block; height: 100%; background: var(--ac); transform: scaleX(0); transform-origin: 0; will-change: transform; }
 #w { margin-top: 1em; }
 .e #p { visibility: hidden; }
-.e #s { font-family: inherit; font-size: 1.15em; font-weight: 400; line-height: 1.4; letter-spacing: 0; text-transform: none; color: #8a2b20; }
+.e #s { font-family: inherit; font-size: 1.15em; font-weight: 400; line-height: 1.4; letter-spacing: 0; text-transform: none; color: var(--dt); }
 
 /* buttons: the one inside the scene keeps the look it had; those on the panel are plain, and Egyptian blue marks what
    is chosen and what takes you in */
@@ -86,33 +94,33 @@ button {
 button:hover { transform: translateY(-.12em); filter: brightness(1.15); }
 button:active { transform: translateY(.1em); filter: brightness(.9); }
 :focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-#pl :focus-visible { outline-color: #1d4b9e; }
+#pl :focus-visible { outline-color: var(--lk); }
 #pl button {
-  padding: .55em .7em; border: 1px solid #1b1a1740; border-radius: 0; background: none; box-shadow: none;
-  font: 600 .84em/1.2 var(--d); letter-spacing: .04em; text-transform: none; color: #1b1a17; transition: background .12s;
+  padding: .55em .7em; border: 1px solid var(--ln); border-radius: 0; background: none; box-shadow: none;
+  font: 600 .84em/1.2 var(--d); letter-spacing: .04em; text-transform: none; color: var(--fg); transition: background .12s;
 }
-#pl button:hover { transform: none; filter: none; background: #1d4b9e24; }
-#pl .on { border-color: #1d4b9e; background: #1d4b9e; color: #ecebe5; pointer-events: none; }
+#pl button:hover { transform: none; filter: none; background: var(--hv); }
+#pl .on { border-color: var(--ac); background: var(--ac); color: var(--af); pointer-events: none; }
 #g { display: grid; gap: .8em; }
 #pl #d {
-  justify-self: start; padding: .9em 1.7em; border: 0; background: #1d4b9e; color: #ecebe5;
+  justify-self: start; padding: .9em 1.7em; border: 0; background: var(--ac); color: var(--af);
   font-size: 1.12em; letter-spacing: .16em; text-transform: uppercase;
 }
-#pl #d:hover { background: #163b7e; }
-#j, #h { margin-top: -.3em; font-size: .9em; font-style: italic; color: #55524b; }
+#pl #d:hover { background: var(--ah); }
+#j, #h { margin-top: -.3em; font-size: .9em; font-style: italic; color: var(--so); }
 
 /* the controls: a label, then its choices side by side with the current one filled */
-#q, #t, #n, #v { display: flex; flex-wrap: wrap; align-items: center; }
+#q, #t, #n, #v, #lk { display: flex; flex-wrap: wrap; align-items: center; }
 /* (a label is set at .7em, so 7.7em of its own size is the 5.4em column the layer and date rows use) */
-#q span, #t span, #n span, #v span { flex: 0 0 7.7em; }
-#q button, #t button, #v button { flex: 1 1 auto; margin-left: -1px; }
+#q span, #t span, #n span, #v span, #lk span { flex: 0 0 7.7em; }
+#q button, #t button, #v button, #lk button { flex: 1 1 auto; margin-left: -1px; }
 /* the date: a slider a finger can drag, the date it stands at, and under them the four marks of the sun's year */
-#n input { flex: 1; min-width: 0; height: 2.2em; margin: 0; accent-color: #1d4b9e; touch-action: none; }
+#n input { flex: 1; min-width: 0; height: 2.2em; margin: 0; accent-color: var(--ac); touch-action: none; }
 #n b { width: 4.6em; font: 600 .9em/1 var(--d); text-align: right; }
 #n i { flex: 0 0 100%; display: flex; flex-wrap: wrap; gap: 0 1.1em; box-sizing: border-box; padding-left: 5.4em; font-style: normal; }
-#pl #n button { padding: .2em 0 .3em; border: 0; font-size: .74em; color: #1d4b9e; }
+#pl #n button { padding: .2em 0 .3em; border: 0; font-size: .74em; color: var(--lk); }
 /* the layers: each with what it shows, so the choice explains itself */
-#r { display: grid; grid-template-columns: 5.4em auto 1fr; align-items: center; gap: .3em 0; padding: .7em 0; border-block: 1px solid #1b1a1730; }
+#r { display: grid; grid-template-columns: 5.4em auto 1fr; align-items: center; gap: .3em 0; padding: .7em 0; border-block: 1px solid var(--ln); }
 #r span { grid-row: 1 / 4; align-self: start; padding-top: .6em; }
 #r button { flex-direction: column; gap: 0; min-width: 6.4em; }
 #r em { padding-left: .9em; font-size: .94em; line-height: 1.3; }
@@ -123,10 +131,10 @@ button:active { transform: translateY(.1em); filter: brightness(.9); }
 #e { display: none; }
 
 /* the keys, each kept beside its label */
-#k { padding-top: .8em; border-top: 1px solid #1b1a1730; font: 400 .8em/1.3 var(--d); }
+#k { padding-top: .8em; border-top: 1px solid var(--ln); font: 400 .8em/1.3 var(--d); }
 #k u { display: inline-flex; align-items: center; gap: .4em; margin: 0 1.2em .5em 0; text-decoration: none; white-space: nowrap; }
 #k i { display: inline-flex; align-items: center; gap: .2em; font-style: normal; }
-#k b { min-width: 1em; padding: .1em .4em; border: 1px solid #1b1a1759; text-align: center; font-weight: 600; }
+#k b { min-width: 1em; padding: .1em .4em; border: 1px solid var(--ln); text-align: center; font-weight: 600; }
 #h, #y { display: none; }
 /* where there is no keyboard: the touch hint in place of the keys, and a way to show the stats line with no H key */
 @media (pointer: coarse) {
@@ -137,7 +145,7 @@ button:active { transform: translateY(.1em); filter: brightness(.9); }
 
 /* how each thing is known, and whose data this is built from: one line, which opens in place */
 summary { padding-top: .2em; cursor: pointer; }
-#x { margin-top: .8em; font-size: .78em; line-height: 1.45; color: #3a3833; overflow-wrap: anywhere; -webkit-user-select: text; user-select: text; }
+#x { margin-top: .8em; font-size: .78em; line-height: 1.45; opacity: .86; overflow-wrap: anywhere; -webkit-user-select: text; user-select: text; }
 
 /* in the scene: a small menu button (hidden while the mouse is captured, Esc does the same) and the stats line */
 #o {
@@ -176,6 +184,7 @@ summary { padding-top: .2em; cursor: pointer; }
         <p id=t><span>Time</span><button>Dawn</button><button>Noon</button><button>Afternoon</button><button>Golden</button><button>Dusk</button><button>Night</button></p>
         <p id=n><span>Date</span><input id=f type=range max=364 aria-label="Day of the year"><b id=z></b><i><button>Spring equinox</button><button>Summer solstice</button><button>Autumn equinox</button><button>Winter solstice</button></i></p>
         <p id=v><span>Excavated edge</span><button>Hidden</button><button>Shown</button></p>
+        <p id=lk><span>Look</span><button>Plaster</button><button>Dark</button><button>Red ochre</button></p>
         <p id=k>
           <u><i><b>W</b><b>A</b><b>S</b><b>D</b></i>Fly, swim, walk</u>
           <u><i><b>Q</b><b>E</b></i>Down, up</u>

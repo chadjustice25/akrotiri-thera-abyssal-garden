@@ -3,6 +3,12 @@
 // ============================================================================
 const $ = (id) => document.getElementById(id);
 const canvas = $('c'), info = $('i'), body = document.body;
+// The opening page's look (D55): plaster, dark or red ochre. The first one a visitor sees is drawn by chance, and the one
+// in force is remembered, so that the page a visitor comes back to is the page they left. It is set here, before the
+// page is first drawn, as a class on <html> (the class on <body> is the state of the page).
+const bLook = $('lk').querySelectorAll('button');
+const setLook = (i) => { keep('theraLook', i); document.documentElement.className = 'k' + i; bLook.forEach((b, j) => { b.className = i === j ? 'on' : ''; b.onclick = () => setLook(j); }); };
+{ let k; try { k = localStorage.theraLook; } catch {} setLook(k >= 0 && k < 3 ? +k : Math.random() * 3 | 0); }
 // a phone held upright gets the page turned on its side (see template.html)
 const rot = matchMedia('(orientation:portrait) and (pointer:coarse)');
 // loading bar: each stage glides it to `to` (the share done) over ~`ms` on the compositor, so it moves while this

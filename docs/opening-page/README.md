@@ -14,6 +14,20 @@ The page had the menu of the underwater world the engine came from: a glossy tit
 - **The long notice sits behind one line, "About, sources and licences".** It opens in place. Its text is carried over byte for byte by a script, and it can now be selected and copied.
 - **The stats line** moves to the far corner while the opening page is shown, on a dark ground, because its pale lettering could not be read over the panel.
 
+## Three looks, the first by chance (D55)
+
+Added later the same day. The integrator had read Chad's "All three are great and use them" as its three recommended picks, and built the plaster panel alone. Chad corrected it: "All three are fine and let people choose which they want and randomly give the first one someone sees." He meant the three looks.
+
+- **The page has three looks**, and a row of the opening page, **Look**, chooses between them:
+  - **Plaster:** a pale panel with near-black lettering, and Egyptian blue for what is chosen.
+  - **Dark:** a dark glass over the world, with pale lettering and yellow ochre for what is chosen. The world stays where it is behind the glass, where the other two move it aside.
+  - **Red ochre:** a deep red wall with pale lettering.
+- **The first look a visitor sees is drawn by chance**, one in three each. The look in force is remembered on the visitor's device, so the page they come back to is the page they left.
+- It is set before the page is first drawn, so no look flashes and changes.
+- `setLook(0|1|2)` in `source/src/main.js` is a plain function, like the other controls (D43). It adds 902 bytes to the page.
+
+Checked by script at 1440 by 900: a fresh visit got a look by chance and remembered it; each of the three buttons changed the look, lit itself and was remembered; and 3,000 draws came out 976, 1,024 and 1,000. Claude looked at one picture of each look. The gate and the nine-view check pass again. The other checks on this page were made in the plaster look only.
+
 ## What the page says, and what each line rests on
 
 | On the page | Rests on |
@@ -34,9 +48,9 @@ The page claims no approval, support or link with the excavation (D46).
 
 ## A liberty: the colours
 
-The page's colours are named for materials the wall-painters of Akrotiri used, as lane T6's check established them (`docs/research/verification/T6.md`): the white of bare lime plaster (#3), carbon black (#4), red ochre (#5) and Egyptian blue (#12, #14).
+The page's colours are named for materials the wall-painters of Akrotiri used, as lane T6's check established them (`docs/research/verification/T6.md`): the white of bare lime plaster (#3), carbon black (#4), red and yellow ochre (#5) and Egyptian blue (#12, #14).
 
-**The tones on screen are chosen by eye.** No painted surface at Akrotiri has a measured colour (T6 check, §"What it cannot give"), so `#ecebe5`, `#1b1a17`, `#8a2b20` and `#1d4b9e` are this page's choices and not evidence. Nothing on the page copies a motif from a wall painting. The integrator records this in the standard's table of liberties.
+**The tones on screen are chosen by eye.** No painted surface at Akrotiri has a measured colour (T6 check, §"What it cannot give"), so `#ecebe5`, `#1b1a17`, `#8a2b20`, `#c4932b` and `#1d4b9e` are this page's choices and not evidence. The same holds for the dark look's ground and for the paler tones each look uses for small lettering. Nothing on the page copies a motif from a wall painting. The integrator records this in the standard's table of liberties.
 
 ## Lettering
 
@@ -54,8 +68,9 @@ So the page looks a little different on an Apple device, a Windows computer and 
 | | Bytes |
 |---|---|
 | `index.html` on work order 004's branch | 178,790 |
-| `index.html` with this order | 180,220 |
-| Added | 1,430 |
+| `index.html` with this order, one look | 180,220 |
+| `index.html` with the three looks | 181,122 |
+| Added in all | 2,332 |
 
 The budget is 256 kB (262,144 bytes).
 
