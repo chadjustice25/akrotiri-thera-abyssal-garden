@@ -1,7 +1,7 @@
 # 003-measuring-spike: measure the design for layers and time before it is built
-**Status:** open · **Branch:** `task/003-measuring-spike`
+**Status:** merged · **Branch:** `task/003-measuring-spike`
 
-**Done on 2026-11-19, and waiting for Chad's review.** The Result is below. The status stays open until he has chosen a way of fading and the Review is written. It needed no research. Chad asked for the architecture to be looked at before anything more is built (2026-11-19), and approved this spike as the next step ("Let's continue as you suggested", D39).
+**Done on 2026-11-19, and merged into `main` and pushed by Chad on 2026-11-20** (`ea8cb18`). The Result and the Review are below. It needed no research. Chad asked for the architecture to be looked at before anything more is built (2026-11-19), and approved this spike as the next step ("Let's continue as you suggested", D39).
 
 ```harness-spec
 {
@@ -9,7 +9,7 @@
  "id": "003-measuring-spike",
  "family": "code",
  "task_type": "procedural-world",
- "status": "open",
+ "status": "merged",
  "assignee": {"person": "Chad", "agent": "claude-code", "model": "claude-fable-5-2"},
  "branch": "task/003-measuring-spike",
  "owns": [
@@ -269,4 +269,12 @@ By the worker session (Claude Fable 5.2, effort high), 2026-11-19. Branch `task/
 **Who looked:** Claude, in the worker session, looked at every picture in Thera Spike 003, eleven at full size and the rest on contact sheets. Shimmer was measured, not judged by eye, and nobody has watched a fade in motion. Nobody looked at the nine pictures of the views check. Chad had looked at nothing when this was written.
 
 ## Review
-(Waiting for Chad, 2026-11-20. To record here: what he saw, in the pictures and in `dev.html`; which way of fading he chose; and the decisions that follow.)
+By the integrator, 2026-11-20.
+
+- **Merged and pushed.** Chad merged the spike into `main` and pushed it on 2026-11-20 (`ea8cb18`).
+- **The fade is chosen (D41).** Chad: "I like Dither by Coverage and Dither by pixel both with the wave from excavation as it shows the beauty of archaeology field work." He asked which of the two dithers costs less. The measurements cannot tell them apart: they differ by under 0.4 ms, in both directions. So the coverage dither is used where the page has several samples a pixel, and the pixel dither on Low, which has one.
+- **What he looked at is not recorded.** He did not say which pictures he saw, or whether he watched a fade move in `dev.html`.
+- **His note on the method:** "while that was an amazing number of tests and views, I think we can be a bit more efficient. The different dithers could be shown more effectively with the wave and other options within a more understandable interface with design choices clearly defined." Work order 004 asks for one small chooser in place of a gallery.
+- **Two faults in how the choice was put to him.** The wave was measured with the coverage dither and the lidded rise only, so the pairing he chose from, the wave with the pixel dither, has no number. And the integrator's summary called the coverage dither the costliest, when its cost and the pixel dither's are the same within the noise.
+- **Still unmeasured:** any iPad, and a fade watched in motion by anyone who has said so.
+- **What follows:** D41; O20 and O21 are open; work order 004 (`004-layers-and-time.md`) is written.

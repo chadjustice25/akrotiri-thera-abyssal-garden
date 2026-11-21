@@ -1,6 +1,6 @@
 # Handoff
 
-As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pushed, and the research for work order 003 (plants and ground cover) was prepared. Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
+As of 2026-11-20, after work order 003 (the measuring spike) was merged and pushed, Chad chose the way a layer fades (D41), and work order 004 (layers and time) was written. Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
 
 ## Where things stand
 - **The world is Thera with its town.** `main` holds the island of 1628 BCE (high chronology, D36; the year was 1615 until 2026-11-19) and the town at Akrotiri from the outside, in one `index.html` of 166 kB. There is no plant, animal, person, interior, harbour or ship yet: the ground is bare and the town is empty.
@@ -11,7 +11,8 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
   - The viewer can now walk (D12): coming down onto land puts them on foot, walls stop them, `E` or `Space` takes off, and walking out of their depth becomes swimming.
   - The terrace under it (terrain edit E8) was reshaped into the sourced north–south ridge.
 - **Repository:** <https://github.com/chadjustice25/akrotiri-thera-abyssal-garden>, public, forked from `Noniv/abyssal-garden` (MIT). Remotes are `origin` (the fork) and `upstream` (Noniv).
-- **Pushed.** Chad pushed `main` on 2026-11-18: the public fork now shows the island, the town and every notice (work orders 001 and 002 and the integration after each). `git log --oneline origin/main..main` lists anything committed since.
+- **Pushed.** Chad last pushed `main` on 2026-11-20, with work order 003: the public fork shows the island, the town, every notice, and a Stats button in the menu on touch devices. `git log --oneline origin/main..main` lists anything committed since.
+- **Work order 003** (`docs/tasks/003-measuring-spike.md`) is merged, with its Result and Review. Its report is `docs/spike/003-measurements.md`, and what it changed in the design is in `docs/ARCHITECTURE.md` §11. Its prototypes run in the development build only.
 - **Work order 002** (`docs/tasks/002-town-of-akrotiri.md`) has its Result and Review filled in. Its liberties A-L1 to A-L15 are in `docs/HISTORICAL_STANDARD.md` §6.
 - **Checks on `main`:** `checks/build.sh` PASSes at 166 kB of the 256 kB budget. `node checks/views.mjs --views 9 --min-fps 55 --min-scale 60` PASSes with every view at 60 fps and full resolution. **The views check now needs `--views 9`**; `cd source && npm run views` passes it. The latest pictures are in **Thera Views**, <https://claude.ai/artifact/EAM2iAgZHr4toJ39qt9C9L> (version 11).
 - **Who looked:** Chad went through each of the nine views and flew over and partly through the town on 2026-11-18, and said: "That's looking excellent for now." He did not report on the views one by one. Claude looked at the nine stills, golden hour, night, the menu, and Medium and Low detail, and tested walking by script. Nobody has tried touch on a device.
@@ -35,6 +36,9 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
   - The year can be moved as well as the date, so that the world and the sky are seen to change; every thing is to carry the years it stands for (D34).
   - Every Gemini Deep Research prompt ends by asking for the report to be saved to the Google Drive folder `Thera Research` (D35), first tried on the rerun of T3c.
   - The world is shown in three cumulative layers (found; what the evidence points to; what is there for the experience), and changing layer fades things in and out without a reload or a pause (D31, closes O12).
+- **Decided on 2026-11-20:**
+  - A layer fades as a dither that spreads as a wave from the excavated centre: the coverage dither on High and Medium detail, the per-pixel dither on Low (D41, closes O19). Chad: it "shows the beauty of archaeology field work".
+  - Chad asked that a design choice be put to him as one clear chooser with each option defined, not as a large gallery of tests and views (`LESSONS.md`). Work order 004 asks its worker for that.
 - **Research:** X1, T1, T1b, T1c, T2, T2b and T3–T7 are in `docs/research/claude/`, each checked in `docs/research/verification/`. T1c is applied to the terrain; T2 and T2b to the town.
 - **Two kinds of data in the page are not MIT.**
   - The terrain stays under the Copernicus WorldDEM-30 licence and CC BY 4.0 (EMODnet).
@@ -42,15 +46,16 @@ As of 2026-11-19, after work order 002 (the town of Akrotiri) was merged and pus
   - Their notices are in the page's menu, `README.md`, the two generated data files and the two records, and must travel with the page.
 
 ## Next
-0. **Chad: review work order 003, the measuring spike, and choose the fade** (O19). The spike is done and its report is `docs/spike/003-measurements.md`.
-   - Pictures: Thera Spike 003, <https://claude.ai/artifact/RT8eBH4JC9c7vsxUHJTRbk>.
-   - In motion, which nobody has watched yet: `cd source && npm run build:dev`, open `dev.html`, press `9` for the view over the roofs, then `K` to change layer, `J` to change the way of fading and `N` for the wave.
-   - What it found is in `docs/ARCHITECTURE.md` §11. In short: the design holds; a fade costs 1–2 ms on this Mac; the island after the eruption is about twice the size estimated; and the whole plan is now put at about 310–410 kB.
-   - The page has a **Stats** button in its menu on touch devices, so the frame rate can be read on an iPad. That reading should be taken before work order 004 is written.
-   - Then work order 004, layers and time, is written (O20 says what it would put in the menu), and after it 005, plants.
+0. **Chad: read work order 004, settle O20 and O21, and start its session.** The order is `docs/tasks/004-layers-and-time.md`: more land in the ring (edit E4, D29), the three layers with their fade (D41), and a date that moves the sun by season. It runs on Claude Fable 5.2 at effort high in its own worktree (D14, D39).
+   - **O20, the menu:** the order builds a layer control and a date control, and gives the year its plumbing with no control.
+   - **O21, what each layer shows today:** Found is the land in a plain tone with the excavated buildings whole and plain; Inferred adds colour and the town built by rule; Imagined adds nothing yet, so its button is marked "to come" and the world opens in Inferred. The order's Part B has the table.
+   - The order ends in three choices for Chad, shown in one small chooser: the plain tone of Found, how long the wave takes, and what happens to a viewer where a house appears.
+   - **Still to be taken: a reading on an iPad.** The page has a **Stats** button in its menu on touch devices. The spike's times are all one Mac's.
+   - **Still not known to have been watched: a fade in motion.** `cd source && npm run build:dev`, open `dev.html`, press `9` for the view over the roofs, then `K` to change layer, `J` to change the way of fading and `N` for the wave. The wave with the pixel dither can be seen there, though it was not measured.
+   - After 004 comes 005, plants.
 1. **Chad: start the plant research** (D26). Three lanes go to Gemini Neon (D30) and can run at the same time: T3b (what grew where, and how thickly), T3c (how each plant looked, and its state in late May) and T3d (plants in Aegean art, on Thera and elsewhere).
    - The steps are in `docs/research/RUNBOOK-003-plants.md`. The Research Desk (below) lists the three lanes first, with a Copy button each.
-   - When the reports are in, Claude checks each against its sources (`docs/research/verification/T3b.md`, `T3c.md`, `T3d.md`) and then drafts `docs/tasks/003-…`. Nothing is built from a report that has not been checked. The order's first step is to raise the land that edit E4 puts back (D29).
+   - When the reports are in, Claude checks each against its sources (`docs/research/verification/T3b.md`, `T3c.md`, `T3d.md`) and then drafts the plant order, `docs/tasks/005-…` (D39). Nothing is built from a report that has not been checked. Raising the land that edit E4 puts back (D29) is now Part A of work order 004.
    - **Where the lanes stand on 2026-11-19:** T3d is in (`docs/research/neon/T3d_Neon.md`) and checked (`docs/research/verification/T3d.md`): usable with fifteen corrections, no source made up, but 57 of its 153 rows could not be checked because their sources would not open. Its sizes of rooms and friezes are not to be used yet. T3c's first run handed back the prompt and has to be run again, with its prompt as changed on 2026-11-19 (it now asks for each plant's whole year). T3b is not in. Chad reports that Deep Research runs fail fairly often.
    - A second X1 report, from Neon, is also in (`docs/research/neon/X1_Neon.md`). It was compared with the adopted world clock (`docs/research/verification/X1_Neon.md`). They agree on what matters and the clock stays decided, but two points weaken the reason given for 1615 BCE (O15).
    - Art never places a plant on the island by itself: Theran art is grade B for Thera, and art from elsewhere is grade C (D26).

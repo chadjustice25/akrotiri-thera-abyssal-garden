@@ -17,6 +17,7 @@ One file per task: `docs/tasks/NNN-slug.md`, numbered from 001. A work order is 
 
 | # | Order | Status |
 |---|---|---|
-| 003 | `003-measuring-spike.md`: measure the design for layers and time before it is built (Fable 5.2, effort high, D14, D39) | done 2026-11-19 (`ffdb45a`); waiting for Chad's review and his choice of fade |
+| 004 | `004-layers-and-time.md`: the three layers with their fade, a date the viewer can move, and more land in the ring (Fable 5.2, effort high, D14, D39, D41) | open, written 2026-11-20; not started. O20 and O21 are Chad's to settle first |
+| 003 | `003-measuring-spike.md`: measure the design for layers and time before it is built (Fable 5.2, effort high, D14, D39) | merged into `main` 2026-11-20 (`ea8cb18`) |
 | 002 | `002-town-of-akrotiri.md`: the town at Akrotiri from outside, and walking (Fable 5.2, D14) | merged into `main` 2026-11-18 (`54755e1`) |
 | 001 | `001-terrain-and-sea.md`: Thera's land, sea and sky in 1615 BCE (Fable 5.2, D14) | merged into `main` 2026-11-18 (`7651a39`) |

@@ -16,6 +16,8 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 - **A prototype kept in files only the development build includes cannot change the released page**, and the gate proves it. The price is duplicated code, so its size overstates the real feature.
 - **A direct `eval()` in any file stops the minifier shortening names in the whole page.** It inflated the first size readings by 5 kB.
 - **Ask what a thing looks like from every view.** The cheapest fade, the lidded rise, came from seeing that the clipped rise looked hollow from above.
+- **Put a choice to Chad as one small chooser, not a gallery** (Chad, 2026-11-20). Name each option in plain words, define it in a sentence, show options that combine in every combination he could pick, and put the cost and the drawback beside each. The spike published dozens of pictures and still had no number for one of the two pairings he was choosing between, the wave with the pixel dither.
+- **When two options cost the same, say so.** The integrator's summary called the coverage dither the costliest. It and the pixel dither differ by less than the noise, and Chad had to ask.
 
 ## The architecture review (2026-11-19)
 - **Check a statement about the engine against the source before it goes into a record.** A first draft of `docs/ARCHITECTURE.md` said the ground was one fixed mesh and proposed nested grids as an improvement. The ground has been nested grids over baked height maps since work order 001. The session was working from its memory of earlier work, not from the code; one `grep` showed the truth.

@@ -181,8 +181,8 @@ These are standard methods, described here as they would be built for Thera. Not
 ## 8. Order of work proposed
 
 1. **A measuring spike** (done: work order 003, §11), before any other work order: a dithered fade on the town with a layer value; a placement pass drawing fifty thousand plain instances on the island; two sets of height maps blended by a year value; and the size of the island's difference. Its numbers replace the estimates above.
-2. **Work order 003, layers and time:** the three tags, the fades, the controls (layer, date, year), the town retagged, shadows and collision following, and the change to edit E4 (D29).
-3. **Work order 004, plants**, placed by the GPU, with seasons.
+2. **Work order 004, layers and time** (written 2026-11-20): the three tags, the fade, the controls for the layer and the date, the town retagged, shadows and collision following, and the change to edit E4 (D29). The year gets its plumbing and no control until something is dated (O20).
+3. **Work order 005, plants**, placed by the GPU, with seasons.
 4. **The sky and the calendar**, after its own research lane.
 5. **The end of the town**, from lane T7.
 
@@ -193,10 +193,10 @@ Then the harbour and ships, people and animals, interiors, and labels.
 | # | Question | Leaning |
 |---|---|---|
 | 1 | The size budget, when a work order's numbers pass 256 kB | Keep one file and raise the budget (§5, option 1) |
-| 2 | Whether the layers and time are built first, as work order 003 (O14) | Yes, after the measuring spike |
+| 2 | Whether the layers and time are built first (O14) | Decided: yes, as work order 004, after the measuring spike (D39) |
 | 3 | Which iPad is the slowest device the world must run well on | The one used in the touch test, until a slower one matters |
 | 4 | Whether to study Formosa Forest's source and credit what is learned | Yes |
-| 5 | Which way a layer fades (§11) | Chad's choice, from the pictures and from `dev.html` in motion |
+| 5 | Which way a layer fades (§11) | Decided: a dither that spreads as a wave from the excavated centre (D41) |
 | 6 | How coarsely the later island is stored | Decide when the end of the town is planned: heights to 2 m, or a grid of 80 m cells |
 
 ## 10. What this kind of work is called
@@ -228,14 +228,14 @@ The full report is `docs/spike/003-measurements.md`. Its pictures are in the pri
 | Two islands blended by the year (§4.3) | Holds for speed; costs 133 MB of GPU memory on High |
 | The sky, time as data, seasons (§4.4–4.6) | Not tested |
 
-**Five ways of fading were built**, and the choice among them is Chad's:
-- **Coverage dither:** reads as clear glass. It costs the most, and Low detail cannot use it.
-- **Pixel dither:** a fine diagonal screen shows over whatever is fading.
+**Five ways of fading were built.** Chad chose the dither, spreading as a wave (D41): the coverage dither on High and Medium, the pixel dither on Low.
+- **Coverage dither:** reads as clear glass. Low detail cannot use it, because it has one sample a pixel.
+- **Pixel dither:** a fine diagonal screen shows over whatever is fading. Its cost and the coverage dither's are the same within the noise, and both cost more than the rises.
 - **Surface dither:** coarse, and it shimmers nearly five times as much. Not to be used.
 - **Clipped rise:** the houses show as hollow shells, open at the top.
 - **Lidded rise:** a low solid town growing storey by storey. It is the cheapest and does not shimmer.
 
-Any of them can also **spread as a wave** from the excavated centre, at about half the cost. The paving then appears ahead of its houses unless the town's plan map is made to carry the wave.
+Any of them can also **spread as a wave** from the excavated centre, at about half the cost. That was measured with the coverage dither and the lidded rise only. The paving then appears ahead of its houses unless the town's plan map is made to carry the wave.
 
 **What the next order must do that this review did not foresee:**
 1. Give every corner of the town its building's number.
