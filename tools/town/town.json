@@ -539,5 +539,20 @@
       },
       { "id": "east", "seed": 1700, "angleDegrees": 9, "keep": 0.6, "outline": [[-99, 5848], [-12, 5848], [-68, 5917], [-92, 5917]], "outer": [1] }
     ]
+  },
+  "layers": {
+    "about": "Work order 004: how the town takes part in the three layers (D31, D38) and in the wave a change of layer spreads as (D41). A building's layer is not listed here: it follows from its status (excavated: Found; reconstructed: Inferred), which follows from the plan and the record above.",
+    "wave": {
+      "about": "Each building's turn in the wave is a number from 0 (first) to 1 (last) that build.mjs writes into the page's data, one byte a building. The page draws what it is given: changing the order is a change to this rule or to the data, not to the page.",
+      "rule": "distance",
+      "ruleNote": "By distance from the excavated centre (the centre of the excavated buildings' ground, weighted by area), the same for every part of one building. LIBERTY (L-L2 in docs/layers/README.md): it is a way of showing. It is not the order in which the site was dug, and not a claim about how the town was built. D44 asks for the order of the excavation once research lane T8 has been checked.",
+      "townShare": 0.8,
+      "townShareNote": "The furthest building has this turn. The land beyond the town takes the rest of the wave, the colour reaching the far end of the island as the wave ends.",
+      "landScaleMetres": 2500,
+      "landScaleNote": "How fast the turn of the land beyond the town approaches 1 with distance."
+    },
+    "years": {
+      "about": "Every building stands for the whole span: nothing in the town is dated yet (D34, D37). The page's table has a first and a last year for each building, and no building's row differs from the span."
+    }
   }
 }

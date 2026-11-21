@@ -1,29 +1,28 @@
 // ============================================================================
 // THE MEASURING SPIKE (work order 003): only in dev.html (npm run build:dev), never in index.html
 // ============================================================================
-// Prototypes that measure the design in docs/ARCHITECTURE.md section 4 before it is built. NOTHING HERE IS EVIDENCE, and
-// nothing here is the feature: the placed things are grey shapes, the second island is today's island as a stand-in, and
-// the "years" and "days" a thing stands for are dice. docs/spike/003-measurements.md has the numbers.
+// Prototypes that measured the design in docs/ARCHITECTURE.md section 4 before it was built. NOTHING HERE IS EVIDENCE, and
+// nothing here is a feature: the placed things are grey shapes, the second island is today's island as a stand-in, and
+// the "years" and "days" a placed thing stands for are dice. docs/spike/003-measurements.md has the numbers.
 //
-// This file is what the parts share. The parts are spike-fade.js (a layer of the town fading), spike-place.js (placing by
-// rule on the GPU) and spike-year.js (two islands blended by the year); spike-go.js builds the pipelines and takes over the
-// frame. Each part can be left out of the build (node build.mjs --dev --only fade,place), which is how each is measured.
+// Work order 004 built the first prototype, a layer of the town fading, into the engine itself (docs/layers/README.md)
+// and took its file out. Two are left: spike-place.js (placing by rule on the GPU) and spike-year.js (two islands blended
+// by one number). This file is what they share; spike-go.js builds their pipelines and takes over the frame. Each can be
+// left out of the build (node build.mjs --dev --only place), which is how each was measured. Both now follow the
+// engine's own layer, year and day (K in the page; U and I in dev.js): the placed things are shown by the same three numbers.
 //
-// The engine is not changed. Every scene shader is the engine's own text with marked replacements (rep() fails loudly if
-// the engine's text has moved on), and everything a part adds is in bind group 1, so that group 0 stays the engine's.
+// The engine is not changed by them. Every scene shader is the engine's own text with marked replacements (rep() fails
+// loudly if the engine's text has moved on), and everything a part adds is in bind group 1, so that group 0 stays the engine's.
 //
-// In the page: spk.lay(0..2) the layer; spk.year(bce) the year; spk.day(1..365) the day; spk.isl(0..1) the island blend
-// by hand; spk.mode(kind, wave) how things fade; spk.swing(seconds) keeps the layer (and year) moving; spk.set({...});
-// spk.on = 0 hands the frame back to the engine untouched; spk.meas(ms) times the GPU; keys are listed in spike-go.js.
+// In the page: spk.isl / spk.set({ isl }) the island blend by hand; spk.mode(kind) how a placed thing fades;
+// spk.swing(seconds) keeps the island blend moving; spk.on = 0 hands the frame back to the engine untouched;
+// spk.meas(ms) times the GPU (with the spike on or off); keys are listed in spike-go.js.
 const SPK = {
-  on: 1,
-  // the three numbers every shader gets (docs/ARCHITECTURE.md 4.1): the layer, 0 Found, 1 Inferred, 2 Imagined, moving
-  // smoothly during a change; the year BCE; the day of the year
-  lay: 2, layTo: 2, yr: 1628, day: 145,
+  on: 0,                     // off when the page opens, so that dev.html looks as the released page does: P turns them on
   isl: 0, islTo: 0,          // the island: 0 the island of 1628 BCE, 1 the stand-in for the island after the eruption
-  kind: 1, wave: 0,          // how a thing fades (KINDS below), and how strongly the fade spreads outward from the centre
-  secs: 2.5,                 // how long a change of layer takes
-  swing: 0,                  // > 0: the layer (and the island) go back and forth with this period, for timing a fade in motion
+  kind: 1,                   // how a placed thing fades (KINDS below)
+  secs: 2.5,                 // half of how long the island takes to change
+  swing: 0,                  // > 0: the island goes back and forth with this period, for timing a blend in motion
   hold: 0, freeze: 0,        // hold: the page's own resolution scaler is off; freeze: the sea and the stars stand still
   parts: [], patches: [], wgsl: '', entries: [], res: [], // what the parts add: shader replacements, bindings, resources
   U: new Float32Array(16),   // struct XU in the shaders
@@ -38,17 +37,17 @@ const rep = (s, a, b) => { if (!s.includes(a)) throw new Error('spike: the engin
 const xAdd = (decl, layout, resource) => { const n = SPK.entries.length + 1; SPK.wgsl += `@group(1) @binding(${n}) ${decl};\n`; SPK.entries.push({ binding: n, visibility: SS.VERTEX | SS.FRAGMENT | SS.COMPUTE, ...layout }); SPK.res.push(resource); return n; };
 const uboX = device.createBuffer({ size: 64, usage: BU.UNIFORM | BU.COPY_DST });
 
-// What every spike shader shares. vis(): THE ONE VISIBILITY FUNCTION of the design: a thing's layer, the years it stands
-// for (from, to, BCE, so from > to) and its days of the year (first, last; a window that may run over the new year) give
-// one number, 0 hidden to 1 shown. cover(): how a partly shown fragment is drawn, with no sorting and no blending: the
-// set of samples it keeps (0 = none).
+// What every spike shader shares. xvis(): the engine's one visibility function (vis() in shaders.js) without the wave, for
+// the placing pass, which does not include the scene's shared text: a thing's layer, the years it stands for (from, to,
+// BCE, so from > to) and its days of the year give one number, 0 hidden to 1 shown, from the engine's own three numbers
+// (g.ly). cover(): how a partly shown placed thing is drawn, with no sorting and no blending: the samples it keeps.
 const S_X = /*wgsl*/`
 struct XU { a: vec4f, b: vec4f, c: vec4f, d: vec4f };
 @group(1) @binding(0) var<uniform> xu: XU;
-fn visL(layer: f32) -> f32 { return clamp(xu.a.x - layer + 1., 0., 1.); }
-fn visY(y: vec2f) -> f32 { return clamp((y.x - xu.a.z) / 3. + 1., 0., 1.) * clamp((xu.a.z - y.y) / 3. + 1., 0., 1.); }
-fn visD(d: vec2f) -> f32 { let h = fract((d.y - d.x) / 365.) * 182.5; let m = d.x + h; let q = abs(fract((xu.a.w - m) / 365. + .5) - .5) * 365.; return clamp((h - q) / 8. + 1., 0., 1.); }
-fn vis(layer: f32, years: vec2f, days: vec2f) -> f32 { return visL(layer) * visY(years) * visD(days); }
+fn xvis(layer: f32, y: vec2f, d: vec2f) -> f32 {
+  let h = fract((d.y - d.x) / 365.) * 182.5; let q = abs(fract((g.ly.z - d.x - h) / 365. + .5) - .5) * 365.;
+  return clamp(g.ly.x - layer + 1., 0., 1.) * clamp((y.x - g.ly.y) / 3. + 1., 0., 1.) * clamp((g.ly.y - y.y) / 3. + 1., 0., 1.) * clamp((h - q) / 8. + 1., 0., 1.);
+}
 fn xign(p: vec2f) -> f32 { return fract(52.9829189 * fract(dot(p, vec2f(.06711056, .00583715)))); }
 fn xh21(p: vec2f) -> f32 { var q = fract(p.xyx * vec3f(.1031, .1030, .0973)); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
 // v: visibility; fc: the pixel; key: a place on the thing's own surface, in metres; px: the width of a pixel there, in
@@ -65,9 +64,8 @@ fn cover(v: f32, fc: vec2f, key: vec2f, px: f32, h: f32, ns: u32) -> u32 {
 }
 `;
 
-SPK.set = (o) => { Object.assign(SPK, o); if (o.lay !== undefined && o.layTo === undefined) SPK.layTo = SPK.lay; if (o.isl !== undefined && o.islTo === undefined) SPK.islTo = SPK.isl; return 1; };
-SPK.layer = (v, now) => { SPK.layTo = v; if (now) SPK.lay = v; return v; };
-SPK.mode = (kind, wave = 0) => { SPK.kind = kind; SPK.wave = wave; return KINDS[kind] + (wave ? ', as a wave' : ''); };
+SPK.set = (o) => { Object.assign(SPK, o); if (o.isl !== undefined && o.islTo === undefined) SPK.islTo = SPK.isl; return 1; };
+SPK.mode = (kind) => { SPK.kind = kind; return KINDS[kind]; };
 // the resolution: s is the share of the window's pixels along each side; it stays there until spk.res(0)
 SPK.resTo = (s) => { SPK.hold = s; if (s) { pix = DW * DH * s * s; resize(); dynT = -Infinity; } else { pix = DW * DH; resize(); } return `${W}x${H}`; };
 // time the GPU for ms milliseconds: resolves to the mean, median and 95th percentile of the frame's GPU time, the frame
@@ -76,14 +74,10 @@ SPK.meas = (ms = 3000, settle = 700) => new Promise((done) => setTimeout(() => {
 const xStat = (a, n) => { const s = Array.from(a.subarray(0, n)).sort((p, q) => p - q); let t = 0; for (const v of s) t += v; return { avg: +(t / n).toFixed(2), med: +s[n >> 1].toFixed(2), p95: +s[min(n - 1, floor(n * 0.95))].toFixed(2), max: +s[n - 1].toFixed(2) }; };
 // called once a frame by spike-go.js with the time since the last frame in seconds
 function xStep(dt) {
-  if (SPK.swing) { const u = (performance.now() / 1000 / SPK.swing) % 1, t = u < 0.5 ? u * 2 : 2 - u * 2; SPK.lay = SPK.layLo + (SPK.layHi - SPK.layLo) * t; SPK.layTo = SPK.lay; if (SPK.swingIsl) SPK.isl = SPK.islTo = t; }
-  else {
-    const d = SPK.layTo - SPK.lay, st = dt / SPK.secs; SPK.lay = abs(d) <= st ? SPK.layTo : SPK.lay + Math.sign(d) * st;
-    const e = SPK.islTo - SPK.isl, se = dt / (SPK.secs * 2); SPK.isl = abs(e) <= se ? SPK.islTo : SPK.isl + Math.sign(e) * se;
-  }
+  if (SPK.swing) { const u = (performance.now() / 1000 / SPK.swing) % 1; SPK.isl = SPK.islTo = u < 0.5 ? u * 2 : 2 - u * 2; }
+  else { const e = SPK.islTo - SPK.isl, se = dt / (SPK.secs * 2); SPK.isl = abs(e) <= se ? SPK.islTo : SPK.isl + Math.sign(e) * se; }
   const U = SPK.U;
-  U[0] = SPK.lay; U[1] = SPK.kind; U[2] = SPK.yr; U[3] = SPK.day;
-  U[4] = SPK.isl; U[5] = SPK.wave;
+  U[1] = SPK.kind; U[4] = SPK.isl;
   Q.writeBuffer(uboX, 0, U);
 }
 // called every frame, spike on or off: the timing that spk.meas() asked for
@@ -93,4 +87,3 @@ function xMeas(dt) {
     if (performance.now() > SPK.mEnd) { const n = SPK.mN, g = xStat(SPK.mG, n), f = xStat(SPK.mT, n); SPK.mN = -1; SPK.mDone({ frames: n, fps: +(1000 / f.avg).toFixed(1), gpu: g.avg, gpuMed: g.med, gpuP95: g.p95, gpuMax: g.max, worstFrame: f.max, res: `${W}x${H}` }); }
   }
 }
-SPK.layLo = 0; SPK.layHi = 1; SPK.swingIsl = 0;

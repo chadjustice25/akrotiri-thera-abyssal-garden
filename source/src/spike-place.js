@@ -11,7 +11,7 @@
 // The four coarsest stand for clumps seen from far off, and come in only beyond a third of their reach: without them a
 // view from high above the island would have nothing to count. For each cell, up to K spots come from a hash of the cell's number, so the same spots come
 // out every frame. A spot is kept if it is on land, passes the stand-in rule (slope, height and a patchy noise), is shown
-// by its layer, years and days (vis() in spike.js), and is in view. Kept things go into one of three lists by how large
+// by its layer, years and days (xvis() in spike.js, from the engine's own three numbers), and is in view. Kept things go into one of three lists by how large
 // they look (a two-tier box, a plain box, an upright card), with counts the GPU draws from directly (indirect draws).
 {
   const G = 256, NL = 9, C0 = 1, CAP = [32768, 131072, 262144], VERTS = [60, 30, 6];
@@ -63,7 +63,7 @@ fn dice(c: vec2i, l: u32, k: u32) -> vec4f {
     let years = vec2f(9999., select(0., 1700. - (m - .6) / .4 * 180., m > .6));
     let days = select(vec2f(0., 364.99), vec2f(60. + 40. * fract(hh.w * 13.7), 200. + 60. * fract(hh.w * 3.1)), fract(hh.w * 7.3) < .25);
     // (a thing comes and goes by the same fade whether it is its layer, its years, its days or the distance that hides it)
-    let f = clamp((far - t * .8) / .2, 0., 1.) * vis(layer, years, days);
+    let f = clamp((far - t * .8) / .2, 0., 1.) * xvis(layer, years, days);
     if (f <= 0.) { continue; }
     let s = c * (.25 + .25 * fract(hh.w * 5.9)); let hs = 1.2 + fract(hh.w * 11.3);
     // in view

@@ -127,9 +127,12 @@ const WK = array<vec3f, 10>(vec3f(1., 2., 1.), vec3f(-2., 1., .9), vec3f(3., 1.,
 // ---------------------------------------------------------------- shared scene code
 // G is the per-frame block: sm = the island's shadow map, tm = the town's; sun.w = how fresh the breeze is (0-1); mis =
 // exposure, light-shaft strength, 1 while the edge of the excavated walls is shown, the height of the sea surface at the
-// camera; sunc = sunlight at sea level (w: 1 at night); cam.w = time in seconds.
+// camera; sunc = sunlight at sea level (w: 1 at night); cam.w = time in seconds; ly = THE THREE NUMBERS EVERY THING IS
+// SHOWN BY (docs/layers/README.md): the layer (0 Found, 1 Inferred, 2 Imagined, moving smoothly during a change), the
+// year BCE, the day of the year counted from the spring equinox, and w: how sharply a change of layer spreads as a wave;
+// pt = the plain tone of what has no sourced colour (w: 1 for the frames of a fade).
 const S_G = /*wgsl*/`
-struct G { vp: mat4x4f, sm: mat4x4f, cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, sun: vec4f, res: vec4f, mis: vec4f, sunc: vec4f, tm: mat4x4f };
+struct G { vp: mat4x4f, sm: mat4x4f, cam: vec4f, right: vec4f, up: vec4f, fwd: vec4f, sun: vec4f, res: vec4f, mis: vec4f, sunc: vec4f, tm: mat4x4f, ly: vec4f, pt: vec4f };
 const TAU = 6.2831853;
 const LOW = ${LV > 1};
 const DOM = ${DOM}.;
@@ -235,8 +238,28 @@ struct WV { w: array<vec4f, ${NWAVE * 2}> };
 @group(0) @binding(12) var sA: sampler;
 @group(0) @binding(13) var tTs: texture_depth_2d;
 @group(0) @binding(14) var tT: texture_2d<f32>;
+@group(0) @binding(15) var tT2: texture_2d<f32>;
+struct TB { r: array<vec4f, 512> };
+@group(0) @binding(16) var<uniform> tb: TB;
 const MIP0 = ${log2(DOM / TS)};
 const LK = ${LK};
+// ---- THE ONE VISIBILITY FUNCTION, the same text in every stage. A thing's layer with its turn in the wave (lt), the
+// years it stands for (first and last, BCE, so first > last) and its days of the year (first and last, counted from the
+// spring equinox; the window may run over the new year) give one number: 0 hidden to 1 shown.
+// A change of layer spreads as a wave (D41): a thing whose turn is t (0 first, 1 last) is held back by t. In between,
+// a thing is drawn through a screen of holes (holes(), below); nothing is sorted or blended.
+fn visL(lt: vec2f) -> f32 { return clamp((g.ly.x - lt.x + 1.) * (1. + g.ly.w) - lt.y * g.ly.w, 0., 1.); }
+fn visY(y: vec2f) -> f32 { return clamp((y.x - g.ly.y) / 3. + 1., 0., 1.) * clamp((g.ly.y - y.y) / 3. + 1., 0., 1.); }
+fn visD(d: vec2f) -> f32 { let h = fract((d.y - d.x) / 365.) * 182.5; let q = abs(fract((g.ly.z - d.x - h) / 365. + .5) - .5) * 365.; return clamp((h - q) / 8. + 1., 0., 1.); }
+fn vis(lt: vec2f, years: vec2f, days: vec2f) -> f32 { return visL(lt) * visY(years) * visD(days); }
+// the turn of a place on the land: by its distance from the excavated centre (a liberty: a way of showing). The town has
+// the first share of the wave; the land beyond it takes the rest
+fn turn(p: vec2f) -> f32 { let d = distance(p, vec2f(${TOWNR.wave[0]}, ${TOWNR.wave[1]})) / ${TOWNR.wave[2]}.; return select(${TOWNR.wave[3]} * d, 1. - ${+(1 - TOWNR.wave[3]).toFixed(4)} * exp((1. - d) * ${TOWNR.wave[2] / TOWNR.wave[4]}), d > 1.); }
+// how far the colours of the Inferred layer have come at a place whose turn is t
+fn hue(t: f32) -> f32 { return visL(vec2f(1., t)); }
+// FLAT SCREEN: the one place where a fade reads the pixel's own place on the screen (or, in a shadow map, the texel's).
+// True where a thing shown by the share v leaves a hole. In a headset each eye would get its own pattern (ARCHITECTURE 12).
+fn holes(v: f32, fc: vec2f) -> bool { return ign(fc) >= v; }
 fn tuv(p: vec2f) -> vec2f { return p / DOM + .5; }
 fn hgt(p: vec2f, l: f32) -> f32 { return textureSampleLevel(tH, sC, tuv(p), l).r; }
 // the terrain's shadow: one map over the whole island, drawn again whenever the sun moves
@@ -252,7 +275,9 @@ fn shadow(p: vec3f) -> f32 {
 fn tsh(p: vec3f) -> f32 {
   let s = g.tm * vec4f(p, 1.); let uv = vec2f(s.x * .5 + .5, .5 - s.y * .5); let z = s.z - .0005;
   if (any(abs(uv - .5) > vec2f(.498)) || z > 1.) { return 1.; }
-  if (LOW) { return textureSampleCompareLevel(tTs, sS, uv, z); }
+  // (Low reads the map once; but while a layer fades, a shadow drawn through the screen of holes needs the nine readings
+  // to come out as a paler shadow and not as blotches: g.pt.w is 1 for the frames of a fade)
+  if (LOW && g.pt.w == 0.) { return textureSampleCompareLevel(tTs, sS, uv, z); }
   let e = 1.1 / ${TSH}.; var a = 0.;
   for (var x = -1; x <= 1; x++) { for (var y = -1; y <= 1; y++) { a += textureSampleCompareLevel(tTs, sS, uv + vec2f(f32(x), f32(y)) * e, z); } }
   return a / 9.;
@@ -496,19 +521,26 @@ fn tri(p: vec3f, n: vec3f, s: f32) -> TP {
   var E = g.sunc.rgb * shadow(i.wp + n0 * 2.);
   var ao = nt.b;
   var am = i.zen * (.3 + .7 * (N.y * .5 + .5)) + skyL(normalize(vec3f(N.x, .1, N.z))) * (.5 - .25 * N.y);
-  // sunlight thrown back by the ground around
-  am += g.sunc.rgb * max(L.y, 0.) * vec3f(.30, .25, .19) * (.45 - .35 * N.y) * .5;
+  // The layers: every colour above is a liberty, so the Found layer draws the land in one plain tone (D31); light, shadow
+  // and haze stay. The colours come with the wave (D41): hu is how far they have come here.
+  let hu = hue(turn(i.wp.xz));
+  // sunlight thrown back by the ground around (which has the ground's colour, or the plain tone)
+  let bnc = mix(g.pt.rgb, vec3f(.30, .25, .19), hu);
+  am += g.sunc.rgb * max(L.y, 0.) * bnc * (.45 - .35 * N.y) * .5;
   let ca = caus(i.wp, dist);
   // the town: paved streets between its houses (T2#11), the houses' shadows, and on request the edge of the excavated walls
-  let tu = tnuv(i.wp.xz); var mark = 0.;
+  let tu = tnuv(i.wp.xz); var mark = 0.; var pv = 0.;
   if (all(abs(tu - .5) < vec2f(.5)) && y > .5) {
-    let tw = textureSampleLevel(tT, sC, tu, 0.); let den = textureSampleLevel(tT, sC, tu, 4.).r;
-    let pv = ss(.07, .24, den);
+    // (a street's paving and shade belong to its houses: where only what was found is shown, only its streets are, and
+    // the rest arrive with their houses, by the turn the plan gives each place)
+    let tw = textureSampleLevel(tT, sC, tu, 0.); let t2 = textureSampleLevel(tT2, sC, tu, 0.); let sp = hue(t2.b);
+    let den = mix(textureSampleLevel(tT2, sC, tu, 4.).r, textureSampleLevel(tT, sC, tu, 4.).r, sp);
+    pv = ss(.07, .24, den);
     alb = mix(alb, flags(i.wp.xz, dist * g.right.w * 2. * g.res.z) * (.8 + .4 * B.h), pv);
     // little sky reaches the foot of a wall, or the floor of a narrow street
-    ao *= mix(1., (.5 + .5 * ss(0., .2, tw.g)) * (1. - .4 * ss(.3, .9, den)), ss(.03, .15, den));
+    ao *= mix(1., (.5 + .5 * ss(0., .2, mix(t2.g, tw.g, sp))) * (1. - .4 * ss(.3, .9, den)), ss(.03, .15, den));
     // (and the walls throw sunlight back into the street)
-    am += g.sunc.rgb * max(L.y, 0.) * vec3f(.3, .25, .19) * .22 * ss(.1, .5, den);
+    am += g.sunc.rgb * max(L.y, 0.) * bnc * .22 * ss(.1, .5, den);
     E *= tsh(i.wp + vec3f(0., .06, 0.));
     mark = ss(.085, .05, tw.b) * g.mis.z;
   }
@@ -516,10 +548,12 @@ fn tri(p: vec3f, n: vec3f, s: f32) -> TP {
     // light under the sea: absorbed on the way down, gathered into caustics
     E *= exp(KD * (y / max(L.y, .25))) * (.3 + ca * .18); am = am * exp(KD * y * 1.3) * .8 + WCOL * wlit() * exp(KD * y) * .12;
   }
+  // (the plain tone is a shade darker where a street is paved, so that a street can be told from the ground)
+  alb = mix(g.pt.rgb * (1. - .2 * pv), alb, hu);
   let ndl = sat(dot(N, L));
   var c = alb * (E * ndl + (am + vec3f(.0016, .0022, .004) * g.sunc.w * (.4 + .6 * N.y)) * ao);
   // sheen on glassy lava and on wet shingle
-  let gl = gw.b * .12 + wet * .5 * step(0., y);
+  let gl = (gw.b * .12 + wet * .5 * step(0., y)) * hu;
   c += E * pow(sat(dot(N, normalize(V + L))), 24.) * gl * ndl;
   // the edge of the excavated walls, drawn on the ground: beyond it nothing is measured
   c = mix(c, vec3f(1., .3, .08) * (dot(E + am, vec3f(.4)) + .01), mark);
@@ -536,22 +570,30 @@ fn tri(p: vec3f, n: vec3f, s: f32) -> TP {
 // whether the rubble was plastered outside. The materials are sourced: fieldstone and earth in a timber frame (T2#65, T2#67),
 // off-white tuff round the openings and in string courses, hard-stone corner blocks (T2#68, T2#69), earth roofs (T2#70).
 const W_TOWN = S_B + /*wgsl*/`
-struct TI { @location(0) p: vec3f, @location(1) uv: vec2f, @location(2) n: vec4f, @location(3) m: vec4u, @location(4) l: f32 };
-struct TO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) uv: vec2f, @location(2) n: vec3f, @location(3) @interpolate(flat) m: vec4u, @location(4) @interpolate(flat) lh: vec2f, @location(5) zen: vec3f };
+struct TI { @location(0) p: vec3f, @location(1) uv: vec2f, @location(2) n: vec4f, @location(3) m: vec4u, @location(4) li: vec2u };
+struct TO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) uv: vec2f, @location(2) n: vec3f, @location(3) @interpolate(flat) m: vec4u, @location(4) @interpolate(flat) lh: vec2f, @location(5) zen: vec3f, @location(6) @interpolate(flat) fd: vec2f };
+// The building's row of the table (tb): its layer, its turn in the wave, the first and the last year it stands for. Returns
+// how far it is shown, and how far its colours have come (what was found stands plain in the Found layer).
+fn shown(i: TI) -> vec2f { let t = tb.r[i.li.y]; return vec2f(vis(t.xy, t.zw, vec2f(0., 364.99)), select(hue(t.y), 1., t.x >= 1.)); }
 @vertex fn vs(i: TI) -> TO {
   var o: TO; let dq = i.p.xz - g.cam.xz;
-  o.wp = i.p; o.uv = i.uv; o.n = i.n.xyz; o.m = i.m; o.lh = vec2f(i.l, i.n.w * 31.75); o.zen = skyL(vec3f(0., 1., 0.));
+  o.wp = i.p; o.uv = i.uv; o.n = i.n.xyz; o.m = i.m; o.lh = vec2f(f32(i.li.x) / 2048., i.n.w * 31.75); o.zen = skyL(vec3f(0., 1., 0.)); o.fd = shown(i);
   o.cp = g.vp * vec4f(i.p.x, i.p.y - dot(dq, dq) / (2. * RE), i.p.z, 1.);
+  // (a hidden building is dropped here, before a single pixel of it is worked out)
+  if (o.fd.x <= 0.) { o.cp = vec4f(2., 2., 2., 1.); }
   return o;
 }
-@vertex fn vsS(i: TI) -> @builtin(position) vec4f { return g.vp * vec4f(i.p, 1.); }
+// the town's shadow map: a building's shadow fades through the same screen of holes as the building
+struct SO { @builtin(position) cp: vec4f, @location(0) @interpolate(flat) v: f32 };
+@vertex fn vsS(i: TI) -> SO { var o: SO; o.v = shown(i).x; o.cp = g.vp * vec4f(i.p, 1.); if (o.v <= 0.) { o.cp = vec4f(2., 2., 2., 1.); } return o; }
+@fragment fn fsS(i: SO) { if (holes(i.v, i.cp.xy)) { discard; } }
 // dressed blocks in courses: xyz = colour factor and joint, for courses ch metres high of blocks about bl metres long
 fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
   let r = floor(uv.y / ch); let x = uv.x / bl + hs(r) * 3.7; let c = floor(x);
   let e = min(min(fract(x), 1. - fract(x)) * bl, min(fract(uv.y / ch), 1. - fract(uv.y / ch)) * ch);
   return vec2f(mix(1., .82 + .36 * hs(c * 1.31 + r * 7.7), fine), ss(.016, .004, e) * fine);
 }
-@fragment fn fs(i: TO) -> @location(0) vec4f {
+fn shade(i: TO) -> vec4f {
   let mat = i.m.x; let seed = f32(i.m.y) / 255.; let stone = i.m.z & 3u; let gap = f32(i.m.w) * .05;
   let u = i.uv.x; let v = i.uv.y; let len = i.lh.x; let N0 = normalize(i.n);
   let dist = length(i.wp - g.cam.xyz); let px = dist * g.right.w * 2. * g.res.z;
@@ -609,10 +651,13 @@ fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
   } else {
     alb = flags(i.wp.xz, px) * (.85 + .3 * d1.b);
   }
+  // The layers: no colour or material above is sourced, so in the Found layer what was found stands in the plain tone,
+  // whole (a liberty: its upper storeys, roofs and openings were not all found). Its colours come with the wave.
+  alb = mix(g.pt.rgb, alb, i.fd.y); gloss *= i.fd.y;
   // with the edge of the evidence shown, what is reconstruction is drawn plain and pale
   let recon = g.mis.z * select(1., 0., (i.m.z & 4u) != 0u);
   alb = mix(alb, vec3f(.4, .41, .45), recon * .85);
-  let dn = (d1.rg - .5) * bump * fine * (1. - recon);
+  let dn = (d1.rg - .5) * bump * fine * (1. - recon) * i.fd.y;
   let N = normalize(N0 + (T * dn.x + Bt * dn.y) * .7);
   let L = g.sun.xyz;
   let E = g.sunc.rgb * shadow(i.wp + vec3f(0., 2., 0.)) * tsh(i.wp + N0 * .07);
@@ -622,12 +667,16 @@ fn ashlar(uv: vec2f, ch: f32, bl: f32, fine: f32) -> vec2f {
   if (!lev) { sky = max(sky, .3) * (.6 + .4 * ss(0., 1.3, v)); }
   var am = (i.zen * (.3 + .7 * (N.y * .5 + .5)) + skyL(normalize(vec3f(N.x, .1, N.z))) * (.5 - .25 * N.y)) * sky;
   // sunlight thrown back by the ground and the walls around
-  am += g.sunc.rgb * max(L.y, 0.) * vec3f(.34, .27, .19) * (.85 - .6 * N.y) * (.5 + .5 * sky);
+  am += g.sunc.rgb * max(L.y, 0.) * mix(g.pt.rgb, vec3f(.34, .27, .19), i.fd.y) * (.85 - .6 * N.y) * (.5 + .5 * sky);
   let ndl = sat(dot(N, L));
   var c = alb * (E * ndl + am + vec3f(.0016, .0022, .004) * g.sunc.w * (.4 + .6 * N.y) * sky);
   c += E * pow(sat(dot(N, normalize(normalize(g.cam.xyz - i.wp) + L))), 30.) * gloss * ndl;
   return fin(medium(c, i.wp));
 }
+@fragment fn fs(i: TO) -> @location(0) vec4f { return shade(i); }
+// The same through the screen of holes, for the frames of a fade only: a shader that may discard costs the GPU its
+// hidden-surface removal even when it discards nothing, so at rest the town is drawn with fs.
+@fragment fn fsF(i: TO) -> @location(0) vec4f { if (holes(i.fd.x, i.cp.xy)) { discard; } return shade(i); }
 `;
 
 // ---------------------------------------------------------------- the sea surface (from above and from below)
@@ -675,7 +724,8 @@ struct VO { @builtin(position) cp: vec4f, @location(0) wp: vec3f, @location(1) o
   let spec = g.sunc.rgb * sh * min(a2 / (dd * dd) * .25 / max(ci, .08), mix(120., 14., far)) * F;
   // into the water: the bottom through the water column, and the water's own colour
   let bsl = 1. - sqrt(max(1. - dot(bn.xy * 2. - 1., bn.xy * 2. - 1.), .01));
-  let balb = mix(mix(vec3f(.15, .145, .13), vec3f(.44, .43, .36), bn.a * (1. - bg.a)), vec3f(.08, .08, .09), sat(ss(.2, .55, bsl) + bg.b)) * (.8 + .4 * cb);
+  // (the sea floor is land: in the Found layer it has the plain tone too)
+  let balb = mix(g.pt.rgb, mix(mix(vec3f(.15, .145, .13), vec3f(.44, .43, .36), bn.a * (1. - bg.a)), vec3f(.08, .08, .09), sat(ss(.2, .55, bsl) + bg.b)), hue(turn(bp))) * (.8 + .4 * cb);
   let bot = balb * (g.sunc.rgb * sh * max(L.y, 0.) * exp(KD * (-dc / max(L.y, .25))) * (.4 + min(pow(cs, 2.3) * 5., 3.) * (.45 + cb * 1.3) * .2 * ss(12., 2., dc)) + zen * exp(-KD * dc * 1.3) * .8);
   let body = wfog(bot, vec3f(i.wp.x, 0., i.wp.z), Rr, pl);
   var c = mix(body, skyL(normalize(R)), F) + spec;

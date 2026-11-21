@@ -61,6 +61,7 @@ cd source && npm run build     # then rebuild index.html (also: npm run town)
 - `traced.json` is committed, so the town can be rebuilt without the plan. The plan itself is never committed.
 - The town depends on the terrain: `build.mjs` reads the ground from `source/src/terrain-data.js`. Rebuild the town after any change to the terrain.
 - `tools/town/shot.mjs` drives `dev.html` in headless Chrome: development pictures, and the scripted moves that test walking (§8). It is not a check.
+- `tools/town/layers.mjs` measures the layers with it: each layer at rest and each change of layer, on High, Medium and Low (`docs/layers/README.md`). It is not a check either.
 
 **What is automatic and what is by hand.**
 - *Automatic:* `trace.mjs` finds the plan's yellow wall shapes (the exact colour 245, 211, 103, with its black outline; the legend's own yellow box is left out), separates the thick strokes (building walls) from the thin double lines (terrace edges and drains), turns them into outlines, and derives the edge of the excavated walls (§3).
@@ -221,8 +222,19 @@ Departures from the evidence, or choices where there is none. They were entered 
 | Masses | 463 (some buildings are several), with 2 terraces and the pithos |
 | Storeys | 332 buildings of two, 120 of three; Delta 16 is one low storey |
 | Lots | 485 cut, 420 kept; 7 dropped for their size, 58 thinned out, none on steep ground |
-| Data | 10,744 bytes, 14.0 kB as text in the page |
+| Data | 11,210 bytes, 14.6 kB as text in the page (10,744 bytes before work order 004 gave each building its turn in the wave) |
 | Page | `index.html` is 165.6 kB of the 256 kB budget (132 kB before this order) |
+
+## 7a. What work order 004 changed in the town's data (2026-11-21)
+
+The town's plan, its rules and its look in the layer the world opens in are as they were. Four things changed underneath, for the layers (`docs/layers/README.md`):
+
+- **Each building has a turn in the wave** that a change of layer spreads as: one more byte a mass in `town-data.js`, and one each for the two terraces and the pithos (466 bytes). `build.mjs` writes it from the rule in `town.json` (`layers.wave`): today, distance from the excavated centre, the same for every part of one building (the masses of one `group`). The build report gives the centre (x −131.9, z 5935), the furthest building (462 m) and the turns of the excavated masses (6 to 36 of 255). It is liberty L-L2 of the layers record: a way of showing, not the order of the dig (D44).
+- **The page is given the wave's numbers** in `TOWNR.wave`: the centre, the furthest building, the town's share of the wave (0.8) and the scale of the land beyond it (2,500 m).
+- **A building's layer is not new data.** It is the `excavated` bit each mass already had: excavated is Found, reconstructed is Inferred. Of the 463 masses, 27 are excavated and 436 reconstructed.
+- **In the page** (`buildTown` in `source/src/world.js`) every corner now carries its building's number, the triangles of what was found come first, each building has a row (layer, turn, foot, top), and the plan is two maps. Built by the old code and the new on the same ground, the mesh is the same in every corner's place, facing and material, the triangles are the same set, and the first plan map and the collision grid are byte for byte the same; a wall's length is now stored to 0.24 mm.
+
+One more thing moved, from Part A of the same order: the terrain was repacked, so the stored ground under the town differs from before by rounding (0.23 m rms over the terrace, 1.25 m at most on its slopes; `docs/terrain/README.md`, E4). `groundMetres` in the build report moved by 0.1 m for some masses. The houses are built on the stored ground when the page loads, so each stands that much higher or lower.
 
 ## 8. Walking, and how it was tested
 

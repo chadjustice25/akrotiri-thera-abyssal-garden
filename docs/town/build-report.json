@@ -1,6 +1,6 @@
 {
  "inputs": {
-  "townJson": "fd4f273e8700ec89cb3cfa4cc7a70c93fb4244a66423770708c5561f651e8c48",
+  "townJson": "07807b85c3eec53e4e8efee7383805473aea153de1f53aa77f0c70e9e3fc03a5",
   "tracedJson": "942840db89e6a048d9aaaff2e27481cf59ddda68f17b861b89c4f6b000eac896",
   "plan": {
    "file": "Map_Akrotiri_1600_BC-en.png",
@@ -462,9 +462,24 @@
    "T2b#36"
   ]
  },
+ "wave": {
+  "rule": "distance",
+  "excavatedCentre": [
+   -131.9,
+   5935
+  ],
+  "furthestBuildingMetres": 462,
+  "townShare": 0.8,
+  "landScaleMetres": 2500,
+  "turnsOfTheExcavatedMasses": [
+   6,
+   36
+  ],
+  "bytesAdded": 466
+ },
  "data": {
-  "bytes": 10744,
-  "sha256": "14871263ba6e6584023c56d79a7bf57692d0ad4294a32d351c920769ed0cd33d",
-  "textKilobytes": 14
+  "bytes": 11210,
+  "sha256": "da331cfa4a911839141d5bfa286c104aaf59b2fc7e0a9c4afbff661ad6aea8ee",
+  "textKilobytes": 14.6
  }
 }

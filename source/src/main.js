@@ -49,11 +49,13 @@ const tWater = tex(WATER, WATER, HDR, RT, 5), tDetail = tex(1024, 1024, 'rgba8un
 const tH = tex(TS, TS, 'r16float', RT | TU.COPY_SRC, TM), tNrm = tex(TS, TS, 'rgba8unorm', RT, TM), tGeo = tex(1024, 1024, 'rgba8unorm', RT, 11);
 const tSky = tex(SKYW, SKYH, HDR, RT);
 // the town: its own shadow map, and its plan (what is built on, how far the nearest wall is, where the evidence ends)
-const TMM = log2(TMAPN) + 1, tTownSh = tex(TSH, TSH, 'depth16unorm', RT), tTown = tex(TMAPN, TMAPN, 'rgba8unorm', RT | TU.COPY_DST, TMM);
+const TMM = log2(TMAPN) + 1, tTownSh = tex(TSH, TSH, 'depth16unorm', RT), tTown = tex(TMAPN, TMAPN, 'rgba8unorm', RT | TU.COPY_DST, TMM), tTown2 = tex(TMAPN, TMAPN, 'rgba8unorm', RT | TU.COPY_DST, TMM);
 
 // the per-frame block (struct G in shaders.js): one for the scene, one each for drawing the island's and the town's shadow map
-const UB = new Float32Array(80), UBS = new Float32Array(80), UBT = new Float32Array(80);
-const ubo = device.createBuffer({ size: 320, usage: BU.UNIFORM | BU.COPY_DST }), uboS = device.createBuffer({ size: 320, usage: BU.UNIFORM | BU.COPY_DST }), uboT = device.createBuffer({ size: 320, usage: BU.UNIFORM | BU.COPY_DST });
+const UB = new Float32Array(88), UBS = new Float32Array(88), UBT = new Float32Array(88);
+const ubo = device.createBuffer({ size: 352, usage: BU.UNIFORM | BU.COPY_DST }), uboS = device.createBuffer({ size: 352, usage: BU.UNIFORM | BU.COPY_DST }), uboT = device.createBuffer({ size: 352, usage: BU.UNIFORM | BU.COPY_DST });
+// the table of the town's buildings (struct TB): a row each, its layer, its turn in the wave, the first and last year it stands for
+const TBU = new Float32Array(2048), uboTab = device.createBuffer({ size: 8192, usage: BU.UNIFORM | BU.COPY_DST });
 const WT = new Float32Array(4), uboW = device.createBuffer({ size: 16, usage: BU.UNIFORM | BU.COPY_DST });
 const uboWaves = buf(WAVES, BU.UNIFORM);
 
@@ -64,8 +66,8 @@ const bgl0 = device.createBindGroupLayout({ entries: [
   { binding: 4, visibility: VF, texture: { sampleType: 'depth' } },
   ...[5, 6, 7, 8, 9, 10].map((binding) => ({ ...T2, binding })),
   { binding: 11, visibility: VF, buffer: {} }, { binding: 12, visibility: VF, sampler: {} },
-  { binding: 13, visibility: VF, texture: { sampleType: 'depth' } }, { ...T2, binding: 14 }] });
-const mkBG0 = (u, sh, ts) => device.createBindGroup({ layout: bgl0, entries: [u, sRep, sClamp, sCmp, sh, tWater, tDetail, tH, tNrm, tGeo, tSky, uboWaves, sAniso, ts, tTown]
+  { binding: 13, visibility: VF, texture: { sampleType: 'depth' } }, { ...T2, binding: 14 }, { ...T2, binding: 15 }, { binding: 16, visibility: VF, buffer: {} }] });
+const mkBG0 = (u, sh, ts) => device.createBindGroup({ layout: bgl0, entries: [u, sRep, sClamp, sCmp, sh, tWater, tDetail, tH, tNrm, tGeo, tSky, uboWaves, sAniso, ts, tTown, tTown2, uboTab]
   .map((r, binding) => ({ binding, resource: r.createView ? r.createView() : r.size ? { buffer: r } : r })) });
 const bg0 = mkBG0(ubo, tShadow, tTownSh), bg0s = mkBG0(uboS, tDummy, tDummy), bg0t = mkBG0(uboT, tDummy, tDummy);
 const pl0 = device.createPipelineLayout({ bindGroupLayouts: [bgl0] });
@@ -94,7 +96,7 @@ const BLEND = { color: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha' }, a
 const ADD = { color: { srcFactor: 'one', dstFactor: 'one' }, alpha: { srcFactor: 'one', dstFactor: 'one' } };
 const A = (shaderLocation, offset, format) => ({ shaderLocation, offset, format });
 const vbGrid = { arrayStride: 4, attributes: [A(0, 0, 'sint16x2')] }, ibLevel = { arrayStride: 16, stepMode: 'instance', attributes: [A(1, 0, 'float32x4')] };
-const vbTownL = { arrayStride: 32, attributes: [A(0, 0, 'float32x3'), A(1, 12, 'float32x2'), A(2, 20, 'snorm8x4'), A(3, 24, 'uint8x4'), A(4, 28, 'float32')] };
+const vbTownL = { arrayStride: 32, attributes: [A(0, 0, 'float32x3'), A(1, 12, 'float32x2'), A(2, 20, 'snorm8x4'), A(3, 24, 'uint8x4'), A(4, 28, 'uint16x2')] };
 const ibSpeck = { arrayStride: 16, stepMode: 'instance', attributes: [A(0, 0, 'float32x4')] };
 const scenePipe = (m, vsE, fsE, buffers, o = {}) => device.createRenderPipeline({ layout: pl0,
   vertex: { module: m, entryPoint: vsE, buffers },
@@ -105,9 +107,12 @@ const scenePipe = (m, vsE, fsE, buffers, o = {}) => device.createRenderPipeline(
 await say('Compiling shaders…', 0.08, 300);
 const mTerr = mod(W_TERR), mSea = mod(W_SEA), mSky = mod(W_SKY), mTown = mod(W_TOWN);
 const pTerrain = scenePipe(mTerr, 'vs', 'fs', [vbGrid, ibLevel], { cull: 'back' });
-const pTown = scenePipe(mTown, 'vs', 'fs', [vbTownL], { cull: 'back' });
-const pTownSh = device.createRenderPipeline({ layout: pl0, vertex: { module: mTown, entryPoint: 'vsS', buffers: [vbTownL] }, primitive: { cullMode: 'none' },
+// The town has two pipelines, and its shadow two: an opaque one for when nothing is fading, and one that may discard
+// for the frames of a fade (fsF, fsS). At rest the layers cost what the town cost before them.
+const pTown = scenePipe(mTown, 'vs', 'fs', [vbTownL], { cull: 'back' }), pTownF = scenePipe(mTown, 'vs', 'fsF', [vbTownL], { cull: 'back' });
+const townSh = (fragment) => device.createRenderPipeline({ layout: pl0, vertex: { module: mTown, entryPoint: 'vsS', buffers: [vbTownL] }, fragment, primitive: { cullMode: 'none' },
   depthStencil: { format: 'depth16unorm', depthWriteEnabled: true, depthCompare: 'less', depthBias: 3, depthBiasSlopeScale: 2.5 } });
+const pTownSh = townSh(), pTownShF = townSh({ module: mTown, entryPoint: 'fsS', targets: [] });
 const pSea = scenePipe(mSea, 'vs', 'fs', [vbGrid, ibLevel], { blend: BLEND, dw: 1 });
 const pSky = scenePipe(mSky, 'vs', 'fs', []);
 const pSpeck = scenePipe(mSky, 'vsP', 'fsP', [ibSpeck], { strip: true, blend: ADD });
@@ -169,15 +174,43 @@ function hMax(x, z, r) {
 
 // ---------------------------------------------------------------- the town: its houses, its plan, and what stands where
 await say('Building the town…', 0.9, 500);
-const TB = buildTown(hAt), vbTown = buf(TB.v, BU.VERTEX), ibTown = buf(TB.ix, BU.INDEX), nTown = TB.ix.length, TGRID = TB.grid, TTOP = TB.top;
+const TB = buildTown(hAt), vbTown = buf(TB.v, BU.VERTEX), ibTown = buf(TB.ix, BU.INDEX), nTown = TB.ix.length, TGRID = TB.grid, TROW = TB.rows, NTB = TROW.length / 4;
 {
-  Q.writeTexture({ texture: tTown }, TB.map, { bytesPerRow: TMAPN * 4 }, [TMAPN, TMAPN]);
   const e = device.createCommandEncoder();
-  for (let i = 1; i < TMM; i++) { const r = e.beginRenderPass({ colorAttachments: [colorAtt(mipView(tTown, i), true)] }); r.setPipeline(pMip8); r.setBindGroup(0, blitBG(mipView(tTown, i - 1))); r.draw(3); r.end(); }
+  for (const [t, m] of [[tTown, TB.map], [tTown2, TB.map2]]) {
+    Q.writeTexture({ texture: t }, m, { bytesPerRow: TMAPN * 4 }, [TMAPN, TMAPN]);
+    for (let i = 1; i < TMM; i++) { const r = e.beginRenderPass({ colorAttachments: [colorAtt(mipView(t, i), true)] }); r.setPipeline(pMip8); r.setBindGroup(0, blitBG(mipView(t, i - 1))); r.draw(3); r.end(); }
+  }
   Q.submit([e.finish()]);
+  // nothing in the town is dated yet (D34): every row stands for the whole span of years
+  for (let i = 0; i < NTB; i++) { TBU[i * 4] = TROW[i * 4]; TBU[i * 4 + 1] = TROW[i * 4 + 1]; TBU[i * 4 + 2] = 9999; }
+  Q.writeBuffer(uboTab, 0, TBU);
 }
-// the top of whatever is built at (x, z), or far below the ground where nothing is; then the height of the solid world there
-function tAt(x, z) { const i = floor((x - TGX) / TCELL), j = floor((z - TGZ) / TCELL); return i < 0 || j < 0 || i >= TGW || j >= TGH ? -1e9 : TTOP[TGRID[j * TGW + i]]; }
+// ---------------------------------------------------------------- the layers, the year and the day (docs/layers/README.md)
+// The three numbers every thing is shown by: the layer (0 Found, 1 Inferred, 2 Imagined), the year BCE and the day of the
+// year, counted from the spring equinox. Each glides to the value it was set to; nothing is rebuilt and nothing waits.
+// The choices put to Chad (docs/layers/README.md, "The choices"), as built: TONE, the plain tone of what has no sourced
+// colour; CROSS, the seconds the wave takes to cross the town; LIFT, 1 if a viewer standing where a house appears is
+// lifted to its roof, 0 if the house is not solid for them until they have walked out of it.
+let TONE = [0.31, 0.3, 0.275], CROSS = 5, LIFT = 1, layTo = 1, yearTo = 1628, fading = 0, ghost = 0;
+const WAVE = 3, SHOWN = new Float32Array(NTB), LAY = 25, YEAR = 26, DAY = 27;
+// how far each building is shown, 0 to 1: the same sum as vis() in the shaders, worked out again only when a number has moved
+function showAll() {
+  const l = F[LAY], y = F[YEAR]; fading = l !== round(l) ? 1 : 0;
+  for (let i = 1; i < NTB; i++) {
+    let s = (l - TBU[i * 4] + 1) * (1 + WAVE) - TBU[i * 4 + 1] * WAVE, a = (TBU[i * 4 + 2] - y) / 3 + 1, b = (y - TBU[i * 4 + 3]) / 3 + 1;
+    s = (s < 0 ? 0 : s > 1 ? 1 : s) * (a < 0 ? 0 : a > 1 ? 1 : a) * (b < 0 ? 0 : b > 1 ? 1 : b);
+    SHOWN[i] = s; if (s > 0 && s < 1) fading = 1;
+  }
+}
+// Collision follows what is shown. The top of whatever is built at (x, z), or far below the ground where nothing is: a
+// hidden building is not there, and one that is part shown stands part of its height, so a viewer on its roof is let
+// down as it goes and lifted as it comes (or, with LIFT 0, is left inside it: ghost is the building they are in).
+function tAt(x, z) {
+  const i = floor((x - TGX) / TCELL), j = floor((z - TGZ) / TCELL); if (i < 0 || j < 0 || i >= TGW || j >= TGH) return -1e9;
+  const id = TGRID[j * TGW + i], s = SHOWN[id], o = id * 4;
+  return !id || s <= 0 || id === ghost ? -1e9 : s >= 1 ? TROW[o + 3] : LIFT || layTo < F[LAY] ? TROW[o + 2] + (TROW[o + 3] - TROW[o + 2]) * s : -1e9;
+}
 function sAt(x, z) { const h = hAt(x, z), t = tAt(x, z); return t > h ? t : h; }
 // the same two, for a body 40 cm across (the narrowest street on the plan is about a metre between its walls)
 function wallAt(x, z) { return max(tAt(x, z), tAt(x - 0.2, z), tAt(x + 0.2, z), tAt(x, z - 0.2), tAt(x, z + 0.2)); }
@@ -198,6 +231,7 @@ const NSPECK = 6000 >> LV, ibSpecks = buf(Float32Array.from({ length: NSPECK * 4
 // per-frame float state lives in one preallocated array, so the frame loop allocates no heap numbers
 const F = new Float64Array(40), P6 = new Float64Array(6), V3 = new Float64Array(3);
 const CX = 0, CY = 1, CZ = 2, YAW = 3, PIT = 4, FX = 5, FY = 6, FZ = 7, RX = 8, RZ = 9, UX = 10, UY = 11, UZ = 12, VX = 13, VY = 14, VZ = 15, TIME = 16, FLT = 17, LAST = 18, GPU = 19, HUDT = 20, SPL = 21, HOUR = 22, HSEA = 23, FEET = 24;
+F[LAY] = layTo; F[YEAR] = yearTo; F[DAY] = 66; showAll(); // (day 66 after the spring equinox: late May)
 // a height given above the ground (or the sea), or a depth below the surface, as an absolute height
 const lift = (p) => { p[1] = p[1] < 0 ? p[1] : max(hAt(p[0], p[2]), 0) + p[1]; };
 for (const p of POSES) lift(p);
@@ -269,7 +303,7 @@ function flyAt() {
 // ---------------------------------------------------------------- the sun, the time of day
 // The hour moves towards hourTo (always forwards, as the sun does). While it moves, and whenever the sun has moved
 // since the shadow map was drawn, the map is drawn again from the new direction.
-let hourTo = TIMES[2][1], shadowAt = -1, expo = 1, wet = 0; // wet: 0 in the air to 1 under water, following the camera with a short delay, as eyes do
+let hourTo = TIMES[2][1], shadowAt = -1, shLay = -1, shYear = 0, expo = 1, wet = 0; // wet: 0 in the air to 1 under water, following the camera with a short delay, as eyes do
 F[HOUR] = hourTo;
 function setSun() {
   const el = sunAt(F[HOUR], V3);
@@ -389,8 +423,14 @@ function render() {
   m[40] = ux; m[41] = uy; m[42] = uz; m[43] = TANH;
   m[44] = fx; m[45] = fy; m[46] = fz; m[47] = NEAR;
   m[57] = RAYS; m[58] = show; m[59] = F[HSEA];
+  m[80] = F[LAY]; m[81] = F[YEAR]; m[82] = F[DAY]; m[83] = WAVE; m[84] = TONE[0]; m[85] = TONE[1]; m[86] = TONE[2]; m[87] = fading;
   const moved = shadowAt !== F[HOUR];
-  if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); Q.writeBuffer(uboT, 0, UBT); shadowAt = F[HOUR]; }
+  if (moved) { setSun(); Q.writeBuffer(uboS, 0, UBS); shadowAt = F[HOUR]; }
+  // the town's shadow map is drawn again while its owners change: when the sun moves, and on every frame of a fade
+  const townSh = moved || shLay !== m[80] || shYear !== m[81];
+  if (townSh) { shLay = UBT[80] = m[80]; shYear = UBT[81] = m[81]; UBT[83] = WAVE; Q.writeBuffer(uboT, 0, UBT); }
+  // at rest in the Found layer only what was found is drawn: its triangles come first
+  const nDraw = m[80] ? nTown : TB.nF;
   m[56] = expo * (1 + 0.6 * wet);
   Q.writeBuffer(ubo, 0, UB);
   WT[0] = F[TIME]; Q.writeBuffer(uboW, 0, WT);
@@ -407,16 +447,14 @@ function render() {
   for (let i = 1; i < 5; i++) { r = e.beginRenderPass(waterPass[i]); r.setPipeline(pMip16); r.setBindGroup(0, waterBG[i - 1]); r.draw(3); r.end(); }
   // the sky, and the shadow map when the sun has moved
   r = e.beginRenderPass(passSky); r.setPipeline(pSkyLut); r.setBindGroup(0, bgSkyLut); r.draw(3); r.end();
-  if (moved) {
-    r = e.beginRenderPass(passShadow); r.setPipeline(pShadow); r.setBindGroup(0, bg0s); r.setIndexBuffer(ibShadowGrid, 'uint32'); r.drawIndexed(SG * SG * 6); r.end();
-    r = e.beginRenderPass(passTownSh); r.setPipeline(pTownSh); r.setBindGroup(0, bg0t); r.setVertexBuffer(0, vbTown); r.setIndexBuffer(ibTown, 'uint32'); r.drawIndexed(nTown); r.end();
-  }
+  if (moved) { r = e.beginRenderPass(passShadow); r.setPipeline(pShadow); r.setBindGroup(0, bg0s); r.setIndexBuffer(ibShadowGrid, 'uint32'); r.drawIndexed(SG * SG * 6); r.end(); }
+  if (townSh) { r = e.beginRenderPass(passTownSh); r.setPipeline(fading ? pTownShF : pTownSh); r.setBindGroup(0, bg0t); r.setVertexBuffer(0, vbTown); r.setIndexBuffer(ibTown, 'uint32'); r.drawIndexed(nDraw); r.end(); }
   // scene: land, sea, sky, and specks in the water when the camera is in it
   r = e.beginRenderPass(passScene);
   r.setBindGroup(0, bg0); r.setVertexBuffer(0, vbMesh); r.setIndexBuffer(ibMesh, 'uint16');
   r.setPipeline(pTerrain); r.setVertexBuffer(1, ibTerr);
   r.drawIndexed(GM.nFull, 1, 0, 0, 0); if (nT > 1) r.drawIndexed(GM.nRing, nT - 1, GM.nFull, 0, 1);
-  r.setPipeline(pTown); r.setVertexBuffer(0, vbTown); r.setIndexBuffer(ibTown, 'uint32'); r.drawIndexed(nTown);
+  r.setPipeline(fading ? pTownF : pTown); r.setVertexBuffer(0, vbTown); r.setIndexBuffer(ibTown, 'uint32'); r.drawIndexed(nDraw);
   r.setPipeline(pSea); r.setVertexBuffer(0, vbMesh); r.setIndexBuffer(ibMesh, 'uint16'); r.setVertexBuffer(1, ibSea);
   r.drawIndexed(GM.nFull, 1, 0, 0, 0); if (nS > 1) r.drawIndexed(GM.nRing, nS - 1, GM.nFull, 0, 1);
   r.setPipeline(pSky); r.draw(3);
@@ -458,6 +496,16 @@ function frame(now) {
   }
   F[TIME] += dt;
   wet += ((F[CY] < F[HSEA] ? 1 : 0) - wet) * (1 - exp(-dt * 4));
+  // The layer glides to the one chosen, and can be turned round on the way: nothing jumps, because every thing is shown
+  // by where the number is. The wave crosses the town in CROSS seconds (the town has the first TOWNR.wave[3] of the turns).
+  // The year glides too (no control in the released page: nothing is dated yet).
+  if (F[LAY] !== layTo || F[YEAR] !== yearTo) {
+    const d = layTo - F[LAY], st = dt * TOWNR.wave[3] * WAVE / (1 + WAVE) / CROSS, e = yearTo - F[YEAR], se = dt * 12;
+    F[LAY] = abs(d) <= st ? layTo : F[LAY] + (d < 0 ? -st : st); F[YEAR] = abs(e) <= se ? yearTo : F[YEAR] + (e < 0 ? -se : se);
+    showAll();
+  }
+  // (with LIFT 0: a viewer standing where a house is appearing is inside it, and it is not solid for them until they leave)
+  if (!LIFT) { const i = floor((F[CX] - TGX) / TCELL), j = floor((F[CZ] - TGZ) / TCELL), id = i < 0 || j < 0 || i >= TGW || j >= TGH ? 0 : TGRID[j * TGW + i]; if (id && SHOWN[id] < 1 && layTo > F[LAY]) ghost = id; else if (id !== ghost) ghost = 0; } else ghost = 0;
   // the hour glides to the chosen moment, forwards through the day
   if (F[HOUR] !== hourTo) { const gap = (hourTo - F[HOUR] + 24) % 24, st = max(gap * 2.2, 1.5) * dt; F[HOUR] = st >= gap ? hourTo : (F[HOUR] + st) % 24; }
   {
@@ -531,6 +579,13 @@ const bShow = $('v').querySelectorAll('button');
 const setShow = (on) => { show = on ? 1 : 0; bShow.forEach((b, j) => { b.className = show === j ? 'on' : ''; }); };
 bShow.forEach((b, i) => { b.onclick = () => setShow(i); });
 setShow(0);
+// The layer: Found, Inferred, Imagined (D38). setLayer() is the one way in, for the menu, the K key and whatever comes
+// later (a link, a headset: ARCHITECTURE 12). Imagined holds nothing yet, so its button waits and K passes it by.
+const bLay = $('r').querySelectorAll('button'), LINES = ['Only what was dug up, where it was found', 'Adds what the evidence points to', 'Adds what brings the place to life'];
+const setLayer = (i) => { layTo = i; bLay.forEach((b, j) => { b.className = i === j ? 'on' : ''; }); $('e').textContent = LINES[i]; };
+bLay.forEach((b, i) => { b.onclick = () => setLayer(i); });
+setLayer(1);
+const setYear = (y) => { yearTo = y; };
 // the stats line: key H, or the menu's Stats button on a touch screen
 const stat = () => { hud = !hud; hTot = 0; hPer = 1e9; info.textContent = ''; };
 $('y').onclick = stat;
@@ -545,6 +600,7 @@ const key = (e, v) => {
       else if (e.code === 'KeyT') setTime((TIMES.findIndex((t) => t[1] === hourTo) + 1) % TIMES.length);
       else if (e.code === 'Escape') ui(true);
       else if (e.code === 'KeyL') setShow(!show);
+      else if (e.code === 'KeyK') setLayer(layTo ? 0 : 1);
       else if (e.code >= 'Digit1' && e.code <= 'Digit9') lookAt(...POSES[e.code.charCodeAt(5) - 49]);
     }
   }

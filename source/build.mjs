@@ -1,9 +1,10 @@
 // Bundles src/*.js into the single self-contained ../index.html
 //   npm run build            minified
 //   npm run build:readable   unminified, for debugging
-//   npm run build:dev        ../dev.html: unminified, plus the development tools in src/dev.js and the measuring spike
-//                            (work order 003) in src/spike*.js. --only a,b keeps just those spike parts (fade, place, year)
-//                            and --out NAME writes ../NAME instead, so that each part can be measured by itself.
+//   npm run build:dev        ../dev.html: unminified, plus the development tools in src/dev.js (the chooser of work order
+//                            004 among them) and what is left of the measuring spike (work order 003) in src/spike*.js.
+//                            --only a,b keeps just those spike parts (place, year; --only none leaves both out) and
+//                            --out NAME writes ../NAME instead, so that each part can be measured by itself.
 //   npm run size             prints where the released page's bytes go, part by part; writes nothing
 //   npm run spike:size       prints what each part of the spike would add to the page; writes nothing
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -19,7 +20,7 @@ const dev = has('--dev'), readable = dev || has('--readable');
 const out = dev ? opt('--out') || 'dev.html' : 'index.html';
 // The measuring spike: prototypes that exist in the development build only. spike.js is what they share, spike-go.js
 // turns them on; each part between the two can be left out.
-const SPIKE = { fade: ['spike-fade.js'], place: ['spike-place.js'], year: ['spike-island.js', 'spike-year.js'] };
+const SPIKE = { place: ['spike-place.js'], year: ['spike-island.js', 'spike-year.js'] };
 const spikeFiles = (parts) => ['spike.js', ...parts.flatMap((p) => SPIKE[p]), 'spike-go.js'];
 const read = (f) => readFileSync(path.join(here, 'src', f), 'utf8');
 const tpl = readFileSync(path.join(here, 'template.html'), 'utf8');
@@ -56,9 +57,7 @@ if (has('--spike-size')) {
   // What each part of the spike adds: to the development page as it is written (readable), and to the page if it were
   // minified into it as the release build would. Each part is measured by leaving it out.
   const all = Object.keys(SPIKE), dv = (parts) => tpl.replace('/*SCRIPT*/', () => wrap([...FILES, ...spikeFiles(parts), 'dev.js'].map(read).join('\n')));
-  // (spike-fade.js calls eval(), which stops the minifier shortening any name in the page; the real feature would not, so
-  // for this measure the call is made one the minifier can see past)
-  const mn = (parts) => page(minJs([...FILES, ...(parts ? spikeFiles(parts) : [])].map(read).join('\n').replace("eval('(' + src + ')')", "(0, eval)('(' + src + ')')")));
+  const mn = (parts) => page(minJs([...FILES, ...(parts ? spikeFiles(parts) : [])].map(read).join('\n')));
   const base = mn(null), full = mn(all), dfull = dv(all), b = (s) => Buffer.byteLength(s);
   console.log('What the spike adds (bytes). "dev" is dev.html as written; "minified" is what the part would add to index.html.\n');
   console.log('  part                         dev raw   dev gzip   minified raw   minified gzip');

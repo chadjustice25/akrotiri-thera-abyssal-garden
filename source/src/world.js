@@ -138,14 +138,16 @@ function decodeTown(s) {
   const ox = i16(), oz = i16(), nm = i16(), ne = i16(), nt = b[p++], M = [];
   const pts = (n) => { const a = new Float32Array(n * 2); for (let i = 0; i < n; i++) { a[i * 2] = ox + i16() / 16; a[i * 2 + 1] = oz + i16() / 16; } return a; };
   for (let k = 0; k < nm; k++) {
-    const n = b[p++], f1 = b[p++], f2 = b[p++], seed = b[p++], o = pts(n), ft = [];
+    const n = b[p++], f1 = b[p++], f2 = b[p++], seed = b[p++], tn = b[p++] / 255, o = pts(n), ft = [];
     for (let i = f2 >> 4; i--;) { ft.push([b[p], b[p + 1], b[p + 2] / 255, b[p + 3]]); p += 4; } // what, on which wall, how far along it, a number
     // exc: drawn from the excavated plan (else reconstructed); st: storeys; stone: 0 rubble, 1 dressed tuff, 2 dressed ignimbrite;
-    // sc: string courses; big: large windows; low: one low storey; kind: 0 house, 1 porch; part: part of a house whose door is elsewhere
-    M.push({ o, n, exc: f1 & 1, st: ((f1 >> 1) & 3) + 1, stone: (f1 >> 3) & 3, sc: (f1 >> 5) & 1, big: (f1 >> 6) & 1, low: f1 >> 7, kind: f2 & 3, part: (f2 >> 2) & 1, seed, ft });
+    // sc: string courses; big: large windows; low: one low storey; kind: 0 house, 1 porch; part: part of a house whose door is elsewhere;
+    // tn: its turn in the wave a change of layer spreads as, 0 first to 1 last (docs/layers/README.md)
+    M.push({ o, n, exc: f1 & 1, st: ((f1 >> 1) & 3) + 1, stone: (f1 >> 3) & 3, sc: (f1 >> 5) & 1, big: (f1 >> 6) & 1, low: f1 >> 7, kind: f2 & 3, part: (f2 >> 2) & 1, seed, tn, ft });
   }
-  const edge = pts(ne), ter = []; for (let k = 0; k < nt; k++) ter.push(pts(b[p++]));
-  return { M, edge, ter, pithos: pts(1) };
+  const edge = pts(ne), ter = [], tt = []; for (let k = 0; k < nt; k++) { ter.push(pts(b[p++])); tt.push(b[p++] / 255); } // tt: the turns of the terraces, then the pithos's
+  const pithos = pts(1); tt.push(b[p] / 255);
+  return { M, edge, ter, pithos, tt };
 }
 const TOWNG = decodeTown(TOWN);
 // The ground the town stands on: its textures (the plan, the houses' shadows) cover a square of side TNS metres centred
@@ -160,15 +162,17 @@ const TCELL = 0.25, TMAPN = 1024;
 }
 // Builds every house from its outline: walls with their openings, parapet, roof and spout, by the rules in TOWNR. hAt(x, z) is
 // the ground. Returns the mesh (32 bytes a corner: place; where it is on its wall; the way it faces and the wall's height;
-// material, the house's own number, flags, the free ground before the wall; the wall's length), the collision grid (a
-// building's number per cell, 0 for none) with each number's top, and the plan as a texture for the ground's shader.
+// material, the house's own dice, flags, the free ground before the wall; the wall's length in 2048ths of a metre (the
+// longest wall is 26.5 m) and THE BUILDING'S NUMBER, 16 bits each), with the triangles of what was found first (nF of them); the collision grid (a
+// building's number per cell, 0 for none); each number's row (rows: its layer, its turn in the wave, its foot, its top);
+// and the plan as two textures for the ground's shader.
 function buildTown(hAt) {
   const R = TOWNR, SH = R.sh, M = TOWNG.M;
-  let cap = 1 << 18, F = new Float32Array(cap * 8), B = new Uint8Array(F.buffer), nv = 0, IX = new Uint32Array(cap * 2), ni = 0;
-  let cm = 0, cs = 0, cf = 0, cg = 255, cl = 0, ch = 0, nx = 0, ny = 1, nz = 0; // what the next corners are made of, and the way they face
+  let cap = 1 << 18, F = new Float32Array(cap * 8), B = new Uint8Array(F.buffer), S = new Uint16Array(F.buffer), nv = 0, IX = new Uint32Array(cap * 2), ni = 0;
+  let cm = 0, cs = 0, cf = 0, cg = 255, cl = 0, ch = 0, nx = 0, ny = 1, nz = 0, cid = 0; // what the next corners are made of, the way they face, whose they are
   const V = (x, y, z, u, v) => {
-    if (nv === cap) { cap *= 2; const f = new Float32Array(cap * 8); f.set(F); F = f; B = new Uint8Array(F.buffer); }
-    const o = nv * 8, b = nv * 32; F[o] = x; F[o + 1] = y; F[o + 2] = z; F[o + 3] = u; F[o + 4] = v; F[o + 7] = cl;
+    if (nv === cap) { cap *= 2; const f = new Float32Array(cap * 8); f.set(F); F = f; B = new Uint8Array(F.buffer); S = new Uint16Array(F.buffer); }
+    const o = nv * 8, b = nv * 32; F[o] = x; F[o + 1] = y; F[o + 2] = z; F[o + 3] = u; F[o + 4] = v; S[nv * 16 + 14] = min(cl * 2048 + 0.5, 65535); S[nv * 16 + 15] = cid;
     B[b + 20] = nx * 127; B[b + 21] = ny * 127; B[b + 22] = nz * 127; B[b + 23] = ch; B[b + 24] = cm; B[b + 25] = cs; B[b + 26] = cf; B[b + 27] = cg;
     return nv++;
   };
@@ -238,7 +242,11 @@ function buildTown(hAt) {
     return a1 > a0 * 0.15 && a1 < a0 ? r : null;
   };
   // ---- the collision grid: which building stands on each cell
-  const grid = new Uint16Array(TGW * TGH), top = new Float32Array(M.length + TOWNG.ter.length + 2).fill(-1e9), xs = [];
+  const NT = M.length + TOWNG.ter.length + 2, grid = new Uint16Array(TGW * TGH), rows = new Float32Array(NT * 4), xs = [];
+  // a row: the thing's layer (0 Found, 1 Inferred, 2 Imagined), its turn in the wave, its foot, its top. A thing's layer
+  // follows from what it already carries: drawn from the excavated plan, or not (docs/layers/README.md)
+  const row = (id, layer, turn, foot, top) => { rows[id * 4] = layer; rows[id * 4 + 1] = turn; rows[id * 4 + 2] = foot; rows[id * 4 + 3] = top; };
+  row(0, 0, 0, -1e9, -1e9);
   const fill = (o, n, id) => {
     let z0 = 1e9, z1 = -1e9; for (let i = 0; i < n; i++) { z0 = min(z0, o[i * 2 + 1]); z1 = max(z1, o[i * 2 + 1]); }
     for (let j = max(0, floor((z0 - TGZ) / TCELL)); j <= min(TGH - 1, floor((z1 - TGZ) / TCELL)); j++) {
@@ -270,7 +278,7 @@ function buildTown(hAt) {
     // levels: the street at the door; the ground floor a few steps below it (T2#11, T2#14); floors; the roof; the parapet's top
     const D = de < 0 ? gsum / n : g[de] + (g[(de + 1) % n] - g[de]) * dt, sunk = m.low ? R.sunk16 : R.sunk[0] + rn() * (R.sunk[1] - R.sunk[0]);
     const F0 = D - sunk, roofY = F0 + m.st * SH + R.roof, topY = roofY + R.par[0], base = gmin - 2, e0 = 0.6;
-    top[k + 1] = topY; cs = m.seed; cf = m.stone | (m.exc << 2) | (m.sc << 3);
+    row(cid = k + 1, m.exc ? 0 : 1, m.tn, gmin - 0.3, topY); cs = m.seed; cf = m.stone | (m.exc << 2) | (m.sc << 3);
     const lim = (s) => (s < m.st - 1 ? F0 + (s + 1) * SH : roofY) - 0.3; // the highest an opening of storey s may reach
     for (let i = 0; i < n; i++) {
       edge(i); const gap = gp[i], ops = [];
@@ -362,14 +370,14 @@ function buildTown(hAt) {
   // ---- the terraces of Double Horns Square (T2b#47), and the stone pithos in Cenotaph Square (T2#53)
   TOWNG.ter.forEach((o, k) => {
     const n = o.length / 2, id = M.length + 1 + k; let y = -1e9, lo = 1e9; for (let i = 0; i < n; i++) { const h = hAt(o[i * 2], o[i * 2 + 1]); y = max(y, h); lo = min(lo, h); }
-    y += 0.04; top[id] = y; fill(o, n, id); cs = 90 + k * 40; cf = 4; cg = 255; ch = 0;
+    y += 0.04; row(cid = id, 0, TOWNG.tt[k], lo, y); fill(o, n, id); cs = 90 + k * 40; cf = 4; cg = 255; ch = 0;
     for (let i = 0; i < n; i++) { const a = i * 2, b = ((i + 1) % n) * 2; ax = o[a]; az = o[a + 1]; L = hypot(o[b] - ax, o[b + 1] - az); dx = (o[b] - ax) / L; dz = (o[b + 1] - az) / L; ox = dz; oz = -dx; ga = gb = y - 1; cl = L; cm = 0; nx = ox; ny = 0; nz = oz; rect(0, L, lo - 1.5, y, 0); }
     cm = 10; nx = 0; ny = 1; nz = 0; const v0 = nv, t = ears(o, n); for (let i = 0; i < n; i++) V(o[i * 2], y, o[i * 2 + 1], o[i * 2], o[i * 2 + 1]);
     for (let i = 0; i < t.length; i += 3) tri(v0 + t[i], v0 + t[i + 1], v0 + t[i + 2]);
   });
   {
     const px = TOWNG.pithos[0], pz = TOWNG.pithos[1], y = hAt(px, pz), P = [0.2, 0, 0.34, 0.2, 0.43, 0.55, 0.42, 0.85, 0.32, 1.08, 0.24, 1.18, 0.3, 1.3, 0.22, 1.3], id = M.length + 1 + TOWNG.ter.length, k = R.pithos / 1.3;
-    cm = 8; cs = 9; cf = 4; cg = 255; cl = 9; ch = 0; top[id] = y + R.pithos;
+    cm = 8; cs = 9; cf = 4; cg = 255; cl = 9; ch = 0; row(cid = id, 0, TOWNG.tt[TOWNG.ter.length], y, y + R.pithos);
     for (let j = 0; j < 7; j++) for (let s = 0; s < 12; s++) {
       const a0 = s / 12 * TAU, a1 = (s + 1) / 12 * TAU, r0 = P[j * 2] * k, r1 = P[j * 2 + 2] * k, y0 = y + P[j * 2 + 1] * k, y1 = y + P[j * 2 + 3] * k, sl = (r0 - r1) / hypot(r0 - r1, y1 - y0);
       nx = cos(a0); nz = sin(a0); ny = sl; V(px + nx * r0, y0, pz + nz * r0, a0, y0 - y); V(px + nx * r1, y1, pz + nz * r1, a0, y1 - y);
@@ -377,13 +385,15 @@ function buildTown(hAt) {
     }
     for (let j = -2; j <= 2; j++) for (let i = -2; i <= 2; i++) if (i * i + j * j < 6) { const gi = floor((px - TGX) / TCELL) + i, gj = floor((pz - TGZ) / TCELL) + j; grid[gj * TGW + gi] = id; }
   }
-  // ---- the plan as a texture for the ground's shader: r built on; g metres to the nearest wall / 8; b metres to the
-  // edge of the excavated walls / 4; a inside that edge
-  const N = TMAPN, map = new Uint8Array(N * N * 4), ms = TNS / N, d = new Float32Array(N * N), E = TOWNG.edge, en = E.length / 2;
+  // ---- the plan as two textures for the ground's shader. map: r built on; g metres to the nearest wall / 8; b metres to
+  // the edge of the excavated walls / 4; a inside that edge. map2, for the layers: r built on by what was found; g metres
+  // to the nearest wall of what was found / 8; b the turn in the wave of the nearest building, so that the paving and the
+  // shade of a street arrive with its houses
+  const N = TMAPN, map = new Uint8Array(N * N * 4), map2 = new Uint8Array(N * N * 4), ms = TNS / N, d = new Float32Array(N * N), d0 = new Float32Array(N * N), who = new Uint16Array(N * N), E = TOWNG.edge, en = E.length / 2;
   let ex0 = 1e9, ex1 = -1e9, ez0 = 1e9, ez1 = -1e9; for (let i = 0; i < en; i++) { ex0 = min(ex0, E[i * 2]); ex1 = max(ex1, E[i * 2]); ez0 = min(ez0, E[i * 2 + 1]); ez1 = max(ez1, E[i * 2 + 1]); }
   for (let j = 0, k = 0; j < N; j++) for (let i = 0; i < N; i++, k++) {
-    const x = TNX - TNS / 2 + (i + 0.5) * ms, z = TNZ - TNS / 2 + (j + 0.5) * ms, id = idAt(x, z), built = id > 0 && id <= M.length;
-    map[k * 4] = built ? 255 : 0; d[k] = built ? 0 : 1e9; map[k * 4 + 2] = 255;
+    const x = TNX - TNS / 2 + (i + 0.5) * ms, z = TNZ - TNS / 2 + (j + 0.5) * ms, id = idAt(x, z), built = id > 0 && id <= M.length, f = built && M[id - 1].exc;
+    map[k * 4] = built ? 255 : 0; d[k] = built ? 0 : 1e9; map[k * 4 + 2] = 255; map2[k * 4] = f ? 255 : 0; d0[k] = f ? 0 : 1e9; who[k] = built ? id : 0;
     if (x > ex0 - 5 && x < ex1 + 5 && z > ez0 - 5 && z < ez1 + 5) {
       let dm = 1e9, ins = false;
       for (let e = 0; e < en; e++) {
@@ -393,14 +403,22 @@ function buildTown(hAt) {
       map[k * 4 + 2] = min(255, dm * 63.75); map[k * 4 + 3] = ins ? 255 : 0;
     }
   }
-  for (let pass = 0; pass < 2; pass++) for (let q = 0; q < N * N; q++) {
-    const k = pass ? N * N - 1 - q : q, i = k % N, s = pass ? 1 : -1; let v = d[k];
-    if (i + s >= 0 && i + s < N) v = min(v, d[k + s] + 1); // (one pass looks back, the other ahead)
-    const r = k + s * N; if (r >= 0 && r < N * N) { v = min(v, d[r] + 1); if (i > 0) v = min(v, d[r - 1] + 1.414); if (i < N - 1) v = min(v, d[r + 1] + 1.414); }
-    d[k] = v;
-  }
-  for (let k = 0; k < N * N; k++) map[k * 4 + 1] = min(255, d[k] * ms * 31.875);
-  return { v: new Uint8Array(F.buffer, 0, nv * 32), ix: IX.subarray(0, ni), grid, top, map };
+  // distances in cells to the nearest built cell (two sweeps); w, if given, takes the number of the building it belongs to
+  const sweep = (d, w) => {
+    for (let pass = 0; pass < 2; pass++) for (let q = 0; q < N * N; q++) {
+      const k = pass ? N * N - 1 - q : q, i = k % N, s = pass ? 1 : -1; let v = d[k], f = k;
+      if (i + s >= 0 && i + s < N && d[k + s] + 1 < v) { v = d[k + s] + 1; f = k + s; } // (one pass looks back, the other ahead)
+      const r = k + s * N; if (r >= 0 && r < N * N) { if (d[r] + 1 < v) { v = d[r] + 1; f = r; } if (i > 0 && d[r - 1] + 1.414 < v) { v = d[r - 1] + 1.414; f = r - 1; } if (i < N - 1 && d[r + 1] + 1.414 < v) { v = d[r + 1] + 1.414; f = r + 1; } }
+      d[k] = v; if (w) w[k] = w[f];
+    }
+  };
+  sweep(d, who); sweep(d0);
+  for (let k = 0; k < N * N; k++) { map[k * 4 + 1] = min(255, d[k] * ms * 31.875); map2[k * 4 + 1] = min(255, d0[k] * ms * 31.875); map2[k * 4 + 2] = rows[who[k] * 4 + 1] * 255; }
+  // ---- what was found is drawn first, so that the Found layer at rest draws only that
+  const ix = new Uint32Array(ni); let nF = 0, a = 0;
+  for (let i = 0; i < ni; i += 3) if (!rows[S[IX[i] * 16 + 15] * 4]) nF += 3;
+  for (let i = 0, b = nF; i < ni; i += 3) { const o = rows[S[IX[i] * 16 + 15] * 4] ? b : a; ix[o] = IX[i]; ix[o + 1] = IX[i + 1]; ix[o + 2] = IX[i + 2]; if (o === a) a += 3; else b += 3; }
+  return { v: new Uint8Array(F.buffer, 0, nv * 32), ix, nF, grid, rows, map, map2 };
 }
 
 // ---------------------------------------------------------------- viewpoints (keys 1-9): position and look-at
