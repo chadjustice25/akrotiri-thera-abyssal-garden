@@ -36,7 +36,7 @@ The liberty numbers are those of `docs/town/README.md` §6.
 | The West House timber records | TiMMA, hosted by the French School at Athens; its data need the director's agreement (T2#108) | the "axes to verify" marks on the door and window |
 | The terms for consulting the laser scan of 2013 | the excavation, the Ephorate of Antiquities of the Cyclades, or the University of Vienna, where the data were deposited (T2#103) | measured wall heights, as a check on all of the above |
 | The map coordinates of two or three fixed points of the plan, in any stated system (added 2026-11-20) | the excavation | the plan's place on the Earth, now good to about 10 m (D22). A visitor's position (D45) and augmented reality (D43) cannot be trusted inside the town without it |
-| Whether a tool for visitors' own phones is welcome at the site, and whether phones get a signal under the shelter (added 2026-11-20) | the excavation | how D45 is built, and O25 |
+| Whether a tool for visitors' own phones is welcome at the site, and whether phones get a signal under the shelter (added 2026-11-20) | the excavation | how D45 is built, and how much use without a connection (D47, D48) matters at the site |
 
 Nothing they hold is likely to close A-L1, the town beyond the dig: no one has measured its edge.
 

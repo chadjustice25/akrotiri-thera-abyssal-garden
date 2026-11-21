@@ -28,7 +28,7 @@ A fork of Noniv's [Abyssal Garden](https://github.com/Noniv/abyssal-garden) (MIT
 
 ## 5. The engine laws (inherited from upstream; kept unless a decision amends them)
 1. WebGPU, with no game engine or 3D library.
-2. Everything procedural: no image, model or sound files. The deliverable is one self-contained `index.html`, built from `source/`.
+2. Everything procedural: no image, model or sound files. The deliverable is one self-contained `index.html`, built from `source/`. Since D48 one helper file that holds no part of the world may sit beside it, to keep the page on a device for use without a connection; `index.html` must still run by itself. No such file exists yet, and the gate refuses one until the order that builds it changes the gate.
 3. No per-frame JavaScript allocations: preallocate buffers.
 4. When they conflict: visual quality first, then stable frame pacing, then file size (upstream `prompt.txt`).
 5. `index.html` is always a fresh build of `source/`: edit `source/src/*`, run `cd source && npm run build`, and commit both.

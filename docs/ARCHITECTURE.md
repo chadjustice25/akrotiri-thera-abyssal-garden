@@ -355,7 +355,9 @@ Added on 2026-11-20. Chad: "We will want it to be downloadable for those that ma
 
 **What it is.** A visitor opens the page once where they have a connection, at home or at their hotel. After that it opens with no signal at all, and it can still show where they are, because a device finds its position from satellites and not from the network (general knowledge, not tested). The position is shown in two ways: standing in the world, and as a mark on a view from above with a ring as wide as the device's doubt. The second is the integrator's reading of "to note on the maps". On a view from above a doubt of 10 m is honest, where a view from eye height pretends to more.
 
-**Three ways to keep the page on a device** (O25).
+**Decided on 2026-11-21 (D48): both ways below, with instructions for the Home Screen.** Chad: "I agree, both. We can give instructions for adding to the Home Screen in that case."
+
+**Three ways to keep the page on a device.**
 
 | Way | What the visitor does | Where it works | What it costs |
 |---|---|---|---|
@@ -363,7 +365,7 @@ Added on 2026-11-20. Chad: "We will want it to be downloadable for those that ma
 | **A plain download** of `index.html` | Saves the file and opens it later | Computers. On a phone a saved page is awkward to open, and it has no secure address, so position is probably refused (the integrator's knowledge, not checked) | Nothing: the page is already one file |
 | **Both** | Either | Everywhere one of them works | The same second file |
 
-The integrator recommends both.
+The integrator recommended both, and Chad chose both.
 
 **What was read, on 2026-11-20.**
 - A service worker exists for this. Its specification speaks of "allowing the service worker to provide content for documents, even while offline", shows it registered from a file of its own, and marks it for secure pages only (word for word; [W3C Service Workers](https://www.w3.org/TR/service-workers/), the draft of 17 November 2026). That it cannot be written inside the page itself is the integrator's knowledge; the part of the specification that would say so was not reached.
@@ -371,7 +373,7 @@ The integrator recommends both.
 - **Chrome** "may evict site data at its discretion, for example, when device storage is low", and a page can ask for storage that is not cleared that way ([web.dev](https://web.dev/articles/storage-for-the-web)).
 
 **What it asks.**
-- The world stays whole in `index.html`, and that file runs by itself with no keeper file present. The gate goes on checking that the page loads nothing.
+- The world stays whole in `index.html`, and that file runs by itself with no keeper file present. The gate goes on checking that the page loads nothing but the keeper file, and that the keeper file holds no part of the world. Work orders may not change `checks/`, so the order says who changes the gate.
 - The keeper file must fetch the newer page whenever there is a connection, or visitors keep an old world.
 - The page says plainly when it is kept: "Saved for use offline", and on an iPhone how to add it to the Home Screen.
 - A test nobody can do yet: a phone with Wi-Fi and mobile data off, position on. It can be done at home, with a link that stands in for Thera.
