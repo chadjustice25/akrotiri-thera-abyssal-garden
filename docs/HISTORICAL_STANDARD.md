@@ -102,6 +102,15 @@ Departures from the evidence, made for the experience. One row each; nothing is 
 | A-L14 | Paving is drawn wherever houses stand close. The covered drain, the houses' drains and the cobbles of one side street are not shown. | Flagstones are sourced for the rebuilt streets (T2#11). The drain (T2#12, T2#13) and the cobbles (T2#60) are sourced and wait for a later order. | streets and squares | work order 002 |
 | A-L15 | The forms of the few things added: the pithos's profile, the benches, the horns, the light-well, the West House's upper room, the porch. | Their existence is sourced; their sizes and shapes are not. | named buildings | work order 002 |
 
+**The layers' and the date's liberties** (work order 004, recorded 2026-11-21). The record is `docs/layers/README.md` §4, which gives each in full.
+
+| # | Liberty | Why | Where | Decision |
+|---|---|---|---|---|
+| L-L1 | The excavated buildings stand whole in the Found layer: full height, with roofs, parapets and every opening the town's rules give them. | The height each wall survives to is not published (O8), so what was found cannot be told from what was restored above it. Found is what was dug up in plan, not in elevation. | every excavated building | D31, D38; work order 004 |
+| L-L2 | A change of layer spreads outward from the excavated centre by distance, the town first and then the land. | A way of showing. It is not the order in which the site was dug, and not a claim about how the town was built. | the wave | D41; to be replaced by the order of the dig (D44, D49) |
+| L-L3 | The plain tones of Found: one for buildings, a deeper one for the land and the sea floor, and paved ground a fifth darker than the land. | Tones have to be chosen, and none is evidence. Two, because one pale tone washed out the water. The darker paving keeps a sourced thing (flagstones, T2#11) visible without its unsourced look. | the Found layer | D31; work order 004; Chad chooses among three sets |
+| L-L4 | The sun goes round its yearly path at an even pace, counted from the spring equinox. | The true pace is uneven, so the true sun is ahead of or behind this one by up to about four days, by today's orbit. | the date | D33; ended by the sky order |
+
 **The opening page's liberty** (work order 006, recorded 2026-11-21). The record is `docs/opening-page/README.md`.
 
 | # | Liberty | Why | Where | Decision |

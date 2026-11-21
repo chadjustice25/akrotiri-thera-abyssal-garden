@@ -229,7 +229,7 @@ Chad asked for this after work order 003 (2026-11-20): fewer tests and views, an
 
 Write `docs/layers/README.md`: what each layer shows and why; how a thing gets its layer; how the fade, the wave and the date work, in a page; every new liberty, with its reason; and the measurements below. Three liberties are known already, and the integrator writes them into the standard from your Result:
 - the excavated buildings stand whole in Found, though their upper storeys, roofs and openings were not all found;
-- the wave runs outward from the excavated centre by distance, as a way of showing. It is not the order in which the site was dug, and not a claim about how the town was built (O22 asks whether a later order should follow the true order of the excavation);
+- the wave runs outward from the excavated centre by distance, as a way of showing. It is not the order in which the site was dug, and not a claim about how the town was built (O22 asked whether a later order should follow the true order of the excavation; D44 has since said yes);
 - the sun's even pace through the year.
 
 ## Measure
@@ -275,10 +275,63 @@ If a part cannot be done inside its limits, **stop and report** instead of worki
 - Any change to the town's plan, its rules or its look in the opening layer.
 - A fallback for slower devices.
 - Anything for augmented or virtual reality beyond "Keep the door open".
-- The order in which the site was excavated (O22).
+- The order in which the site was excavated (O22 when this was written; since D44, a later order).
 
 ## Result
-(To be filled in by the worker's report and the integrator.)
+
+The worker session's report of 2026-11-21 (Claude Fable 5.2), as it sent it to the integrator, pasted here by the integrator. The full record is `docs/layers/README.md`. **Not merged or pushed when this was written.**
+
+**Commits on `task/004-layers-and-time`:**
+- `8be9cea` Part A: edit E4 puts back 14.98 km³ of the ring island (D29)
+- `23690a3` Part B: the three layers, fading as a wave (D31, D38, D41)
+- `dd74362` Part C: a date the viewer can move, and the sun by season (D33)
+- `f39d6c2` the measurements, the chooser page and the record of who looked
+- `9ec250c` new plain tones for Found, after Chad's first look
+- `c768ad3` the record of the three clips on the chooser page
+
+**Part A, the land.** E4 adds 14.98 km³ (13.16 before; the range is 9.1 to 17.1). Land 148.0 km² (145.4 before); highest restored point 260 m; the bay 38.4 km² (41.0 before).
+- With the old bay, a 260 m rim and no gullies at all the volume is 14.28 km³, so the bay had to shrink: its south-east and south-west corners are land again (3.1 km²). It still reaches 1.0 km south of Fira and ends 2.4 km north of Athinios (T1#19, T1#20), and is no nearer to Pre-Kameni than before (709 m).
+- The rim crest is at 260 m along the restored arc and the gullies no longer cut it down; what the gullies remove is given back as a broad swell.
+- **17.1 km³ was not reached:** Pre-Kameni (E7, unchanged) fills the middle of the bay.
+- The model is the same everywhere outside E4 and the bay floor beside its new shore (`tools/terrain/compare.mjs`). The packed data re-rounds elsewhere within its accuracy (0.23 m rms at the Akrotiri terrace), because packing rounds each height from its neighbours. `town-data.js` came out byte for byte the same in Part A. The build writes the same `terrain-data.js` twice.
+
+**Part B, the layers.** A menu row and key `K` move between Found and Inferred; Imagined is in the menu, greyed, "to come"; the world opens in Inferred. One visibility function in every shader stage; every corner of the town carries its building's number; a table has a row a building (layer, turn in the wave, first and last year); a building's turn is data written by `tools/town/build.mjs` (today by distance from the excavated centre). Two pipelines for the town and two for its shadow. The plan is two maps, so paving and street shade arrive with their houses. Collision follows what is shown. The fade's prototype is gone from the development build; placing and the second island still run there (key `P`). `dev.html` has the chooser panel.
+
+**Part C, the date.** A menu row with a slider, the date and four marks (equinoxes, solstices); keys `[` and `]` step a week. The day is counted from the spring equinox and named as today's calendar names the season. The sun's height and the day's length follow it; Dawn, Golden and Dusk follow the sun's height. Only the sun follows the date. The year is in the same block with no control; in `dev.html` four buildings are dated by dice and `U` and `I` move the year.
+
+**Measured, on this Mac only (no iPad):**
+- At rest the layers cost nothing measurable against `main` in Inferred and Imagined. Found is dearer from over the roofs (about 8.1 to 8.8 ms against 6.0 to 6.8 on High at view 9).
+- A change of layer adds about 0.2 to 2 ms of GPU time a frame. It held 60 frames a second in 50 of 54 changes over three runs, and in all 18 of the second run.
+- **Rare single frames stalled, and the cause was not found:** four of 247 to 843 ms, all at view 9; three while other commands ran beside the first run, one (843 ms, Low) with nothing of the session's running. Thirty-eight further changes at view 9 showed none.
+- JavaScript's memory does not grow with changing layer and date.
+- The page is 178,790 bytes of the 256 kB budget (169,665 before): Part A +1,384, Part B +5,859, Part C +1,818, the second tone +64.
+- The world builds in 0.42 to 0.48 s, as before.
+- In the opening layer, views 1 to 6 are the same as before to within one grey level in a handful of pixels; in the town views 160 to 467 pixels of 1.1 million differ, along the 4 mm strips where a window frame and its wall tie in depth.
+
+**New liberties** (full text in `docs/layers/README.md` §4; entered in the standard's §6 by the integrator): L-L1, the excavated buildings stand whole in Found; L-L2, the wave runs by distance; L-L3, the plain tones; L-L4, the sun's even pace through the year, up to about four days from the truth by today's orbit (the order said about two). Reworded in `docs/terrain/README.md`: T-L2 and T-L3 (E4's new shore, the gullies' rules) and T-L9 (the day is now the day the world opens on).
+
+**Where the build departs from the order:**
+- Two plain tones, not one: Chad set aside the three single tones on 2026-11-21 (Plaster washed out the water and the land; Clay was too like the regular ground).
+- The visibility function takes a thing's turn in the wave beside its layer.
+- Colours arriving on things that are always there are mixed in smoothly, not dithered.
+- Dawn, Golden and Dusk are set by the sun's height, not by an offset from sunrise and sunset.
+- On Low detail the town's shadow is read nine times during a fade only, because it showed as blotches.
+- In `dev.html` the two remaining prototypes of work order 003 are off until `P` is pressed. The stand-in island was regenerated against the new terrain; `docs/spike/` is untouched.
+- E3 goes on measuring its rim from the caldera's old outline, so that enlarging E4 does not change the stripping elsewhere.
+
+**Who looked:**
+- Claude looked at stills only: the nine views (Thera Views, version 13); Found at rest; the fade held part way on High, Medium and Low; the tones (nine candidates for the second set); midwinter light; the menu at a desktop's size, an iPad's lying down and a phone's lying and upright (not the upright iPad); the chooser's pictures; and single frames of the three clips.
+- Chad looked at the chooser's first page, in stills, on 2026-11-21 and set aside its three tones. He has not yet said anything about a change in motion.
+- Nobody has tried touch on a device; the Date slider worked under emulation only.
+
+**Open with Chad** (the chooser is Thera Layers 004, <https://claude.ai/artifact/3iJQ1P5ceCnhF53g5kmEJB>, which since `c768ad3` also has three short clips of the wave at 3, 5 and 10 seconds):
+1. The plain tones of Found: 1D plaster on stone (built), 1E plaster on card, 1F plaster on slate.
+2. How long the wave takes: 2A 3 seconds, 2B 5 (built), 2C 10.
+3. A viewer where a house appears: 3A lifted to its roof (built), 3B left inside it.
+4. Whether the picture ever freezes when he runs a change of layer himself.
+5. Pre-Kameni with E4, towards 17.1 km³. The worker reports that Chad said "Yes"; the order forbids E7, so it was not started. It needs a decision and an order of its own.
+
+**The integrator's notes.** What the order calls O22 was settled as D44 on 2026-11-20, and the two places that named it are corrected below. The menu this order built was replaced by work order 006's opening page, which keeps every control. The main checkout held a `dev.html` from 18 November, with no layers, which may be what Chad opened when the keys seemed to do nothing.
 
 ## Review
 (To be filled in after Chad has looked.)
