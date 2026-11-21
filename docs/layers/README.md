@@ -99,3 +99,175 @@ The world is to be used in a headset later (`docs/ARCHITECTURE.md` §12). Everyt
 | The same dither in the town's shadow map | `fsS`, through `holes()` | Not a screen effect: it reads the shadow map's own texels, which are the same for both eyes |
 
 Nothing else new reads the screen. The plain tone, the wave and the colours are worked out in the world's own metres. New shader code takes its view and projection from the engine's one camera block (`g.vp`, `g.cam`). True scale and place are untouched: nothing moves the origin or the metres.
+
+## 6. The choices put to Chad
+
+Three choices are Chad's (work order 004, "Choices for Chad"). They are on one page, each defined, with its options side by side, its cost, its drawback and a recommendation: **Thera Layers 004**, <https://claude.ai/artifact/3iJQ1P5ceCnhF53g5kmEJB> (private). The recommendation is built into the released page, so nothing waits on the answer.
+
+| Choice | Options | Built | Where |
+|---|---|---|---|
+| 1. The plain tone of Found | Plaster, a warm off-white; Clay, a pale earth; Grey, a neutral grey | Plaster | `TONE` in `main.js` |
+| 2. How long the wave takes to cross the town | 3, 5 or 10 seconds (the whole change, to the far end of the island: 5.0, 8.3 or 16.7 s; timed at 5.3, 8.7 and 17.0 s with its last shadow map) | 5 seconds | `CROSS` |
+| 3. A viewer standing where a house appears | lifted to its roof; or left inside it, the house not solid for them until they walk out | lifted | `LIFT` |
+
+In `dev.html` (`cd source && npm run build:dev`) a panel at the foot of the screen names each choice and the option in force, in words; a click on a line, or the key shown beside it (`Z`, `V`, `C`), goes to the next option.
+
+What each option costs, as far as it could be measured: the three tones and the two rules for a viewer make **no measurable difference** (the tone is three numbers in a uniform block; the rule is one comparison in JavaScript). The three durations were timed once, from over the roofs (view 9) on High: the 3-second wave averaged 9.3 ms of GPU time a frame against 7.0 ms for 5 seconds and 6.8 ms for 10, with the page at rest at 6.1 to 7.9 ms. A brisk wave has more houses part shown at once; between 5 and 10 seconds there is no measurable difference.
+
+## 7. Measurements
+
+**Every time is this Mac's** (Apple M4, Chrome 157 headless on the Metal adapter, a picture of 1600 × 812), which flatters. **No iPad has been measured**, and no fallback for slower devices was built. The Mac was in use by other sessions while these ran, and its GPU changes speed with load, so two runs of the same state differ by a millisecond or more: **a difference under about 1 ms is noise**, and where runs disagree both are given.
+
+How: `tools/town/layers.mjs` drives the development page built without work order 003's prototypes (`node build.mjs --dev --only none --out dev-none.html`), once for each detail level. The page's resolution scaler is held at full size, so a slower state shows as more milliseconds and not as fewer pixels. GPU time is the engine's own timestamp queries, from the water pass to the final composite. It was run three times on 2026-11-21. The first run is set aside for the tables: other commands were running on the Mac beside it. Its stalls are listed below with the rest.
+
+### At rest
+
+The frame rate was 60 in every state of every run (the lowest mean over 2.5 s was 58.1). The first column is the page of `main` before this order, timed the same day in the same way, twice (it has a little less land: Part A).
+
+**High detail** (GPU ms a frame; two runs each)
+
+| view | `main`, before this order | Found | Inferred | Imagined |
+|---|--:|--:|--:|--:|
+| 1 | 8.38 / 8.71 | 10.32 / 7.22 | 9.66 / 6.86 | 9.59 / 8.13 |
+| 2 | 8.14 / 8.25 | 6.35 / 6.99 | 6.77 / 7.30 | 6.69 / 7.08 |
+| 3 | 8.39 / 8.91 | 8.48 / 7.90 | 8.76 / 8.32 | 8.65 / 8.45 |
+| 4 | 6.69 / 6.97 | 6.28 / 6.27 | 6.61 / 6.56 | 6.59 / 6.84 |
+| 5 | 9.10 / 9.00 | 7.90 / 8.10 | 8.68 / 8.31 | 7.15 / 8.14 |
+| 6 | 8.20 / 8.28 | 6.63 / 7.60 | 6.76 / 7.91 | 6.71 / 8.30 |
+| 7 | 3.92 / 3.92 | 4.71 / 4.27 | 4.41 / 3.96 | 4.19 / 4.01 |
+| 8 | 3.75 / 3.79 | 4.15 / 4.17 | 4.17 / 4.15 | 4.08 / 4.03 |
+| 9 | 6.23 / 6.43 | 8.06 / 8.80 | 6.02 / 6.76 | 6.44 / 6.88 |
+
+**Medium detail** (GPU ms a frame; two runs each)
+
+| view | `main`, before this order | Found | Inferred | Imagined |
+|---|--:|--:|--:|--:|
+| 1 | 9.96 / 7.38 | 8.13 / 9.22 | 8.46 / 9.56 | 8.56 / 9.40 |
+| 2 | 7.49 / 6.75 | 6.74 / 7.04 | 7.35 / 7.62 | 7.20 / 7.46 |
+| 3 | 8.79 / 6.95 | 8.47 / 8.90 | 9.07 / 9.43 | 9.10 / 9.08 |
+| 4 | 6.64 / 6.55 | 6.34 / 6.97 | 6.82 / 7.32 | 6.56 / 7.23 |
+| 5 | 9.90 / 6.76 | 9.35 / 10.01 | 9.45 / 10.12 | 10.08 / 9.88 |
+| 6 | 7.68 / 6.56 | 7.17 / 8.01 | 7.36 / 8.20 | 7.68 / 8.29 |
+| 7 | 4.30 / 4.44 | 4.54 / 5.02 | 4.11 / 4.84 | 4.16 / 4.78 |
+| 8 | 4.05 / 4.35 | 4.58 / 5.06 | 4.55 / 4.80 | 4.35 / 5.06 |
+| 9 | 6.03 / 6.61 | 6.74 / 6.67 | 6.36 / 6.40 | 6.44 / 6.43 |
+
+**Low detail** (GPU ms a frame; two runs each)
+
+| view | `main`, before this order | Found | Inferred | Imagined |
+|---|--:|--:|--:|--:|
+| 1 | 4.64 / 5.41 | 4.92 / 3.84 | 5.22 / 4.32 | 5.21 / 4.35 |
+| 2 | 4.33 / 4.23 | 3.60 / 3.10 | 4.27 / 3.46 | 4.42 / 3.46 |
+| 3 | 5.51 / 5.59 | 5.97 / 4.67 | 6.20 / 5.10 | 6.05 / 4.99 |
+| 4 | 3.52 / 3.27 | 2.89 / 2.95 | 3.34 / 3.26 | 3.23 / 3.37 |
+| 5 | 4.48 / 4.19 | 3.85 / 4.14 | 4.25 / 4.43 | 4.41 / 4.30 |
+| 6 | 4.47 / 4.14 | 3.89 / 3.98 | 4.33 / 4.24 | 4.25 / 4.50 |
+| 7 | 2.93 / 2.77 | 2.55 / 3.06 | 2.80 / 3.46 | 2.78 / 3.38 |
+| 8 | 2.72 / 2.50 | 2.21 / 2.78 | 2.60 / 3.18 | 2.55 / 3.18 |
+| 9 | 3.29 / 3.08 | 3.96 / 3.88 | 3.20 / 3.64 | 3.50 / 3.48 |
+
+- **At rest the layers cost nothing measurable.** Inferred and Imagined are within the noise of `main` at every view and level.
+- **Found is not cheaper, and from over the roofs it is dearer**: 8.1 to 8.8 ms against 6.0 to 6.8 on High at view 9. Work order 003 found the same: the bare ground costs more to shade than the houses that covered it. Elsewhere Found is the same or a little less.
+- **Imagined draws what Inferred draws**, as it should: it holds nothing yet.
+
+### During a change of layer
+
+Every frame from the change to its end, 8.6 to 8.7 s, at the three town views.
+
+| view, change | detail | GPU ms added to the two layers' mean at rest | highest GPU ms of a frame | frames a second | lowest over any half second | slowest frame, ms |
+|---|---|--:|--:|--:|--:|--:|
+| 7, Inferred to Found | High | +0.70 / +0.65 | 8.1 / 9.0 | 60.0 / 60.0 | 59.7 / 59.7 | 18.8 / 20.0 |
+| 7, Inferred to Found | Medium | +0.42 / +0.59 | 7.6 / 10.6 | 60.0 / 60.0 | 59.8 / 59.7 | 18.5 / 18.9 |
+| 7, Inferred to Found | Low | +0.76 / +0.55 | 6.8 / 6.2 | 60.0 / 60.0 | 59.8 / 59.9 | 18.6 / 17.6 |
+| 7, Found to Inferred | High | +0.66 / +0.81 | 7.6 / 8.1 | 60.0 / 60.0 | 59.7 / 59.7 | 18.8 / 18.9 |
+| 7, Found to Inferred | Medium | +0.38 / +0.71 | 7.4 / 9.8 | 60.0 / 60.0 | 59.9 / 59.8 | 17.7 / 18.8 |
+| 7, Found to Inferred | Low | +0.72 / +0.47 | 6.8 / 5.2 | 60.0 / 60.0 | 59.7 / 59.9 | 18.9 / 17.6 |
+| 8, Inferred to Found | High | +0.42 / +1.13 | 7.5 / 8.7 | 60.0 / 60.0 | 59.7 / 59.9 | 18.7 / 17.6 |
+| 8, Inferred to Found | Medium | +0.27 / +0.69 | 9.4 / 9.2 | 60.0 / 60.0 | 59.7 / 59.7 | 18.8 / 19.0 |
+| 8, Inferred to Found | Low | +0.63 / +0.60 | 5.8 / 6.0 | 60.0 / 60.0 | 59.7 / 59.7 | 19.0 / 18.9 |
+| 8, Found to Inferred | High | +0.44 / +0.72 | 7.3 / 8.8 | 60.0 / 60.0 | 59.8 / 59.8 | 17.9 / 18.3 |
+| 8, Found to Inferred | Medium | +0.27 / +0.65 | 7.3 / 8.5 | 60.0 / 60.0 | 59.7 / 59.7 | 18.8 / 18.9 |
+| 8, Found to Inferred | Low | +0.67 / +0.59 | 4.8 / 5.5 | 60.0 / 60.0 | 59.7 / 59.7 | 18.9 / 19.4 |
+| 9, Inferred to Found | High | +1.30 / +2.02 | 11.1 / 14.5 | 60.0 / 60.0 | 59.8 / 59.8 | 18.2 / 18.1 |
+| 9, Inferred to Found | Medium | +0.17 / +1.22 | 9.4 / 12.0 | 60.0 / 60.0 | 59.7 / 59.8 | 18.7 / 18.3 |
+| 9, Inferred to Found | Low | +0.96 / +1.19 | 7.3 / 7.5 | 60.0 / 60.0 | 59.8 / 59.7 | 18.4 / 19.1 |
+| 9, Found to Inferred | High | +0.91 / +1.90 | 10.7 / 14.1 | 60.0 / 60.0 | 59.9 / 59.9 | 18.0 / 17.6 |
+| 9, Found to Inferred | Medium | +0.21 / +0.79 | 9.0 / 10.2 | 60.0 / 60.0 | 59.8 / 59.7 | 18.8 / 19.1 |
+| 9, Found to Inferred | Low | +0.95 / +0.97 | 7.1 / 7.0 | 60.0 / 42.0 | 59.9 / 1.2 | 17.9 / 842.9 |
+
+- **A change adds about 0.2 to 1.3 ms of GPU time a frame in the streets, and up to 2.0 ms from over the roofs**, on this Mac. The highest GPU time of any single frame was 14.5 ms (view 9, High), inside the 16.7 ms a frame has.
+- **The frame rate held 60, with no half second below 59, in 50 of the 54 changes of the three runs, and in all 18 of the second run.**
+- **But single frames stalled, rarely, and the cause was not found.** In the three full runs, 5 of 54 changes had one frame far over the rest, 4 of them at view 9: 353 ms and 247 ms (High) and 270 ms (Medium) in the first run, while other commands ran beside it; 25 ms (view 8, High) in the first; and **843 ms (view 9, Low, Found to Inferred) in the third, with nothing of this session's running beside it**. That last change is the 42 frames a second in the table. Against that: 38 further changes at view 9, run by themselves on High and Low, had no frame over 30 ms; and at rest one frame of 98 ms turned up in 243 windows (view 6, High, second run). So stalls happen on this Mac with and without a fade, and were seen more often during one from above. Whether the page causes them cannot be told from these runs. **It is the first thing to look for on the iPad**, and when Chad watches a change at view 9.
+- **Done-when asks that a change hold 55 frames a second at views 7, 8 and 9 on the three levels.** The second run does, throughout. The third does in 17 of 18 changes, and the first in 15 of 18.
+
+### JavaScript's memory
+
+The heap after a forced collection, at view 9 on High, with the layer changed every two seconds (so every change is turned round part way) and the date sent to a new day every two seconds:
+
+| | bytes in use | change over the minute |
+|---|--:|--:|
+| before | 1,189,452 | |
+| after the first minute of changing | 1,358,816 | +169,364 |
+| after the second | 1,361,944 | +3,128 |
+| after the third | 1,372,060 | +10,116 |
+| after a fourth minute with nothing changing | 1,381,380 | +9,320 |
+
+**It does not grow with the changing.** The first minute adds 0.17 MB once, as work order 003 saw with the engine alone; after that the heap moves by 3 to 10 kB a minute, the same whether the layer and date are changing or not. A change of layer or date allocates nothing in the frame: `showAll()` writes into one fixed array.
+
+### The page's size
+
+`cd source && npm run size`, in bytes of `index.html`.
+
+| | whole page | gzipped | what the part added |
+|---|--:|--:|---|
+| Before this order | 169,665 | 98.0 kB | |
+| After Part A, the land | 171,049 | 99.0 kB | +1,384: terrain data (the larger island packs 1,039 bytes larger) |
+| After Part B, the layers | 176,908 | 101.5 kB | +5,859: engine code 2,696; shaders 1,674; menu and styles 861; town data 651 (the turns) |
+| After Part C, the date | 178,726 | 102.3 kB | +1,818: engine code 976; menu and styles 842 |
+
+**The three parts add 9,061 bytes** (the order's limit before stopping to report: 20 kB). The page is 174.5 kB of the 256 kB budget.
+
+### Load
+
+The world builds in 0.42 to 0.48 s before and after (three loads each of `main`, Part A and Part B, timed to 20 ms). The views check reports "1 s" where it reported "0.5 s", because it looks every half second.
+
+### The same picture as before, in the layer the world opens in
+
+Time frozen, resolution held, the engine's own frame, each of the nine views saved without loss and compared pixel by pixel outside the chooser's panel (1,103,800 pixels a view):
+
+- **Views 1 to 6** (land, sea, sky): after Parts B and C against Part A, 0 to 12 pixels differ, by one grey level (two pixels by 12 at view 3).
+- **Views 7 to 9** (the town): 160 to 467 pixels differ by more than four grey levels (34 to 37 at most). They lie along the 4 mm strips where a window's stone frame and its wall overlap in the same plane: two surfaces tie in depth there, and the last bit of the arithmetic decides which is drawn. The town's mesh was compared value by value and is the same (`docs/town/README.md` §7a). Some thousands more differ by one level.
+- **Part C against Part B**: no pixel differs by more than one level in any view.
+
+## 8. What was tested, and who looked
+
+**Tested by script** (`tools/town/shot.mjs`, reading the camera's state after each step):
+
+| Test | What the state showed |
+|---|---|
+| A walker on a roof that fades (Inferred to Found) | Stayed on the roof at 39.65 m until its house began to go, came down with it to the ground at 30.73 m in about two seconds, and stayed on foot |
+| The same walker, the house coming back (lifted) | Rose with it from 30.73 m to the roof at 39.65 m in about two seconds, on foot |
+| With the other rule (left inside) | Stayed on the ground inside the house; walked west out of it; walking back, was stopped by its wall |
+| A change turned round part way | The layer went 1, 0.94, 0.86, 0.79, 0.72, then 0.77, 0.84, 0.91, 0.98, 1, half a second apart: no jump |
+| The date | Named moments by day: Golden at 18.47 at midsummer and 15.86 at midwinter; Afternoon 14.45 at midwinter; the date glided from day 91 to day 274 the short way; `[` and `]` stepped a week |
+| The menu with a finger (emulated, iPad lying and phone upright) | A tap on the slider's middle gave "18 Sep"; a tap on "Winter solstice" gave "19 Dec"; a tap on Found lit it and changed the line |
+| The development build | `dev.html` shows the chooser's panel; with `P` the placing and second-island prototypes of work order 003 run, and follow the layer and the year |
+
+**Claude (Fable 5.2) looked at**, on 2026-11-21: the nine views of the views check, as a sheet (they are in Thera Views, version 13); Found at rest from views 8 and 9 and from the air; the fade held part way from above, from the north edge and in Telchines Street, on High, Medium and Low; the island from view 3 part way through a change; the three tones; midwinter noon and golden hour in the square; the menu at a desktop's size and at an iPad's and a phone's, lying and upright (the upright iPad's picture was not opened); and the eleven pictures of the chooser.
+
+Seen and worth knowing:
+- **The dither shows, as chosen.** A fading house is drawn through a fine screen. At a low share and from far off, the leading edge of the wave is a sprinkle of dots (view 9 on Medium, a tenth of the way).
+- **The shadow of a fading house** is a paler, smooth shadow on High and Medium. On Low it was blotchy until Low was given the nine-reading filter for the frames of a fade; it is softer now and still a little mottled.
+- **In Found the shaded side of a building is dark**, and its windows are hard to see there: with one tone, only light tells surfaces apart.
+- **The menu is taller.** On a desktop window of 1600 × 813 the key list ends at the foot of the window and the notes are below it, reached by scrolling; on an iPad lying down everything fits; on a phone it scrolls, as it did. Nothing was shrunk. If it is to fit a desktop window again without scrolling, the candidate to leave is the row of four marks under the date slider.
+
+**Nobody has watched a change of layer, or the date gliding, in motion**: every look above is at stills, and the timings say only how long frames took. **Chad has looked at nothing yet.** Nobody has tried touch on a device: the slider on a phone held upright sits in a page turned on its side, and worked only under emulation.
+
+## 9. Known gaps
+
+- **No iPad.** Every number here is one Mac's.
+- **The rare stalled frames** (§7) are unexplained.
+- **Found is not the excavation as it stands** (L-L1).
+- **Nothing but the sun changes with the date, and nothing changes with the year.**
+- **The order of the excavation** (D44) is not in the wave: the turns are by distance until research lane T8 is checked.
+- **Imagined is empty.**

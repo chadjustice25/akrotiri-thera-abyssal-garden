@@ -29,7 +29,7 @@
   const paint = () => {
     panel.replaceChildren(...['Choices for Chad (work order 004). Click a line, or press its key, for the next option.', ...CH.map((c) => `[${c.key}]  ${c.name}: ${c.opts[c.at][0].toUpperCase()} (${c.opts[c.at][1]})${c.at === BUILT[CH.indexOf(c)] ? '  · built' : ''}   — ${c.at + 1} of ${c.opts.length}`), `[K] layer: ${['Found', 'Inferred', 'Imagined'][layTo] || 'held at ' + layTo}   [U] [I] year: ${yearTo} BCE (four buildings are dated here, by dice)`]
       .map((t, i) => { const d = document.createElement('div'); d.textContent = t; if (i > 0 && i <= CH.length) { d.style.cursor = 'pointer'; d.onclick = () => pick(i - 1); } else d.style.opacity = i ? 1 : 0.7; return d; }));
-    panel.style.display = menu ? 'none' : '';
+    panel.style.display = menu || dev.quiet ? 'none' : ''; // (dev.quiet = 1 hides the panel, for a clean picture)
   };
   setInterval(paint, 400);
   // four buildings with years of their own, for the development build only: [building's number, first year, last year] (BCE)
@@ -51,12 +51,13 @@
     info.textContent = `Fly-through ${W}x${H}, ${f.n} frames\nframe  ${fm(f)}\nGPU    ${nGpu ? fm(st(logGpu, nGpu)) : 'timestamp-query unavailable'}`;
   };
   // ---- timing: every frame's length and the GPU's time for it (the engine's own timestamp queries), into two fixed arrays
-  const TN = 1 << 15, tF = new Float32Array(TN), tG = new Float32Array(TN); let tn = -1, tEnd = 0, tTo = -1, tLast = 0, tDone = null, held = 0;
+  const TN = 1 << 15, tF = new Float32Array(TN), tG = new Float32Array(TN), tL = new Float32Array(TN); let tn = -1, tEnd = 0, tTo = -1, tLast = 0, tDone = null, held = 0;
   const tStat = () => {
     const n = tn, f = Array.from(tF.subarray(0, n)), g = Array.from(tG.subarray(0, n)).sort((a, b) => a - b), sum = (a) => a.reduce((p, q) => p + q, 0);
     // the lowest frame rate over any half second: the frames that ended in it
     let low = 1e9; for (let i = 0, j = 0, w = 0; i < n; i++) { w += f[i]; while (w - f[j] >= 500) w -= f[j++]; if (w >= 500) low = min(low, (i - j + 1) * 1000 / w); }
-    return { frames: n, seconds: +(sum(f) / 1000).toFixed(2), fps: +(n * 1000 / sum(f)).toFixed(1), fpsLowestHalfSecond: low > 1e8 ? null : +low.toFixed(1), slowestFrameMs: +Math.max(...f).toFixed(1), gpuMs: +(sum(g) / n).toFixed(2), gpuP95Ms: +g[min(n - 1, floor(n * 0.95))].toFixed(2), gpuMaxMs: +g[n - 1].toFixed(2), res: `${W}x${H}` };
+    let w = 0; for (let i = 1; i < n; i++) if (f[i] > f[w]) w = i;
+    return { frames: n, slowestFrameAtSeconds: +(sum(f.slice(0, w)) / 1000).toFixed(2), layerThen: +tL[w].toFixed(3), framesOver25Ms: f.filter((v) => v > 25).length, seconds: +(sum(f) / 1000).toFixed(2), fps: +(n * 1000 / sum(f)).toFixed(1), fpsLowestHalfSecond: low > 1e8 ? null : +low.toFixed(1), slowestFrameMs: +Math.max(...f).toFixed(1), gpuMs: +(sum(g) / n).toFixed(2), gpuP95Ms: +g[min(n - 1, floor(n * 0.95))].toFixed(2), gpuMaxMs: +g[n - 1].toFixed(2), res: `${W}x${H}` };
   };
   const time = (ms = 3000, settle = 700) => new Promise((done) => setTimeout(() => { tn = 0; tTo = -1; tEnd = performance.now() + ms; tLast = 0; tDone = done; }, settle));
   const change = (to) => new Promise((done) => { setLayer(to); tn = 0; tTo = to; tEnd = 0; tLast = 0; tDone = done; });
@@ -66,7 +67,7 @@
     if (held) dynT = -Infinity;
     if (tn >= 0) {
       const now = performance.now();
-      if (tLast && tn < TN) { tF[tn] = now - tLast; tG[tn++] = F[GPU]; }
+      if (tLast && tn < TN) { tF[tn] = now - tLast; tL[tn] = F[LAY]; tG[tn++] = F[GPU]; }
       tLast = now;
       if (tTo >= 0 && !tEnd && F[LAY] === tTo && !fading) tEnd = now + 300; // (a little past the end, for the last shadow map)
       if (tEnd && now > tEnd) { const r = tStat(); tn = -1; tDone(r); }
