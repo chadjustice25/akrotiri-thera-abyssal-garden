@@ -9,6 +9,10 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 - **From Uruk: grade evidence by its distance in time, not only by whether it exists.** State how far each piece of evidence is from the target moment. A text or image made centuries later is grade C, even when it is famous.
 - **From Uruk and unghost: reports carry errors that only a check against the sources catches.** Nothing from a report is adopted until its claim is checked (`docs/research/verification/`).
 
+## Planning for headsets (2026-11-20)
+- **A search's summary is not the maker's page.** The first check of headset browsers said none could draw WebGPU in WebXR without flags. Apple had shipped it eleven months earlier, and Meta listed it a week before the check. Both were found the same day by reading WebKit's post and Meta's release list. A fact about what a product can do goes into a plan only from the maker's own page, with the date it was read, and anything seen only in a summary is marked as that.
+- **A recommendation to buy something says what was checked, what was not, and that nothing was tried.** The headset table in `docs/ARCHITECTURE.md` §12 marks each price and claim that way.
+
 ## Work order 003, the measuring spike (2026-11-19)
 - **Measure before the design is fixed.** One short order found that the later island costs twice the estimate, that the town's vertices carry no building number (the review and the order both said they did), and that showing less of the town is not cheaper.
 - **A shader that may discard costs even when it discards nothing.** The GPU loses its own hidden-surface removal. Keep an opaque pipeline for when nothing is fading.
@@ -19,7 +23,7 @@ Durable lessons for this project, newest first. Only Chad's session edits this f
 - **Put a choice to Chad as one small chooser, not a gallery** (Chad, 2026-11-20). Name each option in plain words, define it in a sentence, show options that combine in every combination he could pick, and put the cost and the drawback beside each. The spike published dozens of pictures and still had no number for one of the two pairings he was choosing between, the wave with the pixel dither.
 - **When two options cost the same, say so.** The integrator's summary called the coverage dither the costliest. It and the pixel dither differ by less than the noise, and Chad had to ask.
 - **Say what an effect shows and what it does not.** The wave spreads by distance from the excavated centre. Chad read it as showing how the site was excavated, which it does not. A viewer will take a good-looking effect as a claim about the past unless the page says otherwise, so each such effect is written down as a liberty.
-- **Check what a browser can do before planning on it.** Asked to plan for headsets and augmented reality, a search found that WebXR cannot yet draw with WebGPU without flags, and that iPads have no WebXR at all. The plan starts from what works today.
+- **Check what a browser can do before planning on it.** Asked to plan for headsets and augmented reality, a search found that WebXR cannot yet draw with WebGPU without flags, and that iPads have no WebXR at all. The plan starts from what works today. (The first finding was out of date: see "Planning for headsets" above.)
 
 ## The architecture review (2026-11-19)
 - **Check a statement about the engine against the source before it goes into a record.** A first draft of `docs/ARCHITECTURE.md` said the ground was one fixed mesh and proposed nested grids as an improvement. The ground has been nested grids over baked height maps since work order 001. The session was working from its memory of earlier work, not from the code; one `grep` showed the truth.

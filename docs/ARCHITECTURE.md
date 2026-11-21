@@ -202,8 +202,9 @@ Augmented and virtual use (D43) runs beside this list, in the steps §12 gives: 
 | 4 | Whether to study Formosa Forest's source and credit what is learned | Yes |
 | 5 | Which way a layer fades (§11) | Decided: a per-pixel dither that spreads as a wave from the excavated centre (D41) |
 | 6 | How coarsely the later island is stored | Decide when the end of the town is planned: heights to 2 m, or a grid of 80 m cells |
-| 7 | Whether Found should appear in the order the site was dug (O22) | Yes, after a research lane on the history of the excavation |
-| 8 | Which device and which use come first for augmented and virtual use (O23, §12) | Standpoints first; then a headset spike on a device Chad has; augmented reality last |
+| 7 | Whether Found should appear in the order the site was dug (O22) | Decided: yes, once research lane T8 on the history of the excavation is in and checked (D44) |
+| 8 | Which device and which use come first for augmented and virtual use (O23, §12) | Standpoints first; a headset spike once Chad has a headset (the integrator's pick is a Meta Quest 3, §12); augmented reality last |
+| 9 | Whether the viewer can also move through the dig's own years (O24) | Decide when the T8 report has been checked |
 
 ## 10. What this kind of work is called
 
@@ -258,7 +259,7 @@ Any of them can also **spread as a wave** from the excavated centre, at about ha
 
 Added on 2026-11-20. Chad: "One of the top goals of this project is to help citizen scientists and scientists understand the information at the actual archaeological sites", and "I can see people using this in an augmented and virtual way so let's make sure that is in the plan."
 
-**Nothing here is built or measured.** The facts about browsers were checked by web search on 2026-11-20, from release notes, a draft specification and forum posts. They change quickly: check them again before any order is written.
+**Nothing here is built or measured.** The facts about browsers were checked twice on 2026-11-20. The first check rested on a search's summaries and was out of date on the main point. The second read Apple's and Meta's own pages, and "What browsers can do today" below is the corrected text. They change quickly: check them again, at the makers' pages, before any order is written.
 
 ### Three uses, simplest first
 
@@ -272,11 +273,36 @@ The layers suit augmented reality: on site, Found is what the visitor sees with 
 
 ### What browsers can do today
 
-- **The page draws with WebGPU, and WebXR was made for WebGL.** WebXR is the browser's interface to headsets and augmented reality. The part that joins it to WebGPU is still a draft ([WebXR/WebGPU Binding](https://immersive-web.github.io/WebXR-WebGPU-Binding/)). Chrome has had it for testing on Windows and Android since version 135 ([Chrome's notes](https://developer.chrome.com/blog/new-in-webgpu-135)), and Meta's Quest Browser lists it as experimental ([release 146](https://developers.meta.com/horizon/downloads/package/browser/146.0/)). In both it is behind flags that a visitor would have to switch on.
-- **Safari has no WebXR on iPad, iPhone or Mac** ([WebKit's tracking bug](https://webkit.org/b/208988)). On the Vision Pro it supports virtual reality sessions and not augmented ones ([Apple's developer forum](https://developer.apple.com/forums/thread/743655)). Whether it can show WebGPU there was not confirmed.
+- **The page draws with WebGPU, and WebXR was made for WebGL.** WebXR is the browser's interface to headsets and augmented reality. The part that joins it to WebGPU is still a draft ([WebXR/WebGPU Binding](https://immersive-web.github.io/WebXR-WebGPU-Binding/)), but two headsets' browsers now carry it.
+  - **Apple Vision Pro.** "Now with Safari 26.2 on visionOS, WebXR supports WebGPU" ([WebKit's own post, 12 December 2025](https://webkit.org/blog/17640/webkit-features-for-safari-26-2/), read on 2026-11-20). The post names no flag and no limit. It does not say which kinds of session.
+  - **Meta Quest.** Quest Browser 156.0, of 13 November 2026, "added WebGPU in WebXR" ([Meta's release notes](https://developers.meta.com/horizon/documentation/web/browser-release-notes/), read on 2026-11-20; the page says its descriptions are summarised by AI). Earlier entries call their WebGPU features experimental, and this one does not. The page does not say whether a flag is still needed. On version 154, in October, one developer's test still needed the experimental flags ([the test](https://github.com/Mandalorian007/quest-webgpu-webxr-experiment), seen only in a search's summary).
+  - **Chrome on Windows and Android**, which Samsung's Galaxy XR runs: for testing since version 135 ([Chrome's notes](https://developer.chrome.com/blog/new-in-webgpu-135)), and still called experimental in May 2026 ([a three.js issue](https://github.com/mrdoob/three.js/issues/32858), seen only in a search's summary). Nothing later was found.
+- **Safari has no WebXR on iPad, iPhone or Mac** ([WebKit's tracking bug](https://webkit.org/b/208988)). On the Vision Pro, whether it offers augmented sessions is not settled: Apple's developer forum says it does not ([the thread](https://developer.apple.com/forums/thread/743655)), and later guides found by search say it does in part.
 - **Chrome on Android offers augmented reality** through ARCore ([Google's comparison](https://developers.google.com/ar/develop/webxr/arcore-comparison)), for pages that draw with WebGL.
 
-So today no ordinary visitor can open this page in a headset, and an iPad cannot do augmented reality in a browser at all. Standpoints work wherever the page already works.
+So a headset's browser no longer stands in the way of the virtual use. By their makers' own notes a Vision Pro can show a WebGPU page in WebXR, and a Quest can since November 2026, perhaps still behind a flag. Nobody on this project has tried either, and the page has no code that starts a session. An iPad still cannot do augmented reality in a browser at all. Standpoints work wherever the page already works.
+
+### Which headset
+
+Chad asked on 2026-11-20, having none: which one to buy, so that it suits the augmented and virtual devices coming to market. Prices and dates below are from news and shop pages, seen through a search's summaries on that day and not opened one by one. Only the two browser facts above were read at the maker's page. No device has been tried.
+
+| Headset | Price in the US | A WebGPU page in its browser | For this project |
+|---|---|---|---|
+| **Meta Quest 3** | $599.99 with 512 GB, since a rise in April 2026 ([Forbes](https://www.forbes.com/sites/andrewwilliams/2026/04/17/meta-quest-3-hit-with-100-price-increase/)) | Listed as added in Browser 156 | The integrator's pick |
+| Meta Quest 3S | $349.99 or $449.99 | The same browser | Cheaper; a coarser screen and lenses (general knowledge, not checked) |
+| Apple Vision Pro | $3,699, since a rise in June 2026 ([UploadVR](https://www.uploadvr.com/apple-raises-the-price-of-most-products-including-vision-pro/)) | Yes, since Safari 26.2 | The best picture by report; six times the price; few visitors will own one |
+| Samsung Galaxy XR | about $1,800 ([Road to VR](https://roadtovr.com/samsung-galaxy-xr-headset-price-specs-release-date/)) | Chrome with WebXR; WebGPU in it not confirmed past "experimental" | Wait |
+| Valve Steam Frame | $1,059 or $1,299 | One review: "seemingly no WebXR support yet" ([Road to VR](https://roadtovr.com/valve-steam-frame-review/)) | No |
+| Meta VR Glasses | $1,299.99, announced for spring 2027 ([a report of Meta's Connect 2026](https://vr.org/meta-connect-2026)) | Reported to run the Quest's system | The one to watch |
+
+**The integrator's opinion: a Meta Quest 3.**
+- It is the cheapest headset whose browser is listed as able to show this page.
+- By general report it is the headset most people own, so it is the one most visitors would bring. No sales figure was checked.
+- Its browser has offered passthrough augmented sessions for years (the integrator's knowledge, not checked on that day), so one device can try both the virtual and the augmented use.
+- Meta's next device is reported to run the same system, so work tried on a Quest 3 should carry over. A Quest 4 is not reported before late 2027 ([a report of leaked plans](https://the-gadgeteer.com/2026/05/21/meta-quest-4-leak/)), and no new Vision Pro before late 2028 ([MacRumors](https://www.macrumors.com/roundup/apple-vision-pro/)).
+- Nobody can say which maker's devices will lead. The page's protection is that it is built on web standards and not for one headset; a $600 device to test with keeps the larger purchase for when the devices of 2027 can be compared.
+
+No headset suits the dig itself: the on-site use is a tablet or phone at a standpoint.
 
 ### What it asks of the engine now
 
@@ -300,7 +326,7 @@ These cost little while things are being built and a great deal afterwards. From
 
 1. Keep the six points above in every order, starting with 004.
 2. **Standpoints**, as a small order once the layers and the date are in. They serve D42 on the devices people already carry.
-3. **A measuring spike for a headset**, as work order 003 was for the layers: two eyes in the development build, on a real device, with numbers.
+3. **A measuring spike for a headset**, as work order 003 was for the layers: two eyes in the development build, on a real device, with numbers. Its first question is whether the device's browser shows the page at all without a flag. It can follow work order 004 as soon as a headset is at hand.
 4. **Augmented reality**, after the excavation's survey and the labels.
 
 Which device, and which use first, is O23.

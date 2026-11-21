@@ -33,6 +33,16 @@ Added 2026-11-18. **The step-by-step runbook is `RUNBOOK-003-plants.md`**, and t
 
 They follow lane T3 and its check, share its source rules and report format word for word, and add one line to the grades: a plant shown only in the art of another Aegean place is grade C for Thera. T3b and T3d are under 7 KB; T3c, changed on 2026-11-19 to ask for the whole year (D33), is 7.3 KB.
 
+## The history of the excavation (D44)
+
+Added 2026-11-20. One lane, in its own chat; it can run beside the plant lanes. The Research Desk lists it under "Now: the history of the dig".
+
+| Lane | Prompt | Save the report as | What it settles |
+|---|---|---|---|
+| **T8** The history of the excavation at Akrotiri | `prompts/T8-excavation-history.md` | `neon/T8_Neon.md` | Which building, street and square was uncovered when, so that the Found layer can appear in the order of the dig; the shelters and the visitor route; when the best-known finds came to light |
+
+Its claims are about a modern excavation, not about the Bronze Age. So its grades are read by how close a source stands to the season it describes (A: the excavators' own report of that season; B: a later account by the excavation, or a study that cites the reports; C: second-hand), rule 3 reads "begun is not finished", and Section 3 of its report is two tables of the dig. Everything else is word for word as in the other lanes. That reading of the grades is the integrator's, and Chad confirms or changes it when the report is checked. It is 7.9 kB below its line.
+
 ## Steps (Chad), for each lane
 
 1. Open the lane's prompt file in any editor and copy everything **below the `---` line**.
