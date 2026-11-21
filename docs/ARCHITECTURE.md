@@ -14,6 +14,8 @@ A review, written on 2026-11-19 at Chad's request and corrected on 2026-11-20 fr
 
 Still to come, as before: plants, the harbour and ships, people and animals, interiors and wall paintings, labels for what was found, and other places.
 
+Added on 2026-11-20: the world is also to be usable on the real site and in a headset (D42, D43). §12 says what that asks of the engine.
+
 Chad's four words for the result: **high performing, efficient, small and fluid.**
 
 ## 2. Where the engine stands (measured)
@@ -186,7 +188,9 @@ These are standard methods, described here as they would be built for Thera. Not
 4. **The sky and the calendar**, after its own research lane.
 5. **The end of the town**, from lane T7.
 
-Then the harbour and ships, people and animals, interiors, and labels.
+Then the harbour and ships, people and animals, interiors, and labels. Labels matter more since D42: they are how a viewer finds out how each thing is known.
+
+Augmented and virtual use (D43) runs beside this list, in the steps §12 gives: standpoints once the layers and the date are in, then a measuring spike for a headset, then augmented reality.
 
 ## 9. Decisions this needs from Chad
 
@@ -196,8 +200,10 @@ Then the harbour and ships, people and animals, interiors, and labels.
 | 2 | Whether the layers and time are built first (O14) | Decided: yes, as work order 004, after the measuring spike (D39) |
 | 3 | Which iPad is the slowest device the world must run well on | The one used in the touch test, until a slower one matters |
 | 4 | Whether to study Formosa Forest's source and credit what is learned | Yes |
-| 5 | Which way a layer fades (§11) | Decided: a dither that spreads as a wave from the excavated centre (D41) |
+| 5 | Which way a layer fades (§11) | Decided: a per-pixel dither that spreads as a wave from the excavated centre (D41) |
 | 6 | How coarsely the later island is stored | Decide when the end of the town is planned: heights to 2 m, or a grid of 80 m cells |
+| 7 | Whether Found should appear in the order the site was dug (O22) | Yes, after a research lane on the history of the excavation |
+| 8 | Which device and which use come first for augmented and virtual use (O23, §12) | Standpoints first; then a headset spike on a device Chad has; augmented reality last |
 
 ## 10. What this kind of work is called
 
@@ -211,6 +217,8 @@ There is no single name. Four names each cover part of it. They were checked by 
 | **Virtual archaeology; procedural modelling; 4D reconstruction** | What this project adds: reconstruction of the past by rule, with its evidence shown, and soon in time as well as space | The [London Charter](https://www.londoncharter.org/) and the [Seville Principles](https://vwhl.luddy.indiana.edu/sevillePrinciples/index.html); [Müller and others, 2006](https://peterwonka.net/Publications/pdfs/2006.VAST.Mueller.Xkipche.pdf), who rebuilt Maya buildings at Xkipché from a shape grammar |
 
 In one line: **a procedural, real-time 4D reconstruction in virtual archaeology, built in the demoscene's single-file tradition.**
+
+A fifth name, added on 2026-11-20 with the project's goal (D42): **virtual heritage**, the wider field that applies computing to cultural heritage, of which virtual archaeology is a part. It has no single agreed definition. Reconstructions shown on site in augmented reality are one of its common uses ([Virtual heritage](https://en.wikipedia.org/wiki/Virtual_heritage), Wikipedia; [Champion, *Virtual Heritage: A Guide*, 2021](https://library.oapen.org/handle/20.500.12657/53516)). Checked by web search, not against the texts.
 
 ## 11. What the measuring spike found (work order 003)
 
@@ -228,9 +236,9 @@ The full report is `docs/spike/003-measurements.md`. Its pictures are in the pri
 | Two islands blended by the year (§4.3) | Holds for speed; costs 133 MB of GPU memory on High |
 | The sky, time as data, seasons (§4.4–4.6) | Not tested |
 
-**Five ways of fading were built.** Chad chose the dither, spreading as a wave (D41): the coverage dither on High and Medium, the pixel dither on Low.
+**Five ways of fading were built.** Chad chose the pixel dither, spreading as a wave (D41), on every detail level.
 - **Coverage dither:** reads as clear glass. Low detail cannot use it, because it has one sample a pixel.
-- **Pixel dither:** a fine diagonal screen shows over whatever is fading. Its cost and the coverage dither's are the same within the noise, and both cost more than the rises.
+- **Pixel dither (chosen):** a fine diagonal screen shows over whatever is fading. Its cost and the coverage dither's are the same within the noise, and both cost more than the rises. It has not been seen in a headset (§12).
 - **Surface dither:** coarse, and it shimmers nearly five times as much. Not to be used.
 - **Clipped rise:** the houses show as hollow shells, open at the top.
 - **Lidded rise:** a low solid town growing storey by storey. It is the cheapest and does not shimmer.
@@ -245,3 +253,54 @@ Any of them can also **spread as a wave** from the excavated centre, at about ha
 5. Watch the texture limit: the ground's shader is at 14 of 16.
 6. Lift the ideas from the spike's code, and do not merge that code into the engine: it was written to stay out of it.
 7. Take a reading on an iPad, with the Stats button, before the design is fixed.
+
+## 12. Augmented and virtual use (D42, D43)
+
+Added on 2026-11-20. Chad: "One of the top goals of this project is to help citizen scientists and scientists understand the information at the actual archaeological sites", and "I can see people using this in an augmented and virtual way so let's make sure that is in the plan."
+
+**Nothing here is built or measured.** The facts about browsers were checked by web search on 2026-11-20, from release notes, a draft specification and forum posts. They change quickly: check them again before any order is written.
+
+### Three uses, simplest first
+
+| Use | What the viewer does | What it needs |
+|---|---|---|
+| **Standpoints** | Stands at a marked place on the real site, opens the page there on a tablet or phone, and sees the same place in 1628 BCE. Turning the device can turn the view | No new browser feature. A link that opens the page at a place, a layer and a date; the real site's visitor route, from a source; the device's motion sensors for turning |
+| **Virtual reality** | Wears a headset and stands in the town at true scale, or looks down on the island as a model | WebXR drawing with WebGPU; two eyes at 72–90 frames a second; a menu inside the world |
+| **Augmented reality** | Sees the reconstruction laid over the real ruins, or set on a table as a model | WebXR's augmented mode, or a native app; the town placed on the real walls to within centimetres; the real scene hiding what stands behind it |
+
+The layers suit augmented reality: on site, Found is what the visitor sees with their own eyes, and Inferred and Imagined are what the device adds.
+
+### What browsers can do today
+
+- **The page draws with WebGPU, and WebXR was made for WebGL.** WebXR is the browser's interface to headsets and augmented reality. The part that joins it to WebGPU is still a draft ([WebXR/WebGPU Binding](https://immersive-web.github.io/WebXR-WebGPU-Binding/)). Chrome has had it for testing on Windows and Android since version 135 ([Chrome's notes](https://developer.chrome.com/blog/new-in-webgpu-135)), and Meta's Quest Browser lists it as experimental ([release 146](https://developers.meta.com/horizon/downloads/package/browser/146.0/)). In both it is behind flags that a visitor would have to switch on.
+- **Safari has no WebXR on iPad, iPhone or Mac** ([WebKit's tracking bug](https://webkit.org/b/208988)). On the Vision Pro it supports virtual reality sessions and not augmented ones ([Apple's developer forum](https://developer.apple.com/forums/thread/743655)). Whether it can show WebGPU there was not confirmed.
+- **Chrome on Android offers augmented reality** through ARCore ([Google's comparison](https://developers.google.com/ar/develop/webxr/arcore-comparison)), for pages that draw with WebGL.
+
+So today no ordinary visitor can open this page in a headset, and an iPad cannot do augmented reality in a browser at all. Standpoints work wherever the page already works.
+
+### What it asks of the engine now
+
+These cost little while things are being built and a great deal afterwards. From work order 004 on, every order keeps them.
+
+1. **True scale and true place.** The world is in metres, x east and z south, with its origin at 36.405° N, 25.405° E (`source/src/world.js`). That stays.
+2. **One camera, read by every drawing pass.** A headset draws each frame once for each eye. Passes that do not depend on the eye (the shadow maps, the baked ground, the placing of things) run once. The rest take a view and a projection, and can run twice.
+3. **Nothing that works only on a flat screen, without a note.** An effect worked out from a pixel's place on the screen has to be thought through for two eyes: the dither of a fade (D41), light shafts, haze, the resolution scaler. The pixel dither has not been seen in a headset, where each eye gets its own pattern and it may sparkle.
+4. **Controls that can be called without the menu.** The page's menu cannot be seen inside a headset. The layer, the date, the year and the viewpoints are set by plain functions that any kind of input can call.
+5. **A town that can be drawn without its surroundings.** Augmented reality shows the town's layers over the real scene: no sky and no sea, the land as an unseen shape that hides what is behind it, and the sun at the real hour. The date control of work order 004 gives the last.
+6. **A frame budget far below today's.** Two eyes at 72–90 frames a second on a headset's chip is several times the work of one view at 60 on this Mac. A detail level below Low will probably be needed. This is a guess.
+
+### What stands in the way
+
+- **Placing the town on the real walls.** The plan was traced from a published map and placed on the centre of the modern shelter, measured from OpenStreetMap (D22). How far that is from the truth is not known, and augmented reality needs centimetres. The excavation's own survey would settle it (O8).
+- **Finding the viewer under the shelter.** The site is roofed, and a device's sense of its own position is usually poor indoors. That is general knowledge, not checked for this site. The viewer would be placed by a standpoint they choose, or by markers.
+- **The visitor route is modern data the project does not hold.** It needs a source like anything else.
+- **Size.** WebXR needs no library, so the one-file law holds. A guess: a few kB for a headset session, and less for standpoints.
+
+### Order
+
+1. Keep the six points above in every order, starting with 004.
+2. **Standpoints**, as a small order once the layers and the date are in. They serve D42 on the devices people already carry.
+3. **A measuring spike for a headset**, as work order 003 was for the layers: two eyes in the development build, on a real device, with numbers.
+4. **Augmented reality**, after the excavation's survey and the labels.
+
+Which device, and which use first, is O23.

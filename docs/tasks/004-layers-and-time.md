@@ -100,7 +100,8 @@ The world a viewer meets on opening the page looks as it does on `main`, except 
 | D29 | Edit E4 is to add at least 14.4 km³, and towards 17.1 km³ as far as the sourced outline of the bay and the 260 m rim allow |
 | D31, D38 | Three cumulative layers. **Found:** "Only what was dug up, where it was found". **Inferred:** "Adds what the evidence points to". **Imagined:** "Adds what brings the place to life". The land is drawn in every layer, and in Found a colour with no source is drawn plain |
 | D33, D34, D36, D37 | The viewer can move the date and, later, the year. The world opens in late May of 1628 BCE |
-| D41 | A layer fades as a dither that spreads as a wave from the excavated centre: the dither on the samples in a pixel ("coverage") on High and Medium detail, the per-pixel dither on Low |
+| D41 | A layer fades as a per-pixel dither that spreads as a wave from the excavated centre, the same on every detail level |
+| D42, D43 | The project is for citizen scientists and scientists at the real sites, and augmented and virtual use is planned. Every order keeps the door open for it: "Keep the door open" below |
 | O20 | **(leaning)** The menu gets a layer control and a date control. The year gets no control until something in the world is dated |
 | O21 | **(leaning)** What each layer shows today, and which layer the world opens in: the table in Part B |
 
@@ -176,7 +177,7 @@ E4 adds 13.16 km³ today. The source's range is 9.1–17.1 km³; its authors pre
 - **One visibility function** in every shader stage: `vis(layer, years, days)`, as §9 point 12 of the spike's report. The layer value moves smoothly between 0 (Found) and 2 (Imagined).
 - **Every corner of the town carries its building's number**, in the 32 bytes it already has, and a small table holds each building's layer, its turn in the wave, and the first and last year it stands for.
 - **The wave** starts at the excavated centre and moves outward. Colour comes to the land and to the excavated buildings in the same movement as the houses appear, and the paving and street shade arrive with their houses, not ahead of them: the town's plan map has to carry each place's turn. Going down a layer is the same movement in reverse.
-- **The dither** is on the samples in a pixel on High and Medium, and per pixel on Low. Never a dither fixed to the surface.
+- **The dither** is per pixel, on High, Medium and Low alike. Chad chose it knowing that it shows a fine screen over what is fading. Not the dither on the samples in a pixel, and never a dither fixed to the surface.
 - **Two pipelines:** an opaque one whenever nothing is fading, and one that may discard for the frames of a fade. At rest the layers must cost nothing measurable.
 - **Shadows follow** through the same pattern. The spike saw the pattern as dots on the ground at a low share from far off (`m1-v9-wave-coverage-50`): look for it, and soften it if it shows.
 - **A change can be interrupted.** Choosing another layer in the middle of a fade turns the movement round from where it is, with no jump.
@@ -203,6 +204,15 @@ E4 adds 13.16 km³ today. The source's range is 9.1–17.1 km³; its authors pre
 - A **Date** row in the menu that works with a finger, and two keys that step it back and forward. If the menu has room, mark the two solstices and the two equinoxes.
 - **The year:** the same uniform block carries the year, and every building's row holds a first and last year, set to the whole span. Nothing is dated, so the released page has no year control. In the development build only, date a few buildings and move the year with a key, to show that the plumbing works.
 
+### Keep the door open (D43)
+
+The world is to be used on the real site and in a headset later (`docs/ARCHITECTURE.md` §12). **Build none of it here:** no WebXR, no camera, no motion sensors. Keep four things true, and say in the Result where any could not be:
+
+- **One camera.** New shader code takes its view and projection from the engine's one camera block. Nothing new assumes a single eye, the shape of the canvas, or that the sky and the land are always drawn.
+- **Flat-screen effects are named.** The pixel dither reads the pixel's place on the screen. Keep that in one place in the shader text, and list in `docs/layers/README.md` every effect you add or touch that is worked out from the screen.
+- **Controls are functions.** The layer and the date are set by plain functions that the menu and the keys call, so that another kind of input can call them later.
+- **True scale and place stay.** Nothing moves the world's origin or its metres.
+
 ### Choices for Chad: one small chooser, not a gallery
 
 Chad asked for this after work order 003 (2026-11-20): fewer tests and views, and "a more understandable interface with design choices clearly defined".
@@ -219,7 +229,7 @@ Chad asked for this after work order 003 (2026-11-20): fewer tests and views, an
 
 Write `docs/layers/README.md`: what each layer shows and why; how a thing gets its layer; how the fade, the wave and the date work, in a page; every new liberty, with its reason; and the measurements below. Three liberties are known already, and the integrator writes them into the standard from your Result:
 - the excavated buildings stand whole in Found, though their upper storeys, roofs and openings were not all found;
-- the wave runs outward from the excavated centre as a way of showing, and is not a claim about the order in which the town was built or dug;
+- the wave runs outward from the excavated centre by distance, as a way of showing. It is not the order in which the site was dug, and not a claim about how the town was built (O22 asks whether a later order should follow the true order of the excavation);
 - the sun's even pace through the year.
 
 ## Measure
@@ -264,6 +274,8 @@ If a part cannot be done inside its limits, **stop and report** instead of worki
 - Drawing the excavated buildings as ruins.
 - Any change to the town's plan, its rules or its look in the opening layer.
 - A fallback for slower devices.
+- Anything for augmented or virtual reality beyond "Keep the door open".
+- The order in which the site was excavated (O22).
 
 ## Result
 (To be filled in by the worker's report and the integrator.)

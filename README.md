@@ -4,7 +4,9 @@
 
 **Status:** the island's land, sea, sky and light are in (work order 001), and so is the town at Akrotiri, from the outside (work order 002). There is no plant, animal or person yet: the ground is bare and the town is empty. Open [`index.html`](index.html) in Chrome or Edge on a computer.
 
-**What kind of thing this is:** a procedural, real-time reconstruction in virtual archaeology, built in the demoscene's single-file tradition.
+**Who it is for:** citizen scientists and scientists, first of all. One of the project's top goals is to help people understand what is at the real archaeological sites: what was found, what is inferred from it, and how each thing is known. It is planned to be usable on the site itself and in a headset as well as on a screen. None of that is built yet; the plan is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), §12.
+
+**What kind of thing this is:** a procedural, real-time reconstruction in virtual archaeology, built in the demoscene's single-file tradition. The wider field is often called virtual heritage.
 
 - **Procedural:** the world is worked out by code, from rules and measured data, not stored as images and models.
 - **Demoscene:** the tradition of fitting whole worlds into tiny programs. Its best-known example is [.kkrieger](https://www.guinnessworldrecords.com/world-records/421923-fewest-bytes-for-a-first-person-shooter-fps-videogame) (2004), a 3D shooter in 96 kB. Abyssal Garden is that idea in a browser: one HTML file, drawn live with WebGPU.

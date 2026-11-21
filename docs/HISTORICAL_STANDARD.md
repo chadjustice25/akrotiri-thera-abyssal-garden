@@ -106,6 +106,8 @@ How the world shows what is known and what is added (D31, D38), and how it moves
 ## 8. Where this standard sits in the field
 A note, not a rule (D40). It names the standards that virtual archaeology already has, so that this one can be read against them. The facts below were checked by web search on 2026-11-19, not against the primary texts.
 
+**Who the work is for (D42):** citizen scientists and scientists. One of the project's top goals is to help them understand what is at the real archaeological sites. So the test of this standard is practical: a viewer, on a screen or standing at the site, must be able to tell what was found from what was added, and to find out how each thing is known.
+
 - **The London Charter** for the computer-based visualisation of cultural heritage (<https://www.londoncharter.org/>) asks for "intellectual transparency": a reconstruction must let its users see how it was arrived at.
 - **The Seville Principles** (the International Principles of Virtual Archaeology; written in 2011, ratified by ICOMOS in 2017) build on the Charter. Their principles include interdisciplinarity, authenticity, historical rigour and scientific transparency.
 - **Paradata** is the field's word for the record of how interpretive choices were made (the term was proposed by Drew Baker).

@@ -37,7 +37,9 @@ As of 2026-11-20, after work order 003 (the measuring spike) was merged and push
   - Every Gemini Deep Research prompt ends by asking for the report to be saved to the Google Drive folder `Thera Research` (D35), first tried on the rerun of T3c.
   - The world is shown in three cumulative layers (found; what the evidence points to; what is there for the experience), and changing layer fades things in and out without a reload or a pause (D31, closes O12).
 - **Decided on 2026-11-20:**
-  - A layer fades as a dither that spreads as a wave from the excavated centre: the coverage dither on High and Medium detail, the per-pixel dither on Low (D41, closes O19). Chad: it "shows the beauty of archaeology field work".
+  - A layer fades as a per-pixel dither that spreads as a wave from the excavated centre, the same on every detail level (D41, closes O19). Chad: it "shows the beauty of archaeology field work". The wave runs by distance; it does not follow the order of the dig (O22).
+  - One of the project's top goals is to help citizen scientists and scientists understand what is at the real archaeological sites (D42). Labels for what was found (D25) matter more for it.
+  - Augmented and virtual use is in the plan: standpoints on the real site, a headset, and augmented reality (D43; `docs/ARCHITECTURE.md` §12). Nothing is built. Every order from 004 on keeps the door open.
   - Chad asked that a design choice be put to him as one clear chooser with each option defined, not as a large gallery of tests and views (`LESSONS.md`). Work order 004 asks its worker for that.
 - **Research:** X1, T1, T1b, T1c, T2, T2b and T3–T7 are in `docs/research/claude/`, each checked in `docs/research/verification/`. T1c is applied to the terrain; T2 and T2b to the town.
 - **Two kinds of data in the page are not MIT.**
@@ -68,12 +70,15 @@ As of 2026-11-20, after work order 003 (the measuring spike) was merged and push
    - **D21, the Copernicus licence questions.** A fresh draft of the message, not sent, is in `docs/terrain/message-to-copernicus.md`, with where to send it. Chad is looking into it (2026-11-19). Rebuilding the land from NASA's NASADEM stays the fallback.
    - **O8, the excavation and the book.** A draft letter to the Akrotiri Excavations, not sent, is in `docs/town/letter-to-the-excavation.md`. Palyvou 2005 is not in Chad's library and can be bought; the same file says where. Chad decides on the letter this weekend.
    - **O5, the layout for several places.** Left open by Chad until a second place is chosen.
+   - **O22, the order of the excavation.** Whether the Found layer should appear in the order the site was dug. The leaning is yes, after a research lane on the excavation's history; no prompt is written yet.
+   - **O23, augmented and virtual use.** Which device Chad has for a headset trial, and which use comes first. The leaning is standpoints first.
    - **Still open from the T1c check:** no thickness map of the eruption deposits could be opened (liberty T-L1), and the Mavro Rachidi cores, the best local test of the sea level (T-L13), are not yet dated.
 4. **Later orders, in the order suggested on 2026-11-18** (none is planned yet):
    - **The harbour, the old shore and ships.** It needs research first. The one published sketch of the old shore (T2b#61) disagrees with the terrain's coast (T-L14); `docs/town/README.md` §3 records it.
    - **People and animals** (lanes T4 and T3).
    - **Interiors and wall paintings** (lane T6; image rights, D6). The size budget is the first hard decision here: the page is 166 kB of 256 kB (D11, D17).
-   - **Marking and labelling what has been found** (D25).
+   - **Marking and labelling what has been found** (D25). Since D42 this is central: it is how a viewer finds out how each thing is known. Consider moving it up the order.
+   - **Standpoints, a headset, augmented reality** (D43; `docs/ARCHITECTURE.md` §12), in that order. Checked by web search on 2026-11-20: a browser cannot yet show a WebGPU page in a headset without experimental flags, and Safari on iPad and iPhone has no WebXR. Standpoints need neither.
    - **A second pass on the town**, when the book or the excavation's plan arrives. It would close liberties A-L3, A-L6, A-L7, A-L10 and A-L12, and should add the drain and the cobbles that are sourced and not yet shown (A-L14).
    - **The sky and the calendar** (D33, D34; liberty T-L12): a computed sky, a date, time and year the viewer can move, seasons, and jumps to eclipses and other events. It needs its own research lane first: eclipses visible from Thera in the window, how uncertain they are that far back, and the Venus observations of Ammisaduqa's reign. Chad, 2026-11-18: the sky is to be corrected the way Beyond the Gates of Uruk's is being. That method computes the sky for the date and place (`~/Developer/beyond-gates-uruk/docs/research/2026-10-19-sky-ephemeris.md`); Uruk's work was still in progress when he said this. Thera's one-file law means a star catalogue has to fit inside the page.
    - **Also noted by 001:** sound above the water, and a cliff form for the restored southern wall.
