@@ -115,7 +115,7 @@ Departures from the evidence, made for the experience. One row each; nothing is 
 
 | # | Liberty | Why | Where | Decision |
 |---|---|---|---|---|
-| P-L1 | The opening page's colours are named for the wall-painters' materials found at Akrotiri (the white of lime plaster, carbon black, red ochre, Egyptian blue: T6 check #3, #4, #5, #12, #14), and their tones on screen are chosen by eye. | No painted surface at Akrotiri has a measured colour. The page is not part of the world, and it copies no motif from a wall painting. | the opening page | D53, D54; work order 006 |
+| P-L1 | The opening page's colours are named for the wall-painters' materials found at Akrotiri (the white of lime plaster, carbon black, red and yellow ochre, Egyptian blue: T6 check #3, #4, #5, #12, #14), and their tones on screen are chosen by eye, in each of its three looks. | No painted surface at Akrotiri has a measured colour. The page is not part of the world, and it copies no motif from a wall painting. | the opening page | D53, D54, D55; work order 006 |
 
 ## 7. Layers, dates and years
 How the world shows what is known and what is added (D31, D38), and how it moves in time (D33, D34, D36, D37).
