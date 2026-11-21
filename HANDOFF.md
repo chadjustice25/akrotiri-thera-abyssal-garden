@@ -1,6 +1,6 @@
 # Handoff
 
-As of 2026-11-20, after work order 003 (the measuring spike) was merged and pushed, Chad chose the way a layer fades (D41), work order 004 (layers and time) was written, merged and pushed, and Chad decided that Found is to appear in the order of the dig (D44) and that the page is to use a visitor's own position on the island (D45). Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
+As of 2026-11-20, after work order 003 (the measuring spike) was merged and pushed, Chad chose the way a layer fades (D41), work order 004 (layers and time) was written, merged and pushed, and Chad decided that Found is to appear in the order of the dig (D44) that the page is to use a visitor's own position on the island (D45), and that the work is to be shown to the archaeologists of the excavation for their feedback (D46). Only Chad's session edits this file. (Chad's integrator session was closed by accident on 2026-11-18, so he asked the session that built work order 002 to do its integration, as he did for 001. That session wrote this version.)
 
 ## Where things stand
 - **The world is Thera with its town.** `main` holds the island of 1628 BCE (high chronology, D36; the year was 1615 until 2026-11-19) and the town at Akrotiri from the outside, in one `index.html` of 166 kB. There is no plant, animal, person, interior, harbour or ship yet: the ground is bare and the town is empty.
@@ -49,6 +49,10 @@ As of 2026-11-20, after work order 003 (the measuring spike) was merged and push
     - Its limits: a phone's position is probably poor under the shelter's roof, and the town is placed only to within about 10 m (D22). So in the open it can show the landscape of 1628 BCE where the visitor stands, and at the dig it cannot say which street they are in.
     - It needs the page on a secure address (GitHub Pages, still off) and running on phones (nobody has opened it on one).
     - The draft letter to the excavation gained two asks: coordinates of two or three fixed points of the plan, and whether such a tool is welcome and phones get a signal at the site.
+    - Chad approved the rules proposed for it ("All approved"): asked only after a tap, never sent or stored, the page works without it, and it says how sure it is.
+  - The work is to be shown to the archaeologists of the excavation for their feedback, in the hope that it can be offered as a resource for visitors (D46). Chad: "I would love to create this and get feedback from the archaeologists involved for potential inclusion as a resource for people enjoying the island and history."
+    - The letter (O8) now also asks for their view. The integrator's advice: send one letter once the page on the web shows the layers and the order of the dig, with that order attached for them to correct. `docs/town/letter-to-the-excavation.md` lists what has to be done first. When to send it is Chad's decision.
+    - The page claims no approval or link with the excavation until one is given in writing.
 - **Research:** X1, T1, T1b, T1c, T2, T2b and T3–T7 are in `docs/research/claude/`, each checked in `docs/research/verification/`. T1c is applied to the terrain; T2 and T2b to the town.
 - **Two kinds of data in the page are not MIT.**
   - The terrain stays under the Copernicus WorldDEM-30 licence and CC BY 4.0 (EMODnet).
@@ -74,6 +78,8 @@ As of 2026-11-20, after work order 003 (the measuring spike) was merged and push
    - A second X1 report, from Neon, is also in (`docs/research/neon/X1_Neon.md`). It was compared with the adopted world clock (`docs/research/verification/X1_Neon.md`). They agree on what matters and the clock stays decided, but two points weaken the reason given for 1615 BCE (O15).
    - Art never places a plant on the island by itself: Theran art is grade B for Thera, and art from elsewhere is grade C (D26).
    - **A fourth lane, T8, the history of the excavation (D44),** was written on 2026-11-20: `docs/research/prompts/T8-excavation-history.md`, 7.9 kB below its line. It is on the Research Desk under "Now: the history of the dig", with a two-part fallback, and can run beside the plant lanes. Its report goes to `docs/research/neon/T8_Neon.md` and is checked in `docs/research/verification/T8.md` before anything is built from it. It asks which building, street and square was uncovered when, about the shelters and the visitor route, and when the best-known finds came to light, which the labels (D25) will also need. The Desk was republished with it (version 7); nobody has looked at that version.
+   - **T8 was also started as a Claude research agent on 2026-11-20** (D13), when Chad said "let's do the research to discover the order of excavation". Its report goes to `docs/research/claude/T8_Claude.md`; a separate `Verify:` agent checks it afterwards. It was still running when this line was written: if `T8_Claude.md` is there, it finished. A Neon run of the same prompt is still worth having as a second report.
+   - **Six Neon reports were found in the main checkout on 2026-11-20, not tracked by git and not mentioned to any session:** `T1_Neon.md`, `T3_Neon.md`, `T3b_Neon.md`, `T3c_Neon.md`, `T6_Neon.md` and `W2_Neon.md`, all in `docs/research/neon/` and dated 2026-11-19. T3b and T3c have all seven sections (about 169 and 104 table rows), so the line above that says T3b is not in and T3c must be rerun is out of date. Their checks were started the same day as `Verify:` agents and go to `docs/research/verification/T3b.md` and `T3c.md`. The other four are second reports on lanes that Claude agents had already researched, and nobody has compared them yet. Chad adds the six files to git himself, since they sit in his checkout (the command is under Commands).
 2. **Chad: the touch test.** Nobody has tried the page with fingers. Chad and his husband are to try it on an iPad.
    - **On a phone as well, since D45.** The visitor's position is for phones, and nobody has opened the page on one. Note the Stats button's reading, and whether the phone grows hot.
    - GitHub Pages is now needed twice over: for this test, and because a browser gives a position only to a page on a secure address.
@@ -88,7 +94,7 @@ As of 2026-11-20, after work order 003 (the measuring spike) was merged and push
    - **O23, augmented and virtual use.** Which headset Chad buys, and which use comes first. The integrator's opinion is a Meta Quest 3, and standpoints first. Once a headset is at hand, a measuring spike for it can follow work order 004.
    - **O24, how the dig's history is shown.** Only as the order in which Found appears, or also as years of the dig the viewer can move through. Decide when the T8 report has been checked.
    - **O25, use at the site without a signal** (D45). Keeping the page on a phone for use offline needs a second small file, which the one-file law does not allow as it stands. Wait until it is known whether phones get a signal at the site.
-   - **The rules proposed for the visitor's position** (`docs/ARCHITECTURE.md` §12): asked only after a tap, never sent or stored, the page works without it, and it says how sure it is. Chad confirms them when the order is written.
+   - **When the letter to the excavation goes** (O8, D46): now, for the numbers it asks for, or once there is a page to show and the order of the dig to correct. The integrator advises the second.
    - **Still open from the T1c check:** no thickness map of the eruption deposits could be opened (liberty T-L1), and the Mavro Rachidi cores, the best local test of the sea level (T-L13), are not yet dated.
 4. **Later orders, in the order suggested on 2026-11-18** (none is planned yet):
    - **The harbour, the old shore and ships.** It needs research first. The one published sketch of the old shore (T2b#61) disagrees with the terrain's coast (T-L14); `docs/town/README.md` §3 records it.
@@ -129,6 +135,10 @@ git log --oneline origin/main..main   # what a push will publish (the fork is pu
 git push origin main
 git branch -d task/001-terrain-and-sea task/002-town-of-akrotiri   # optional: both are merged
 git worktree remove ../akrotiri-thera-002                          # optional; add --force if it refuses over the downloaded caches
+
+# The six Neon reports that arrived on 2026-11-19 are in this checkout but not in git. Add them BEFORE merging a branch that carries their checks:
+git add docs/research/neon/T1_Neon.md docs/research/neon/T3_Neon.md docs/research/neon/T3b_Neon.md docs/research/neon/T3c_Neon.md docs/research/neon/T6_Neon.md docs/research/neon/W2_Neon.md
+git commit -m "Add six Neon reports as they came from Deep Research (T3b and T3c being checked; the rest not yet compared)"
 
 # Before starting the session for work order 004: bring its worktree up to date with main.
 cd ~/Developer/akrotiri-thera-004

@@ -2,6 +2,16 @@
 
 Drafted on 2026-11-18 after work order 002, when Chad asked whether data could be requested from the excavation itself. **Nothing has been sent.** Whether to send it is open question O8 in `docs/DECISIONS.md`. D22 and the T2b check already name this as the remedy for the gap in the plan's chain of rights (`docs/research/verification/T2b.md`, §4 and §6).
 
+## Since 2026-11-20: a letter that also asks for their view (D46)
+
+Chad: "I would love to create this and get feedback from the archaeologists involved for potential inclusion as a resource for people enjoying the island and history." So the letter is no longer only a request. Before it is sent:
+
+- **Have something to show.** The page on the web (GitHub Pages), with the three layers and the Found layer appearing in the order of the dig. That needs work order 004 and lane T8, checked.
+- **Attach the order of the dig as a table for correction.** It is the one thing they can correct at a glance, and it is their own history. The table comes from lane T8's check.
+- **Check who directs the excavation today,** and address the letter to them. The draft below names Professor Doumas because lane T2b found that he has directed it since 1974; lane T8 asks who directs it now.
+- **Claim nothing.** The page says nothing of approval, support or a link with the excavation, the Archaeological Society or the Ministry until one is given in writing.
+- **Rewrite the draft below then.** It is the text of 2026-11-18 with one question added, and it does not yet ask for their view of the work.
+
 ## Who to ask, and what each answer would close
 
 The liberty numbers are those of `docs/town/README.md` §6.

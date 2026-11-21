@@ -335,7 +335,7 @@ Added on 2026-11-20. Chad: "We need to allow for geo-location if a person is act
 
 **One function, three callers.** Position and standpoints are one feature. One function puts the viewer at a latitude, a longitude and a direction. A standpoint calls it with numbers kept in a link, such as `#at=36.3517,25.4035,180`. The button calls it with the device's own. A headset can call it later. The link also lets the feature be tested from anywhere, with no need to be on Thera, and lets a guide send a visitor to an exact view.
 
-**Rules proposed for it.** They are the integrator's, for Chad to confirm when the order is written.
+**Its rules.** Proposed by the integrator and approved by Chad on 2026-11-20 ("All approved").
 1. The page asks for the position only after a tap, never when it loads. It works in full without it. If the visitor says no, or the device is not on the island, it says so in a line and changes nothing.
 2. The position stays in the page. The page sends nothing and loads nothing at run time, which the gate checks, and it stores nothing. (A phone may itself use a network service to work out where it is. That is the phone's doing, not the page's.)
 3. The page shows how sure the device says it is, and says that the town itself is placed only to within about 10 m.
